@@ -1,0 +1,7 @@
+{
+  "redirects": [
+    { "source": "/coach", "destination": "https://candidates.jobgen.ai/", "permanent": true },
+    { "source": "/coach/:path*", "destination": "https://candidates.jobgen.ai/", "permanent": true },
+    { "source": "/web-development/work/:slug*", "destination": "/web-development/#work", "permanent": true }
+  ]
+}

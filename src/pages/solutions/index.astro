@@ -1,0 +1,50 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import BookDemo from "../../components/BookDemo.astro";
+import { SOLUTIONS } from "../../data/solutions";
+import { WORKFORCE } from "../../data/site";
+const name = (key: string) => WORKFORCE.find((w) => w.key === key)!.name;
+---
+<Base
+  title="Solutions | JOBGEN.AI"
+  description="After-hours answering, overflow call handling, appointment booking and property owner outreach, from the JOBGEN.AI AI workforce."
+  ogTitle="After hours, overflow, bookings and owner outreach. JOBGEN.AI"
+  ogDescription="Pick the gap. We’ll show you the call flow."
+  ogImage="/og/home.png"
+  ogImageAlt="JOBGEN.AI: Grow your business with an AI workforce."
+>
+  <PageHero
+    eyebrow="SOLUTIONS"
+    sub="After hours, when the line is busy, when someone wants to book, or when an owner list needs working. Pick the gap and see the call flow."
+    secondary={{ label: "See solutions ↓", href: "#solutions" }}
+  >
+    <span class="h1-line">Every gap</span>
+    <span class="h1-line h1-muted">has a call flow.</span>
+  </PageHero>
+  <section class="chapter light" id="solutions" aria-labelledby="sol-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">PICK THE GAP</p>
+        <h2 id="sol-title" class="reveal">Four ways in,<br /><span class="muted">one clear next step.</span></h2>
+      </div>
+      <ul class="picker">
+        {SOLUTIONS.map((s, i) => (
+          <li class="reveal" style={`--tint: ${s.agent === "olivia" ? "var(--prop)" : "var(--edu)"}; transition-delay: ${i * 60}ms`}>
+            <a href={`/solutions/${s.slug}/`}>
+              <span class="picker-problem mono">{s.label}</span>
+              <strong>{s.headline}</strong>
+              <span class="picker-who"><span class="dot"></span>{name(s.agent)}<span class="arrow" aria-hidden="true">→</span></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+  <BookDemo
+    line1="Pick the gap."
+    line2="We’ll show you the call."
+    sub="Pick a time and we’ll walk through it with Jenny or Olivia, live."
+    agenda={[{ title: "Hear them live" }, { title: "Map your call flow" }, { title: "Setup and pricing" }]}
+  />
+</Base>

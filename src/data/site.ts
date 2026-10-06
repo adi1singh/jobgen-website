@@ -10,9 +10,11 @@ export const LINKS = {
   // Where the calculator's "get in touch" form (email + phone + numbers) is sent, as a JSON POST.
   // Empty for now: the form shows its thank-you state with a "not connected yet" note and sends nothing.
   leadEndpoint: "",
-  partners: "https://jobgen.ai/partners/",
+  partners: "/partners/",
+  industries: "/industries/",
+  solutions: "/solutions/",
   about: "/about/",
-  news: "https://jobgen.ai/news",
+  news: "/news/",
   careers: "https://recruiter.jobgen.ai/jobs/jobgen-ai-4",
   contact: "mailto:hello@jobgen.ai",
   privacy: "https://www.jobgen.ai/privacy/",

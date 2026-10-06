@@ -37,6 +37,10 @@ On Vercel, import this repo; it detects Astro (build `npm run build`, output `di
   05 With your people → a short founder card → book a demo (lands on the calendar).
 - `src/pages/about.astro`: the company facts, our story timeline, the full founder note, and all four
   specialists including Emma for job seekers.
+- `src/data/industries.ts`, `src/data/solutions.ts`: industry and solution pages, copied from the
+  sales.jobgen.ai page data; `src/pages/industries/[slug].astro` and `solutions/[slug].astro` render them.
+- `src/pages/partners.astro`, `src/data/news.ts` + `src/pages/news/`: partners and the newsroom from jobgen.ai.
+- `tests/uat/`: user acceptance tests (run before every merge).
 - `src/components/OliviaList.astro`, `JessPipeline.astro`: each professional's signature animation
   (simulated, labelled). Pages set `persona` on `Base` to take that professional's colours.
 - `src/pages/receptionist.astro`: Jenny's page (the approved design).
@@ -84,6 +88,9 @@ sends them (edit `note`, `mission` and `vision`, nothing else needs to change).
 2. ✅ Astro, shared layout, Jenny's page with a real recording and testimonials
 3. ✅ Home page (story + problem picker + founder note with Kush's photo; placeholder words), Olivia, Jess and Web development pages
 4. ✅ Pricing: the sales.jobgen.ai estimator with a USD/AUD toggle (live exchange rate)
-5. ✅ About page. Still to do: industries, solutions, partners and news pages (existing copy, lightly tidied)
+5. ✅ About, industries (8 + index), solutions (4 + index), partners and news, moved from jobgen.ai and
+   sales.jobgen.ai (receptionist copy there said Olivia; it now says Jenny). Not moved: privacy and terms
+   (the live privacy page is marked "Draft — pending legal review"), and /demo/ (a live voice app that
+   needs its own home before the switch). `vercel.json` redirects /coach and the old case-study pages.
 6. Boss review on the Vercel preview → point jobgen.ai here → redirects (sales.jobgen.ai marketing
    pages, /coach → candidates.jobgen.ai); login and sign-up stay on sales.jobgen.ai

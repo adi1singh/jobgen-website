@@ -10,7 +10,11 @@ const BASE = process.argv[2] || "http://localhost:8770";
 const OUT = process.argv[3] || "./tests/uat/out";
 mkdirSync(OUT, { recursive: true });
 const AXE = readFileSync(process.env.AXE_PATH || require.resolve("axe-core/axe.min.js"), "utf8");
-const PAGES = ["/", "/receptionist/", "/olivia/", "/recruiter-agent/", "/web-development/", "/pricing/", "/about/"];
+const PAGES = ["/", "/receptionist/", "/olivia/", "/recruiter-agent/", "/web-development/", "/pricing/", "/about/",
+  "/industries/", "/industries/property/", "/industries/plumbing/", "/industries/electricians/", "/industries/accounting/",
+  "/industries/medical/", "/industries/legal/", "/industries/automotive/", "/industries/home-services/",
+  "/solutions/", "/solutions/after-hours/", "/solutions/overflow/", "/solutions/booking/", "/solutions/property-outreach/",
+  "/partners/", "/news/", "/news/australia-job-market-2026/"];
 const results = [];
 let current = "";
 const check = (name, ok, detail = "") => {
@@ -117,6 +121,36 @@ section("UAT-2 · Raj, real estate principal, desktop (1440×900): “Is Olivia 
   await wait(1500);
   const cal = await inView(p, "#book");
   check("Book a demo lands on the calendar", cal && cal.top >= 0 && cal.top < 260, JSON.stringify(cal));
+  check("No script errors", p.errors.length === 0, p.errors.join(" | "));
+  // Raj also checks the property industry page
+  const pi = await page(c, "/industries/property/");
+  check("Property industry page is Olivia’s (badge + amber)", /Olivia/.test(await pi.locator(".product").innerText()) && (await pi.evaluate(() => document.body.dataset.persona)) === "olivia");
+  const tabs = pi.locator('[role="tab"]');
+  await tabs.nth(1).click();
+  check("Example tabs switch the example", (await pi.locator('[role="tabpanel"]:not([hidden])').getAttribute("id")) === "case-1");
+  await tabs.nth(1).focus(); await pi.keyboard.press("ArrowRight");
+  check("Example tabs work with arrow keys", (await pi.locator('[role="tabpanel"]:not([hidden])').getAttribute("id")) === "case-2");
+  await c.close();
+}
+section("UAT-2b · Dana, plumbing business owner, phone: “Will it handle an urgent job?”");
+{
+  const c = await ctx({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const p = await page(c, "/");
+  await p.locator(".menu-btn").tap();
+  await p.locator("#mobile-menu a", { hasText: "Industries" }).tap();
+  await p.waitForURL("**/industries/");
+  await p.locator('a[href="/industries/plumbing/"]').tap();
+  await p.waitForURL("**/industries/plumbing/");
+  const body = await p.locator("main").innerText();
+  check("Plumbing page uses Jenny, never the old receptionist name", /Jenny/.test(body) && !/Olivia/.test(body.replace(/Olivia · AI sales agent for real estate/g, "")), "");
+  check("Plumbing example shows an urgent leak and what she won’t promise", /water coming through/i.test(body) && /Do not promise dispatch/i.test(body));
+  check("Says where Jenny stops", /WHERE JENNY STOPS/.test(body));
+  await p.locator(".hero-actions a", { hasText: "See an example" }).tap(); await wait(1000);
+  const ex = await inView(p, "#example");
+  check("“See an example” jumps to the example", ex && ex.top < 200 && ex.top > -400, JSON.stringify(ex));
+  await p.locator(".explore-solution").first().tap();
+  await p.waitForURL("**/solutions/**");
+  check("Related solution link works", /\/solutions\//.test(p.url()), p.url());
   check("No script errors", p.errors.length === 0, p.errors.join(" | "));
   await c.close();
 }
@@ -373,7 +407,7 @@ section("UAT-7 · Content integrity: links, headings, previews, alt text, every 
   }
   check(`All ${internal.size} internal links work (incl. #anchors)`, broken.length === 0, broken.join(" | "));
   const ext = await (await page(c, "/")).evaluate(() => [...new Set([...document.querySelectorAll('a[href^="http"]')].map((a) => new URL(a.href).host))]);
-  check("External links only go to JobGen-owned or booking domains", ext.every((h) => /jobgen\.ai$|calendly\.com$|primarecruitment|onetec|jolierecruitment/.test(h)), ext.join(", "));
+  check("External links only go to JobGen-owned or booking domains", ext.every((h) => /jobgen\.ai$|calendly\.com$|primarecruitment|onetec|jolierecruitment|butadeogunproperty|msbusinesssolutions|studyandwork/.test(h)), ext.join(", "));
   const overflow = [];
   for (const w of [320, 360, 390, 768, 820, 1024, 1280, 1440, 1920]) {
     const c3 = await ctx({ viewport: { width: w, height: 900 } });

@@ -1,0 +1,140 @@
+---
+// One page per solution, from src/data/solutions.ts (moved from sales.jobgen.ai/solutions/*).
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import BookDemo from "../../components/BookDemo.astro";
+import RealRecording from "../../components/RealRecording.astro";
+import { SOLUTIONS, type Solution } from "../../data/solutions";
+import { INDUSTRIES } from "../../data/industries";
+import { RECORDINGS } from "../../data/recordings";
+import { WORKFORCE } from "../../data/site";
+
+export function getStaticPaths() {
+  return SOLUTIONS.map((solution) => ({ params: { slug: solution.slug }, props: { solution } }));
+}
+const { solution: sol } = Astro.props as { solution: Solution };
+const agent = WORKFORCE.find((w) => w.key === sol.agent)!;
+const ex = sol.example;
+const others = SOLUTIONS.filter((s) => s.slug !== sol.slug);
+const industries = INDUSTRIES.filter((i) => i.related.includes(sol.slug));
+const calls = sol.slug === "property-outreach" ? RECORDINGS.filter((r) => r.product === "olivia") : [];
+---
+<Base
+  title={`${sol.label}: ${sol.headline} | JOBGEN.AI`}
+  description={sol.intro}
+  ogTitle={`${sol.headline} ${sol.label} with ${agent.name}, by JOBGEN.AI.`}
+  ogDescription={sol.intro}
+  ogImage={sol.agent === "olivia" ? "/og/olivia.png" : "/og/jenny.png"}
+  ogImageAlt={`${agent.name} by JOBGEN.AI, ${agent.role}`}
+  persona={sol.agent === "olivia" ? "olivia" : undefined}
+  bookBarText={sol.cta}
+>
+  <PageHero
+    name={agent.name}
+    role={agent.role}
+    position={sol.label}
+    sub={sol.intro}
+    secondary={{ label: "See how it works ↓", href: "#example" }}
+  >
+    <span class="h1-line ind-h1">{sol.headline}</span>
+  </PageHero>
+
+  <!-- 01 · THE EXAMPLE -->
+  <section class="chapter sol-example light" id="example" aria-labelledby="example-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">01 · {ex.eyebrow}</p>
+        <h2 id="example-title" class="reveal ind-h2">{ex.title}</h2>
+      </div>
+      <ol class={`sol-steps sol-steps-${ex.kind} reveal`}>
+        {ex.steps.map(([a, b]) => (
+          <li><b>{a}</b>{b && <span>{b}</span>}</li>
+        ))}
+      </ol>
+      <article class="sol-card reveal">
+        <p class="mono">{ex.tag}</p>
+        <blockquote>{ex.quote}</blockquote>
+        {!ex.fieldsTitle && (
+          <dl>{ex.fields.map(([k, v]) => <div><dt class="mono">{k}</dt><dd>{v}</dd></div>)}</dl>
+        )}
+        {ex.note && <p class="case-note mono">{ex.note}</p>}
+        {!ex.note && <p class="case-note mono">Illustrative workflow · sample data</p>}
+      </article>
+      {ex.fieldsTitle && (
+        <div class="sol-after reveal">
+          <div>
+            <p class="mono">{ex.fieldsEyebrow}</p>
+            <h3>{ex.fieldsTitle}</h3>
+            <p>{ex.fieldsIntro}</p>
+          </div>
+          <dl>{ex.fields.map(([k, v]) => <div><dt class="mono">{k}</dt><dd>{v}</dd></div>)}</dl>
+        </div>
+      )}
+      {ex.pair && (
+        <div class="sol-pair-wrap">
+          <p class="mono chapter-no reveal">{ex.pairTitleEyebrow}</p>
+          <h3 class="sol-pair-title reveal">{ex.pairTitle}</h3>
+          <ul class={`sol-pair sol-pair-${ex.pair.length}`}>
+            {ex.pair.map(([t, d]) => <li class="reveal"><b>{t}</b><span>{d}</span></li>)}
+          </ul>
+        </div>
+      )}
+    </div>
+  </section>
+
+  {calls.length > 0 && (
+    <section class="chapter proof light" id="proof" aria-labelledby="proof-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="mono chapter-no reveal">REAL CALL RECORDINGS</p>
+          <h2 id="proof-title" class="reveal">Hear the difference<br /><span class="muted">between interest and intent.</span></h2>
+        </div>
+        <div class="proof-recordings">
+          {calls.map((rec) => <RealRecording rec={rec} aiLabel="Olivia" />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- 02 · BEFORE YOU GO LIVE -->
+  <section class="chapter ind-prep" aria-labelledby="prep-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">02 · BEFORE YOU GO LIVE</p>
+        <h2 id="prep-title" class="reveal ind-h2">What your team sets before the first call.</h2>
+      </div>
+      <ol class="service-grid prep-grid">
+        {sol.preparation.map(([title, text], i) => (
+          <li class="service reveal"><span class="mono">{String(i + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{text}</p></li>
+        ))}
+      </ol>
+      <aside class="boundary reveal">
+        <p class="mono">WHERE {agent.name.toUpperCase()} STOPS</p>
+        <p>{sol.boundary}</p>
+      </aside>
+      <ul class="capabilities reveal" aria-label="Included">
+        {sol.points.map((p) => <li>{p}</li>)}
+      </ul>
+      <nav class="explore reveal" aria-label="Keep exploring">
+        <p class="mono">CONTINUE EXPLORING</p>
+        <div class="explore-links">
+          {others.map((s) => <a class="explore-solution" href={`/solutions/${s.slug}/`}>{s.label} <span aria-hidden="true">→</span></a>)}
+        </div>
+        {industries.length > 0 && (
+          <ul class="industry-chips">
+            {industries.map((o) => <li><a href={`/industries/${o.slug}/`}>{o.label}</a></li>)}
+          </ul>
+        )}
+      </nav>
+    </div>
+  </section>
+
+  <BookDemo
+    eyebrow={`30 MINUTES · ${sol.label.toUpperCase()}`}
+    line1={sol.cta.split(" ").slice(0, Math.ceil(sol.cta.split(" ").length / 2)).join(" ")}
+    line2={sol.cta.split(" ").slice(Math.ceil(sol.cta.split(" ").length / 2)).join(" ")}
+    sub={`Pick a time and we’ll walk through it with ${agent.name}, live.`}
+    agenda={[{ title: `Hear ${agent.name} live` }, { title: "Map your call flow" }, { title: "Setup and pricing" }]}
+    quoteFrom={sol.agent === "olivia" ? "Buta Deogun" : "George Limberis"}
+  />
+</Base>
