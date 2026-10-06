@@ -1,0 +1,123 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import RealRecording from "../components/RealRecording.astro";
+import Testimonials from "../components/Testimonials.astro";
+import BookDemo from "../components/BookDemo.astro";
+import { RECORDINGS } from "../data/recordings";
+import { TESTIMONIALS } from "../data/testimonials";
+
+const calls = RECORDINGS.filter((r) => r.product === "olivia");
+const quotes = TESTIMONIALS.filter((t) => t.product === "olivia");
+---
+<Base
+  title="Olivia, AI Sales Agent for Property | JOBGEN.AI"
+  description="Olivia calls the property owners already in your database, offers a useful property report, listens for selling intent and books appraisals and agent callbacks."
+  ogTitle="Every owner on your list. Called. Meet Olivia, the AI sales agent by JOBGEN.AI."
+  ogDescription="Olivia calls known owners, listens for selling intent and leaves your agents with the next action already organised."
+  ogImage="/og/olivia.png"
+  ogImageAlt="Olivia by JOBGEN.AI: Every owner on your list. Called."
+  bookBarText="Hear Olivia work your list"
+>
+  <PageHero
+    name="Olivia"
+    role="AI sales agent"
+    position="Outbound calls for property teams."
+    sub="Olivia calls the owners already in your database, offers a useful digital property report, listens for selling intent, and leaves your agents with the next action already organised."
+    secondary={{ label: "Hear a real call", href: "#proof" }}
+  >
+    <span class="h1-line">Every owner on your list.</span>
+    <span class="h1-line h1-muted">Called.</span>
+  </PageHero>
+
+  <!-- WHAT SHE DOES -->
+  <section class="chapter does" aria-labelledby="does-title">
+    <div class="wrap does-grid">
+      <div>
+        <p class="mono chapter-no reveal">WHAT OLIVIA DOES</p>
+        <h2 id="does-title" class="reveal">Helpful calls,<br /><span class="muted">not cold calls.</span></h2>
+        <p class="section-sub reveal">
+          She starts natural conversations with owners you already know, offers something useful, and listens for
+          the moment someone starts thinking about selling.
+        </p>
+      </div>
+      <div class="feature-cards">
+        <article class="feature reveal" style="--tint: var(--prop)">
+          <span class="mono">01</span>
+          <h3>Helpful owner outreach</h3>
+          <p>Starts natural conversations with known owners and respects do-not-contact preferences.</p>
+        </article>
+        <article class="feature reveal" style="--tint: var(--prop)">
+          <span class="mono">02</span>
+          <h3>Listing intent signals</h3>
+          <p>Captures selling horizons, report requests, appraisal interest and preferred callback times.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- REAL CALLS -->
+  <section class="chapter proof light" id="proof" aria-labelledby="proof-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">REAL CALLS</p>
+        <h2 id="proof-title" class="reveal">Hear Olivia<br /><span class="muted">work a real list.</span></h2>
+        <p class="section-sub reveal">
+          Two real outbound calls to homeowners, with personal details removed. Olivia speaks as your agency’s
+          assistant, so on these calls she uses the agency’s name.
+        </p>
+      </div>
+      <div class="proof-recordings">
+        {calls.map((rec) => <RealRecording rec={rec} aiLabel="Olivia" />)}
+      </div>
+      <Testimonials items={quotes} />
+    </div>
+  </section>
+
+  <!-- WITH YOUR AGENTS -->
+  <section class="chapter flow" aria-labelledby="flow-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">WITH YOUR AGENTS</p>
+        <h2 id="flow-title" class="reveal">She works the list.<br /><span class="muted">Your agents work the leads.</span></h2>
+      </div>
+      <ol class="flow-steps">
+        <li class="reveal">
+          <span class="step-no">1</span>
+          <h3>Olivia calls known owners</h3>
+          <p>Property-aware contact profiles mean every call starts with context, and do-not-contact preferences are respected.</p>
+        </li>
+        <li class="reveal">
+          <span class="step-no">2</span>
+          <h3>She listens for intent</h3>
+          <p>Selling horizons, report requests and appraisal interest become hot, warm and normal lead scores.</p>
+        </li>
+        <li class="reveal">
+          <span class="step-no">3</span>
+          <h3>Your agent gets the next step</h3>
+          <p>Appraisals and agent callbacks are routed to the right person, with CRM-ready structured outcomes.</p>
+        </li>
+      </ol>
+      <ul class="capabilities reveal" aria-label="Key capabilities">
+        <li>Known-owner outbound conversations</li>
+        <li>Digital property report requests</li>
+        <li>Hot, warm and normal lead scoring</li>
+        <li>Appraisal and agent callback routing</li>
+        <li>Property-aware contact profiles</li>
+        <li>CRM-ready structured outcomes</li>
+      </ul>
+    </div>
+  </section>
+
+  <BookDemo
+    eyebrow="30 MINUTES · YOUR AGENCY, YOUR LIST"
+    line1="Give your next listing"
+    line2="a head start."
+    sub="Hear Olivia for yourself and see where she fits in your agency. Here’s what we’ll cover together."
+    agenda={[
+      { title: "Hear Olivia.", text: "Listen to how she opens a conversation with an owner and handles a follow-up, live." },
+      { title: "Map your owner list.", text: "Talk through who she should call, what she offers and when an agent takes over." },
+      { title: "Discuss setup & pricing.", text: "Review what getting started involves and the options that suit your agency." },
+    ]}
+  />
+</Base>

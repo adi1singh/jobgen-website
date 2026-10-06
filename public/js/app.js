@@ -13,6 +13,7 @@
   const rotator = $(".rotator");
   const words = $$(".rotator > span");
   let wordIndex = 0;
+  if (rotator) {
   const fitRotator = () => {
     const pad = getComputedStyle(rotator);
     rotator.style.width =
@@ -33,6 +34,7 @@
       fitRotator();
       rotator.dispatchEvent(new CustomEvent("word", { detail: wordIndex }));
     }, 1800);
+  }
 
   /* ---------- Voice ribbon: sound-wave lines that speak in bursts ---------- */
   const ribbon = $("#voice-ribbon");
@@ -100,7 +102,7 @@
       run();
     }).observe(ribbon);
     document.addEventListener("visibilitychange", run);
-    rotator.addEventListener("word", (e) => {
+    rotator?.addEventListener("word", (e) => {
       lines[lineForWord[e.detail]].boost = 1;
       energy = 1;
     });
@@ -181,6 +183,7 @@
       document.body.classList.toggle("book-bar-on", !bookBar.hidden);
     };
     const watch = (el, key) =>
+      el &&
       new IntersectionObserver(([e]) => {
         seen[key] = e.isIntersecting;
         sync();
@@ -235,6 +238,8 @@
           : on.slice(0, -1).join(", ") + " and " + on[on.length - 1];
     ruleSummary.textContent = sentence[0].toUpperCase() + sentence.slice(1) + (on.length ? "." : "");
   }
-  rules.forEach((r) => r.addEventListener("change", updateRules));
-  updateRules();
+  if (ruleSummary) {
+    rules.forEach((r) => r.addEventListener("change", updateRules));
+    updateRules();
+  }
 })();

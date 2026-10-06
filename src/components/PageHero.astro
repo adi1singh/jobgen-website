@@ -1,0 +1,41 @@
+---
+// Hero used by every page: aurora light, optional badge or eyebrow, the headline (passed in),
+// a positioning line, a short paragraph, two actions and the voice ribbon.
+import Badge from "./Badge.astro";
+interface Props {
+  name?: string;
+  role?: string;
+  eyebrow?: string;
+  position?: string;
+  sub: string;
+  primary?: { label: string; href: string };
+  secondary?: { label: string; href: string };
+  ribbon?: boolean;
+}
+const {
+  name,
+  role,
+  eyebrow,
+  position,
+  sub,
+  primary = { label: "Book a demo", href: "#book" },
+  secondary,
+  ribbon = true,
+} = Astro.props;
+---
+<section class="hero page-hero" aria-labelledby="hero-title">
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="wrap hero-inner">
+    {name && role && <Badge name={name} role={role} />}
+    {eyebrow && <p class="hero-eyebrow mono">{eyebrow}</p>}
+    <h1 id="hero-title"><slot /></h1>
+    {position && <p class="hero-position">{position}</p>}
+    <p class="hero-sub">{sub}</p>
+    <div class="hero-actions">
+      <a class="btn btn-light" href={primary.href}>{primary.label} <span aria-hidden="true">→</span></a>
+      {secondary && <a class="btn btn-ghost" href={secondary.href}>{secondary.label}</a>}
+    </div>
+  </div>
+  {ribbon && <canvas class="voice-ribbon" id="voice-ribbon" aria-hidden="true"></canvas>}
+  <slot name="below" />
+</section>

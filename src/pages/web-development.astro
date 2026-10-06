@@ -1,0 +1,186 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import BookDemo from "../components/BookDemo.astro";
+
+// Services, projects, process and industries are from https://jobgen.ai/web-development.
+const services = [
+  { title: "Marketing sites", text: "Fast, responsive sites that read well on a phone and rank on the terms your buyers actually search." },
+  { title: "Web applications", text: "Client portals, booking systems, internal tools: the software your team opens every morning." },
+  { title: "AI integration", text: "Your JobGen.AI professional wired into the site itself: live call widgets, booking handovers, lead capture." },
+  { title: "SEO and analytics", text: "Structured data, page metadata and clean tracking, set up at build time rather than bolted on later." },
+  { title: "Design and build", text: "From a blank page or from your existing brand, designed in-house and built by the same people." },
+  { title: "Care and hosting", text: "Deployment, monitoring and ongoing changes, so the site doesn’t quietly rot after launch." },
+];
+const projects = [
+  {
+    name: "Prima Recruitment & Consultancy",
+    url: "https://www.primarecruitmentandconsultancy.com.au",
+    domain: "primarecruitmentandconsultancy.com.au",
+    type: "Recruitment · Marketing site",
+    title: "A credibility-first site for high-accountability hiring.",
+    story: "A director-led recruitment firm needed a digital presence that could speak to government, enterprise and candidates without flattening its specialist offer.",
+    brief: "Bring specialist ICT recruitment, labour hire, advisory services and government credentials into one clear buyer journey.",
+    tags: ["Content architecture", "Responsive build", "Service pathways", "Lead capture"],
+    tint: "var(--care)",
+  },
+  {
+    name: "ONETEC",
+    url: "https://onetec.com.au",
+    domain: "onetec.com.au",
+    type: "Telecom · Business site",
+    title: "Turning technical services into clear, bookable pathways.",
+    story: "ONETEC covers phone systems, service, repairs and installations. The site needed to make that technical breadth feel simple and immediately actionable.",
+    brief: "Help customers identify the right telecommunications service quickly, especially when they arrive on a phone with an urgent repair or install request.",
+    tags: ["Service architecture", "Mobile conversion", "Responsive build", "Enquiry flows"],
+    tint: "var(--edu)",
+  },
+  {
+    name: "Multi Dynamic Real Estate",
+    url: "",
+    domain: "",
+    type: "Real estate · Web application",
+    title: "A property platform built around appraisal intent.",
+    story: "Multi Dynamic needed more than a brochure site: listings, agents and property enquiries had to work together as one focused digital product.",
+    brief: "Make property discovery useful while keeping the agency’s highest-value actions (appraisals, agent contact and enquiries) close at hand.",
+    tags: ["Web application", "Property listings", "Agent profiles", "Enquiry flows"],
+    tint: "var(--prop)",
+  },
+  {
+    name: "Jolie Recruitment",
+    url: "https://jolierecruitment.com.au",
+    domain: "jolierecruitment.com.au",
+    type: "Rec2Rec · Marketing site",
+    title: "A brand-led site for the agency that recruits recruiters.",
+    story: "Jolie is a female-led Rec2Rec agency. The site had to carry a real personality while still doing the plain work of explaining the services and opening a confidential conversation.",
+    brief: "Give a specialist Rec2Rec offer its own voice, and make a discreet enquiry feel as easy as browsing an open role.",
+    tags: ["Brand-led design", "Service pathways", "Fast static build", "Candidate hand-off"],
+    tint: "var(--rest)",
+  },
+];
+const stages = [
+  { title: "Scope", text: "A call to work out what the site has to do and who it has to do it for. You leave with a fixed scope and a price, not a range." },
+  { title: "Design", text: "Screens you can click before anything is built. We iterate here, where changes are cheap." },
+  { title: "Build", text: "Built on a modern stack, deployed to a staging address from day one so you watch it come together." },
+  { title: "Launch and look after", text: "We handle DNS, redirects and go-live, then stay on for changes as the business moves." },
+];
+const industries = [
+  "Real estate & property", "Recruitment & HR", "Telecom & comms", "Restaurants & cafés", "Childcare & day cares",
+  "Education & institutions", "Career coaches", "Fitness & gyms", "Healthcare & clinics", "Trades & services",
+  "Retail & eCommerce", "Professional services",
+];
+---
+<Base
+  title="Web Design & Development | JOBGEN.AI"
+  description="Design, development and ongoing support from one team, with AI integration when you need it. Marketing sites, web applications, SEO and hosting."
+  ogTitle="Everything between the domain and the database. Web development by JOBGEN.AI."
+  ogDescription="Design, development and ongoing support from one team, with AI integration when you need it."
+  ogImage="/og/web.png"
+  ogImageAlt="JOBGEN.AI web development: everything between the domain and the database."
+  bookBarText="Tell us about your site"
+>
+  <PageHero
+    eyebrow="WEB DESIGN & DEVELOPMENT"
+    sub="Design, development and ongoing support from one team, with AI integration when you need it."
+    primary={{ label: "Talk about your site", href: "#book" }}
+    secondary={{ label: "See our work", href: "#work" }}
+  >
+    <span class="h1-line">Everything between the domain</span>
+    <span class="h1-line h1-muted">and the database.</span>
+  </PageHero>
+
+  <!-- SERVICES -->
+  <section class="chapter services" aria-labelledby="services-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">WHAT WE BUILD</p>
+        <h2 id="services-title" class="reveal">One team,<br /><span class="muted">from first sketch to go-live.</span></h2>
+      </div>
+      <div class="service-grid">
+        {services.map((s, i) => (
+          <article class="service reveal" style={`transition-delay: ${i * 50}ms`}>
+            <span class="mono">{String(i + 1).padStart(2, "0")}</span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section class="chapter work light" id="work" aria-labelledby="work-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">OUR WORK</p>
+        <h2 id="work-title" class="reveal">Websites we’ve<br /><span class="muted">brought to life.</span></h2>
+        <p class="section-sub reveal">Sites and applications we’ve designed and launched for our clients, and how each one came together.</p>
+      </div>
+      <ol class="projects">
+        {projects.map((p, i) => (
+          <li class="project reveal" style={`--tint: ${p.tint}`}>
+            <div class="project-head">
+              <span class="project-no mono">{String(i + 1).padStart(2, "0")}</span>
+              <p class="mono">{p.type}</p>
+              <h3>{p.title}</h3>
+              <p class="project-client">{p.name}</p>
+            </div>
+            <div class="project-body">
+              <p>{p.story}</p>
+              <p class="project-brief"><span class="mono">THE BRIEF</span>{p.brief}</p>
+              <ul class="project-tags">{p.tags.map((t) => <li>{t}</li>)}</ul>
+              {p.url && (
+                <a class="project-link" href={p.url} target="_blank" rel="noopener">
+                  Visit {p.domain} <span aria-hidden="true">↗</span>
+                </a>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="chapter process setup light" aria-labelledby="process-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">HOW WE WORK</p>
+        <h2 id="process-title" class="reveal">Four stages,<br /><span class="muted">no surprises.</span></h2>
+      </div>
+      <ol class="steps steps-4">
+        {stages.map((s, i) => (
+          <li class="step reveal">
+            <span class="step-no">{i + 1}</span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- INDUSTRIES -->
+  <section class="chapter industries" aria-labelledby="industries-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">WHO WE BUILD FOR</p>
+        <h2 id="industries-title" class="reveal">Built for businesses<br /><span class="muted">like yours.</span></h2>
+        <p class="section-sub reveal">From storefronts to service teams, we build websites and applications across industries. Don’t see yours? We build for it too.</p>
+      </div>
+      <ul class="industry-chips reveal">{industries.map((n) => <li>{n}</li>)}</ul>
+    </div>
+  </section>
+
+  <BookDemo
+    eyebrow="30 MINUTES · YOUR SITE"
+    line1="Let’s talk about"
+    line2="your next website."
+    sub="Book a call with our team and tell us what your site needs to do. Here’s what we’ll cover together."
+    agenda={[
+      { title: "Your goals.", text: "What the site has to do, who it’s for and what isn’t working today." },
+      { title: "The scope.", text: "Pages, features and any AI integration, such as a live call widget or booking handover." },
+      { title: "Timeline & price.", text: "How we’d approach it, and what happens next." },
+    ]}
+  />
+</Base>

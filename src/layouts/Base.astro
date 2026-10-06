@@ -8,10 +8,21 @@ interface Props {
   ogDescription?: string;
   ogImage?: string;
   ogImageAlt?: string;
-  /** Where the header's "Book a demo" goes (defaults to Calendly). */
+  /** Where the header's "Book a demo" goes (defaults to the page's own #book section). */
   bookHref?: string;
+  /** Text in the phone booking bar that appears after the hero. */
+  bookBarText?: string;
 }
-const { title, description, ogTitle = title, ogDescription = description, ogImage = "/og/jenny.png", ogImageAlt = title, bookHref } = Astro.props;
+const {
+  title,
+  description,
+  ogTitle = title,
+  ogDescription = description,
+  ogImage = "/og/jenny.png",
+  ogImageAlt = title,
+  bookHref = "#book",
+  bookBarText = "See your AI workforce in 30 minutes",
+} = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const image = new URL(ogImage, Astro.site);
 ---
@@ -49,8 +60,13 @@ const image = new URL(ogImage, Astro.site);
     <main id="main">
       <slot />
     </main>
-    <slot name="after-main" />
+    <!-- Phones: booking is one tap away once the hero is out of view -->
+    <div class="book-bar" id="book-bar" hidden>
+      <span>{bookBarText}</span>
+      <a class="btn btn-light btn-small" href={bookHref}>Book a demo</a>
+    </div>
     <Footer />
     <slot name="scripts" />
+    <script is:inline src="/js/app.js"></script>
   </body>
 </html>

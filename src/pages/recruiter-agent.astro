@@ -1,0 +1,114 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import Testimonials from "../components/Testimonials.astro";
+import BookDemo from "../components/BookDemo.astro";
+import { TESTIMONIALS } from "../data/testimonials";
+
+const quotes = TESTIMONIALS.filter((t) => t.product === "jess");
+---
+<Base
+  title="Jess, AI Recruitment Assistant | JOBGEN.AI"
+  description="Jess finds candidates, screens them with natural voice calls, grades their responses and writes the best profiles back to your ATS."
+  ogTitle="Every applicant. Screened. Meet Jess, the AI recruitment assistant by JOBGEN.AI."
+  ogDescription="Jess sources and screens candidates by voice, grades every response and pushes the best profiles to your ATS."
+  ogImage="/og/jess.png"
+  ogImageAlt="Jess by JOBGEN.AI: Every applicant. Screened."
+  bookBarText="See Jess screen your pipeline"
+>
+  <PageHero
+    name="Jess"
+    role="AI recruitment assistant"
+    position="For recruiters and staffing teams."
+    sub="Jess finds top candidates, screens them with natural voice calls, grades their responses and pushes the best profiles straight to your ATS, so your consultants start the day with a qualified shortlist."
+    secondary={{ label: "How Jess works", href: "#how" }}
+  >
+    <span class="h1-line">Every applicant.</span>
+    <span class="h1-line h1-muted">Screened.</span>
+  </PageHero>
+
+  <!-- WHAT SHE DOES -->
+  <section class="chapter does" id="how" aria-labelledby="does-title">
+    <div class="wrap does-grid">
+      <div>
+        <p class="mono chapter-no reveal">WHAT JESS DOES</p>
+        <h2 id="does-title" class="reveal">The whole pipeline,<br /><span class="muted">not just the first page.</span></h2>
+        <p class="section-sub reveal">
+          Jess screens every applicant, not just the ones your team reaches before the day runs out, and grades each
+          one the same way.
+        </p>
+      </div>
+      <div class="feature-cards">
+        <article class="feature reveal" style="--tint: var(--care)">
+          <span class="mono">01</span>
+          <h3>Multi-channel sourcing</h3>
+          <p>Finds passive and active talent from LinkedIn, Seek and ContactOut.</p>
+        </article>
+        <article class="feature reveal" style="--tint: var(--care)">
+          <span class="mono">02</span>
+          <h3>Voice screening</h3>
+          <p>Runs screening interviews by phone at scale and writes an automatic summary of each one.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- WITH YOUR CONSULTANTS -->
+  <section class="chapter flow light" aria-labelledby="flow-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">WITH YOUR CONSULTANTS</p>
+        <h2 id="flow-title" class="reveal">She screens the pipeline.<br /><span class="muted">Your team works the shortlist.</span></h2>
+      </div>
+      <ol class="flow-steps">
+        <li class="reveal">
+          <span class="step-no">1</span>
+          <h3>Source</h3>
+          <p>Candidates come in from LinkedIn and job boards, alongside the ones who apply.</p>
+        </li>
+        <li class="reveal">
+          <span class="step-no">2</span>
+          <h3>Screen by voice</h3>
+          <p>Jess calls, runs your qualification checks and grades every response.</p>
+        </li>
+        <li class="reveal">
+          <span class="step-no">3</span>
+          <h3>Hand over the best</h3>
+          <p>Top profiles are written back to your ATS and interviews land in the calendar.</p>
+        </li>
+      </ol>
+      <ul class="capabilities reveal" aria-label="Key capabilities">
+        <li>LinkedIn and job board integration</li>
+        <li>Auto-dialling and qualification checks</li>
+        <li>Candidate match scoring</li>
+        <li>Automated calendar syncing</li>
+        <li>ATS writeback (Bullhorn, JobDiva, Ceipal)</li>
+        <li>Analytics and funnel tracking</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- WHAT RECRUITERS SAY -->
+  <section class="chapter quotes-only" id="proof" aria-labelledby="proof-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">FROM RECRUITERS</p>
+        <h2 id="proof-title" class="reveal">The shortlist is waiting<br /><span class="muted">in the morning.</span></h2>
+        <p class="section-sub reveal">What recruitment teams using Jess say. Want to hear her on a call? Book a demo and we’ll run one live.</p>
+      </div>
+      <Testimonials items={quotes} />
+    </div>
+  </section>
+
+  <BookDemo
+    eyebrow="30 MINUTES · YOUR ROLES, YOUR PIPELINE"
+    line1="Give your next hire"
+    line2="a shorter search."
+    sub="Hear Jess for yourself and see where she fits in your recruitment process. Here’s what we’ll cover together."
+    agenda={[
+      { title: "Hear Jess.", text: "Listen to her run a screening call, live." },
+      { title: "Map your pipeline.", text: "Talk through your roles, your screening questions and where your consultants take over." },
+      { title: "Discuss setup & pricing.", text: "Review your ATS, what getting started involves and the options that suit your team." },
+    ]}
+  />
+</Base>

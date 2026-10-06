@@ -16,6 +16,7 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
   ogImage="/og/jenny.png"
   ogImageAlt="Jenny by JOBGEN.AI: Your next call. Handled."
   bookHref="#book"
+  bookBarText="Hear the real Jenny in 30 minutes"
 >
       <!-- HERO -->
       <section class="hero" aria-labelledby="hero-title">
@@ -316,17 +317,9 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
         </div>
       </section>
 
-  <Fragment slot="after-main">
-    <!-- Phones: booking is one tap away once the hero is out of view -->
-    <div class="book-bar" id="book-bar" hidden>
-      <span>Hear the real Jenny in 30 minutes</span>
-      <a class="btn btn-light btn-small" href="#book">Book a demo</a>
-    </div>
-  </Fragment>
 
   <Fragment slot="scripts">
     <script is:inline src="/js/calls.js"></script>
     <script is:inline src="/js/tryit.js"></script>
-    <script is:inline src="/js/app.js"></script>
   </Fragment>
 </Base>
