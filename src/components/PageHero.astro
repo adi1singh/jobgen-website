@@ -1,6 +1,7 @@
 ---
 // Hero used by every page: aurora light, optional badge or eyebrow, the headline (passed in),
-// a positioning line, a short paragraph, two actions and the voice ribbon.
+// a positioning line, a short paragraph, two actions (with an optional "under" slot right below
+// them, kept above the fold) and the voice ribbon.
 import Badge from "./Badge.astro";
 interface Props {
   name?: string;
@@ -35,6 +36,7 @@ const {
       <a class="btn btn-light" href={primary.href}>{primary.label} <span aria-hidden="true">→</span></a>
       {secondary && <a class="btn btn-ghost" href={secondary.href}>{secondary.label}</a>}
     </div>
+    <slot name="under" />
   </div>
   {ribbon && <canvas class="voice-ribbon" id="voice-ribbon" aria-hidden="true"></canvas>}
   <slot name="below" />

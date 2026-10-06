@@ -52,18 +52,16 @@ const problems = [
   >
     <span class="h1-line">Grow your business</span>
     <span class="h1-line h1-muted">with an AI workforce.</span>
-    <div slot="below" class="wrap">
-      <ul class="team-strip" aria-label="Your AI workforce">
-        {WORKFORCE.map((w) => (
-          <li style={`--tint: ${w.tint}`}>
-            <a href={w.href}>
-              <span class="team-voice" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-              <span><b>{w.name}</b><small>{w.role}</small></span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul slot="under" class="team-strip" aria-label="Your AI workforce">
+      {WORKFORCE.map((w) => (
+        <li style={`--tint: ${w.tint}`}>
+          <a href={w.href}>
+            <span class="team-voice" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span><b>{w.name}</b><small>{w.role}</small></span>
+          </a>
+        </li>
+      ))}
+    </ul>
   </PageHero>
 
   <!-- 01 · THE PROBLEM -->
