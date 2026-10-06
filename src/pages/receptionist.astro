@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import RealRecording from "../components/RealRecording.astro";
 import Testimonials from "../components/Testimonials.astro";
 import MissedCalls from "../components/MissedCalls.astro";
+import BookDemo from "../components/BookDemo.astro";
 import { RECORDINGS } from "../data/recordings";
 import { TESTIMONIALS } from "../data/testimonials";
 
@@ -252,42 +253,13 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
       </section>
 
       <!-- BOOK -->
-      <section class="final" id="book" aria-labelledby="final-title">
-        <div class="final-glow" aria-hidden="true"></div>
-        <div class="wrap">
-          <p class="mono reveal">30 MINUTES · YOUR BUSINESS, YOUR CALLS</p>
-          <h2 id="final-title" class="reveal">Give your next call<br /><span class="muted">a better ending.</span></h2>
-          <p class="section-sub book-sub reveal">Hear Jenny for yourself and explore where she fits in your business. Here’s what we’ll cover together.</p>
-          <ol class="demo-agenda reveal" aria-label="What we’ll cover in your 30-minute demo">
-            <li>
-              <span class="agenda-number mono" aria-hidden="true">01</span>
-              <h3>Hear Jenny.</h3>
-              <p>Listen to her actual voice and how she handles a conversation in a live demo.</p>
-            </li>
-            <li>
-              <span class="agenda-number mono" aria-hidden="true">02</span>
-              <h3>Map your calls.</h3>
-              <p>Talk through common questions, booking requests and when your team should take over.</p>
-            </li>
-            <li>
-              <span class="agenda-number mono" aria-hidden="true">03</span>
-              <h3>Discuss setup &amp; pricing.</h3>
-              <p>Review what getting started involves and the options that suit your needs.</p>
-            </li>
-          </ol>
-          <p class="takeaway reveal">You’ll leave knowing which of your calls Jenny can take, and what it would cost.</p>
-          <div class="booking reveal">
-            <iframe
-              title="Book a JOBGEN.AI demo"
-              data-src="https://calendly.com/jobgen-demo/30min?embed_type=Inline&amp;hide_gdpr_banner=1&amp;hide_event_type_details=1&amp;background_color=131316&amp;text_color=efede8&amp;primary_color=7b8cff"
-              loading="lazy"
-            ></iframe>
-            <p class="booking-fallback">
-              Calendar not loading? <a href="https://calendly.com/jobgen-demo/30min" target="_blank" rel="noopener">Open the booking page ↗</a>
-            </p>
-          </div>
-        </div>
-      </section>
+      <BookDemo
+        eyebrow="30 MINUTES · YOUR BUSINESS, YOUR CALLS"
+        line1="Give your next call"
+        line2="a better ending."
+        sub="Pick a time and hear Jenny on a live call."
+        agenda={[{ title: "Hear Jenny live" }, { title: "Map your calls and handovers" }, { title: "Setup and pricing" }]}
+      />
 
 
   <Fragment slot="scripts">

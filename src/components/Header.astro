@@ -23,11 +23,14 @@ const external = bookHref.startsWith("http");
               <small>{w.role}</small>
             </a>
           ))}
+          <a class="nav-menu-more" href={LINKS.webDevelopment}>
+            <b>Web development</b>
+            <small>Websites and web apps, built by our team</small>
+          </a>
         </div>
       </div>
-      <a href={LINKS.webDevelopment}>Web development</a>
       <a href={LINKS.pricing}>Pricing</a>
-      <a href={LINKS.jobSeekers}>For job seekers</a>
+      <a href={LINKS.about}>About</a>
     </nav>
     <div class="header-actions">
       <a class="nav-start" href={LINKS.startFree}>Start free</a>
@@ -47,9 +50,9 @@ const external = bookHref.startsWith("http");
         </a>
       ))}
       <div class="mobile-links">
-        <a href={LINKS.webDevelopment}>Web development</a>
         <a href={LINKS.pricing}>Pricing</a>
-        <a href={LINKS.jobSeekers}>For job seekers</a>
+        <a href={LINKS.about}>About</a>
+        <a href={LINKS.webDevelopment}>Web development</a>
         <a href={LINKS.startFree}>Start free</a>
         <a href={LINKS.login}>Log in</a>
       </div>

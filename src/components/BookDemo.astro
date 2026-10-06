@@ -1,40 +1,34 @@
 ---
-// The booking section from the approved design: agenda + embedded Calendly.
+// Booking: a short heading and agenda beside the embedded Calendly calendar. Every "Book a demo"
+// link points at #book, which is the calendar itself, so visitors land ready to pick a time.
 import { LINKS } from "../data/site";
 interface Props {
   eyebrow?: string;
   line1: string;
   line2: string;
-  sub: string;
-  agenda: { title: string; text: string }[];
-  takeaway?: string;
-  note?: string;
+  sub?: string;
+  agenda: { title: string; text?: string }[];
 }
-const { eyebrow = "30 MINUTES · YOUR BUSINESS", line1, line2, sub, agenda, takeaway, note } = Astro.props;
+const { eyebrow = "30 MINUTES · YOUR BUSINESS", line1, line2, sub, agenda } = Astro.props;
 const embed = `${LINKS.calendly}?embed_type=Inline&hide_gdpr_banner=1&hide_event_type_details=1&background_color=131316&text_color=efede8&primary_color=7b8cff`;
 ---
-<section class="final" id="book" aria-labelledby="final-title">
-  <div class="final-glow" aria-hidden="true"></div>
-  <div class="wrap">
-    <p class="mono reveal">{eyebrow}</p>
-    <h2 id="final-title" class="reveal">{line1}<br /><span class="muted">{line2}</span></h2>
-    <p class="section-sub book-sub reveal">{sub}</p>
-    <ol class="demo-agenda reveal" aria-label="What we’ll cover in your 30-minute demo">
-      {agenda.map((a, i) => (
-        <li>
-          <span class="agenda-number mono" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
-          <h3>{a.title}</h3>
-          <p>{a.text}</p>
-        </li>
-      ))}
-    </ol>
-    {takeaway && <p class="takeaway reveal">{takeaway}</p>}
-    <div class="booking reveal">
+<section class="final final-compact" aria-labelledby="final-title">
+  <div class="wrap book-layout">
+    <div class="book-intro">
+      <p class="mono">{eyebrow}</p>
+      <h2 id="final-title">{line1}<br /><span class="muted">{line2}</span></h2>
+      {sub && <p class="book-line">{sub}</p>}
+      <ol class="book-agenda" aria-label="What we’ll cover in your 30-minute demo">
+        {agenda.map((a, i) => (
+          <li><span class="mono" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>{a.title}</li>
+        ))}
+      </ol>
+    </div>
+    <div class="booking" id="book">
       <iframe title="Book a JOBGEN.AI demo" data-src={embed} loading="lazy"></iframe>
       <p class="booking-fallback">
         Calendar not loading? <a href={LINKS.calendly} target="_blank" rel="noopener">Open the booking page ↗</a>
       </p>
     </div>
-    {note && <p class="book-note mono reveal">{note}</p>}
   </div>
 </section>

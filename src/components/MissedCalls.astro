@@ -27,17 +27,29 @@ const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", hre
         <input type="range" id="in-missed" min="5" max="60" step="5" value="20" />
       </label>
       <label class="slider">
+        <span class="slider-top"><span>Missed callers who’d become customers</span><output id="out-conv" for="in-conv">33%</output></span>
+        <input type="range" id="in-conv" min="5" max="80" step="1" value="33" />
+      </label>
+      <label class="slider">
         <span class="slider-top"><span>New customer value (AUD)</span><output id="out-value" for="in-value">A$150</output></span>
         <input type="range" id="in-value" min="20" max="2000" step="10" value="150" />
       </label>
       <div class="calc-result" aria-live="polite">
-        <p class="mono">WALKING TO WHOEVER PICKS UP FIRST</p>
+        <p class="mono">ESTIMATED REVENUE OPPORTUNITY</p>
         <p class="calc-number" id="calc-number">A$6,600</p>
         <p class="calc-sub">a month, from <b id="calc-missed">132</b> missed calls.</p>
         <slot name="result" />
         <a class="btn btn-light" href={cta.href}>{cta.label} <span aria-hidden="true">→</span></a>
       </div>
-      <p class="calc-note">An estimate to start the conversation, not a promise. Assumes 1 in 3 missed callers would have become a customer, over 22 working days a month.</p>
+      <div class="calc-assumptions">
+        <p class="mono">HOW WE WORKED IT OUT</p>
+        <ol>
+          <li><b id="as-calls">30</b> calls a day × <b id="as-missed">20%</b> unanswered × 22 working days = <b id="as-month">132</b> missed calls a month</li>
+          <li><b id="as-month2">132</b> × <b id="as-conv">33%</b> who’d become customers = <b id="as-cust">44</b> new customers</li>
+          <li><b id="as-cust2">44</b> × <b id="as-value">A$150</b> each = <b id="as-total">A$6,600</b> a month</li>
+        </ol>
+        <p class="calc-note">An estimate to start the conversation, not a promise. Every number above is yours to change, apart from the 22 working days.</p>
+      </div>
     </div>
   </div>
 </section>

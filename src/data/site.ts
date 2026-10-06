@@ -8,7 +8,7 @@ export const LINKS = {
   webDevelopment: "/web-development/",
   pricing: "/pricing/",
   partners: "https://jobgen.ai/partners/",
-  about: "https://jobgen.ai/about/",
+  about: "/about/",
   news: "https://jobgen.ai/news",
   careers: "https://recruiter.jobgen.ai/jobs/jobgen-ai-4",
   contact: "mailto:hello@jobgen.ai",
@@ -37,7 +37,7 @@ export const WORKFORCE = [
   {
     key: "olivia",
     name: "Olivia",
-    role: "AI sales agent",
+    role: "AI sales agent for real estate",
     href: "/olivia/",
     tint: "var(--prop)",
     problem: "Owners on your list going cold",

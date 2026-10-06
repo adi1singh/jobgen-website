@@ -31,10 +31,14 @@ On Vercel, import this repo; it detects Astro (build `npm run build`, output `di
 - `src/data/recordings.json` + `recordings.ts`: the real recordings and transcripts published on
   sales.jobgen.ai, tagged by product (education → Jenny; the two property calls → Olivia; restaurant
   and child care outbound calls → to be confirmed, not shown yet). Audio files are in `public/audio/`.
-- `src/pages/index.astro`: home page, told as a story in chapters: hero ("Grow your business with an
-  AI workforce") → 01 The problem (pick what's falling through: calls → Jenny, owners → Olivia,
-  applicants → Jess, website → web team) → the missed-call calculator → 02 Meet the team → 03 Real calls + testimonials →
-  04 With your people → 05 Our story + founder note → book a demo.
+- `src/pages/index.astro`: home page, built for business customers and demo bookings: hero ("Grow your
+  business with an AI workforce") → 01 Hear a real call → 02 The problem (calls → Jenny, owners → Olivia,
+  applicants → Jess) + the missed-call calculator → 03 Meet the team → 04 What customers say →
+  05 With your people → a short founder card → book a demo (lands on the calendar).
+- `src/pages/about.astro`: the company facts, our story timeline, the full founder note, and all four
+  specialists including Emma for job seekers.
+- `src/components/OliviaList.astro`, `JessPipeline.astro`: each professional's signature animation
+  (simulated, labelled). Pages set `persona` on `Base` to take that professional's colours.
 - `src/pages/receptionist.astro`: Jenny's page (the approved design).
 - `src/pages/olivia.astro`: Olivia, AI sales agent: two real property calls and the Buta Deogun testimonial.
 - `src/pages/recruiter-agent.astro`: Jess: capabilities, how she works with consultants, and the two
@@ -58,7 +62,7 @@ On Vercel, import this repo; it detects Astro (build `npm run build`, output `di
 
 ## Founder note
 
-The home page has a founder section for Kush (photo, personal note, mission and vision), driven by
+The About page has a founder section for Kush (and the home page a short card with his mission line) (photo, personal note, mission and vision), driven by
 `src/data/founder.ts`. The facts come from jobgen.ai/about. **The note, mission and vision live on the
 site now are a placeholder** we wrote from those facts; replace them with Kush's own words when he
 sends them (edit `note`, `mission` and `vision`, nothing else needs to change).
@@ -80,6 +84,6 @@ sends them (edit `note`, `mission` and `vision`, nothing else needs to change).
 2. ✅ Astro, shared layout, Jenny's page with a real recording and testimonials
 3. ✅ Home page (story + problem picker + founder note with Kush's photo; placeholder words), Olivia, Jess and Web development pages
 4. ✅ Pricing: the sales.jobgen.ai estimator with a USD/AUD toggle (live exchange rate)
-5. Industries, solutions, partners, about and news pages (existing copy, lightly tidied)
+5. ✅ About page. Still to do: industries, solutions, partners and news pages (existing copy, lightly tidied)
 6. Boss review on the Vercel preview → point jobgen.ai here → redirects (sales.jobgen.ai marketing
    pages, /coach → candidates.jobgen.ai); login and sign-up stay on sales.jobgen.ai

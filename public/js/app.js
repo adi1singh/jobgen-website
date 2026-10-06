@@ -140,7 +140,7 @@
   // Keep the calculator consistent with JobGen's Australian sales context.
   const inCalls = $("#in-calls");
   if (inCalls) {
-    const inMissed = $("#in-missed"), inValue = $("#in-value");
+    const inMissed = $("#in-missed"), inValue = $("#in-value"), inConv = $("#in-conv");
     const money = {
       factor: 1,
       fmt: { format: (value) => "A$" + Math.round(value).toLocaleString("en-AU") },
@@ -153,14 +153,27 @@
     let shown = 0, raf = 0;
     const update = () => {
       const calls = +inCalls.value, missedPct = +inMissed.value, value = +inValue.value;
-      [inCalls, inMissed, inValue].forEach((el) =>
+      const conv = inConv ? +inConv.value : 33;
+      [inCalls, inMissed, inValue, inConv].filter(Boolean).forEach((el) =>
         el.style.setProperty("--fill", ((el.value - el.min) / (el.max - el.min)) * 100 + "%"),
       );
       $("#out-calls").textContent = calls;
       $("#out-missed").textContent = missedPct + "%";
       $("#out-value").textContent = money.fmt.format(value);
       const missedMonth = Math.round(((calls * missedPct) / 100) * 22);
-      const total = Math.round(missedMonth / 3) * value;
+      const customers = Math.round((missedMonth * conv) / 100);
+      const total = customers * value;
+      if (inConv) $("#out-conv").textContent = conv + "%";
+      const put = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+      put("#as-calls", calls);
+      put("#as-missed", missedPct + "%");
+      put("#as-month", missedMonth.toLocaleString());
+      put("#as-month2", missedMonth.toLocaleString());
+      put("#as-conv", conv + "%");
+      put("#as-cust", customers.toLocaleString());
+      put("#as-cust2", customers.toLocaleString());
+      put("#as-value", money.fmt.format(value));
+      put("#as-total", money.fmt.format(total));
       $("#calc-missed").textContent = missedMonth.toLocaleString();
       const box = inCalls.closest("[data-missed-calls]");
       if (box) {
@@ -178,7 +191,7 @@
       };
       raf = requestAnimationFrame(tick);
     };
-    [inCalls, inMissed, inValue].forEach((el) => el.addEventListener("input", update));
+    [inCalls, inMissed, inValue, inConv].filter(Boolean).forEach((el) => el.addEventListener("input", update));
     update();
   }
 
@@ -233,6 +246,12 @@
       { rootMargin: "600px 0px" },
     );
     near.observe(calendar);
+    // Any "Book a demo" link starts the calendar loading straight away, before the scroll lands.
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest?.('a[href="#book"]') || calendar.src) return;
+      near.disconnect();
+      load();
+    });
   }
 
   /* ---------- Rules console ---------- */
