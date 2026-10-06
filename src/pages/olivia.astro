@@ -4,6 +4,7 @@ import PageHero from "../components/PageHero.astro";
 import RealRecording from "../components/RealRecording.astro";
 import Testimonials from "../components/Testimonials.astro";
 import BookDemo from "../components/BookDemo.astro";
+import OliviaList from "../components/OliviaList.astro";
 import { RECORDINGS } from "../data/recordings";
 import { TESTIMONIALS } from "../data/testimonials";
 
@@ -11,6 +12,7 @@ const calls = RECORDINGS.filter((r) => r.product === "olivia");
 const quotes = TESTIMONIALS.filter((t) => t.product === "olivia");
 ---
 <Base
+  persona="olivia"
   title="Olivia, AI Sales Agent for Property | JOBGEN.AI"
   description="Olivia calls the property owners already in your database, offers a useful property report, listens for selling intent and books appraisals and agent callbacks."
   ogTitle="Every owner on your list. Called. Meet Olivia, the AI sales agent by JOBGEN.AI."
@@ -29,6 +31,9 @@ const quotes = TESTIMONIALS.filter((t) => t.product === "olivia");
     <span class="h1-line">Every owner on your list.</span>
     <span class="h1-line h1-muted">Called.</span>
   </PageHero>
+
+  <!-- SIGNATURE: only on this page -->
+  <OliviaList />
 
   <!-- WHAT SHE DOES -->
   <section class="chapter does" aria-labelledby="does-title">

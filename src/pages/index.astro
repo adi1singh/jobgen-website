@@ -23,6 +23,13 @@ const quotes = ["George Limberis", "Buta Deogun", "Pri Gillett", "McGill Institu
   .map((n) => TESTIMONIALS.find((t) => t.name === n))
   .filter((t) => t !== undefined);
 
+// Example activity for each professional's card in "Meet the team" (illustrative, labelled as such).
+const LIVE: Record<string, string[]> = {
+  jenny: ["Answered at 9:42pm · tour booked for Sat 10am", "Took a message · callback set for 8am", "Transferred to a person · urgent request"],
+  olivia: ["Owner in Ryde · property report sent", "Owner in Castle Hill · appraisal booked", "Owner in Epping · not selling, noted"],
+  jess: ["Payroll officer · 92% match · shortlisted", "Written to your ATS · interview booked", "Bookkeeper · kept on file for later"],
+};
+
 const problems = [
   ...WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` })),
   {
@@ -52,16 +59,18 @@ const problems = [
   >
     <span class="h1-line">Grow your business</span>
     <span class="h1-line h1-muted">with an AI workforce.</span>
-    <ul slot="under" class="team-strip" aria-label="Your AI workforce">
-      {WORKFORCE.map((w) => (
-        <li style={`--tint: ${w.tint}`}>
-          <a href={w.href}>
-            <span class="team-voice" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-            <span><b>{w.name}</b><small>{w.role}</small></span>
-          </a>
-        </li>
-      ))}
-    </ul>
+    <div slot="below" class="wrap hero-team">
+      <ul class="team-strip" aria-label="Your AI workforce">
+        {WORKFORCE.map((w) => (
+          <li style={`--tint: ${w.tint}`}>
+            <a href={w.href}>
+              <span class="team-voice" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span><b>{w.name}</b><small>{w.role}</small></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   </PageHero>
 
   <!-- 01 · THE PROBLEM -->
@@ -114,6 +123,11 @@ const problems = [
               </div>
             </header>
             <p class="member-summary">{w.summary}</p>
+            <p class="member-live" data-live={JSON.stringify(LIVE[w.key] ?? [])}>
+              <span class="member-live-dot" aria-hidden="true"></span>
+              <span class="member-live-text">{LIVE[w.key]?.[0]}</span>
+              <small>example</small>
+            </p>
             <ul>
               {w.capabilities.map((c) => <li>{c}</li>)}
             </ul>
@@ -235,6 +249,25 @@ const problems = [
   />
 
   <Fragment slot="scripts">
+    <script is:inline>
+      // "Meet the team": each card cycles through example activity, staggered so they don't change together.
+      (() => {
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        document.querySelectorAll("[data-live]").forEach((el, n) => {
+          const items = JSON.parse(el.dataset.live || "[]");
+          const text = el.querySelector(".member-live-text");
+          if (items.length < 2 || !text) return;
+          let i = 0;
+          setTimeout(() => setInterval(() => {
+            i = (i + 1) % items.length;
+            text.classList.remove("is-in");
+            void text.offsetWidth;
+            text.textContent = items[i];
+            text.classList.add("is-in");
+          }, 3200), n * 1050);
+        });
+      })();
+    </script>
     <script is:inline>
       // Founder note preview: ?founder=preview shows the draft (clearly labelled) before it's approved.
       (() => {

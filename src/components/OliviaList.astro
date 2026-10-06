@@ -1,0 +1,119 @@
+---
+// Olivia's signature: an example owner list being worked, row by row. Simulated, labelled as such.
+// Every outcome is one of her published capabilities: report requests, selling horizons,
+// appraisal and callback booking, and respecting do-not-contact preferences.
+const rows = [
+  { initials: "PA", suburb: "Parramatta", home: "3-bed house", lead: "normal", tag: "No answer", note: "Retry booked · Thu 5:30pm" },
+  { initials: "RY", suburb: "Ryde", home: "2-bed unit", lead: "warm", tag: "Report requested", note: "Property report sent by SMS" },
+  { initials: "CH", suburb: "Castle Hill", home: "4-bed house", lead: "hot", tag: "Selling in 3 months", note: "Appraisal booked · Sat 10am" },
+  { initials: "EP", suburb: "Epping", home: "Townhouse", lead: "normal", tag: "Not selling", note: "Don’t call for 12 months" },
+  { initials: "BH", suburb: "Baulkham Hills", home: "4-bed house", lead: "warm", tag: "6–12 months", note: "Agent callback · Tue 2pm" },
+  { initials: "WM", suburb: "Westmead", home: "2-bed unit", lead: "warm", tag: "Report requested", note: "Property report sent by email" },
+  { initials: "KV", suburb: "Kellyville", home: "5-bed house", lead: "hot", tag: "Talking to agents", note: "Agent callback · today 4pm" },
+];
+---
+<section class="chapter signature sig-olivia" aria-labelledby="sig-olivia-title">
+  <div class="wrap sig-grid">
+    <div class="sig-copy">
+      <p class="mono chapter-no reveal">WATCH HER WORK THE LIST</p>
+      <h2 id="sig-olivia-title" class="reveal">One list.<br /><span class="grad">Every owner called.</span></h2>
+      <p class="section-sub reveal">
+        Olivia goes down your owner list one call at a time. Each conversation ends as something your agents
+        can act on: a report sent, a callback booked, an appraisal in the diary, or a “not now” she respects.
+      </p>
+      <ul class="sig-legend reveal" aria-label="Lead scores">
+        <li><span class="lead-dot" data-lead="hot"></span>Hot: ready to talk to an agent</li>
+        <li><span class="lead-dot" data-lead="warm"></span>Warm: thinking about it</li>
+        <li><span class="lead-dot" data-lead="normal"></span>Normal: follow up later</li>
+      </ul>
+    </div>
+
+    <div class="ol-board reveal" data-olivia-list>
+      <div class="ol-head">
+        <span class="ol-live"><i></i>Olivia · outbound</span>
+        <span class="mono ol-count"><b data-ol-called>0</b>/{rows.length} called</span>
+      </div>
+      <ol class="ol-rows">
+        {rows.map((r) => (
+          <li class="ol-row" data-lead={r.lead}>
+            <span class="ol-avatar" aria-hidden="true">{r.initials}</span>
+            <span class="ol-who"><b>Owner · {r.suburb}</b><small>{r.home}</small></span>
+            <span class="ol-status">
+              <span class="ol-queued">Queued</span>
+              <span class="ol-calling" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i>Calling…</span>
+              <span class="ol-result"><span class="lead-dot" data-lead={r.lead}></span><b>{r.tag}</b><small>{r.note}</small></span>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <dl class="ol-totals">
+        <div data-lead="hot"><dt>Hot</dt><dd data-ol-total="hot">0</dd></div>
+        <div data-lead="warm"><dt>Warm</dt><dd data-ol-total="warm">0</dd></div>
+        <div><dt>Reports sent</dt><dd data-ol-total="report">0</dd></div>
+        <div><dt>Booked</dt><dd data-ol-total="booked">0</dd></div>
+      </dl>
+      <p class="sig-note">Simulated example. Not real owners or calls. <a href="#proof">Hear a real Olivia call →</a></p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const board = document.querySelector<HTMLElement>("[data-olivia-list]");
+  if (board) {
+    const rows = [...board.querySelectorAll<HTMLElement>(".ol-row")];
+    const called = board.querySelector<HTMLElement>("[data-ol-called]")!;
+    const totals = (k: string) => board.querySelector<HTMLElement>(`[data-ol-total="${k}"]`)!;
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const count = { hot: 0, warm: 0, report: 0, booked: 0 };
+    const bump = (k: keyof typeof count) => {
+      count[k]++;
+      const el = totals(k);
+      el.textContent = String(count[k]);
+      el.parentElement!.classList.remove("bump");
+      void el.offsetWidth;
+      el.parentElement!.classList.add("bump");
+    };
+    const finish = (row: HTMLElement, i: number) => {
+      row.dataset.state = "done";
+      called.textContent = String(i + 1);
+      const lead = row.dataset.lead!;
+      const text = row.textContent || "";
+      if (lead === "hot") bump("hot");
+      if (lead === "warm") bump("warm");
+      if (/report sent/i.test(text)) bump("report");
+      if (/booked ·|callback ·/i.test(text)) bump("booked");
+    };
+    const reset = () => {
+      rows.forEach((r) => delete r.dataset.state);
+      Object.keys(count).forEach((k) => {
+        count[k as keyof typeof count] = 0;
+        totals(k).textContent = "0";
+      });
+      called.textContent = "0";
+    };
+
+    if (still) rows.forEach(finish);
+    else {
+      let visible = false, timer = 0, i = 0;
+      const step = () => {
+        if (!visible) return;
+        if (i >= rows.length) {
+          timer = window.setTimeout(() => { reset(); i = 0; step(); }, 3800);
+          return;
+        }
+        const row = rows[i];
+        row.dataset.state = "calling";
+        timer = window.setTimeout(() => {
+          finish(row, i);
+          i++;
+          timer = window.setTimeout(step, 450);
+        }, 1500);
+      };
+      new IntersectionObserver(([e]) => {
+        visible = e.isIntersecting;
+        clearTimeout(timer);
+        if (visible) step();
+      }, { threshold: 0.35 }).observe(board);
+    }
+  }
+</script>

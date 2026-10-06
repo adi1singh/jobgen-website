@@ -1,0 +1,155 @@
+---
+// Jess's signature: example applicants screened one at a time. Simulated, labelled as such.
+// Uses her published capabilities: voice screening, qualification checks, match scoring and
+// ATS writeback.
+const candidates = [
+  { id: "A", role: "Payroll officer", exp: "6 yrs", score: 92, checks: [true, true, true, true] },
+  { id: "B", role: "Recruitment consultant", exp: "1 yr", score: 54, checks: [true, false, true, false] },
+  { id: "C", role: "Accounts assistant", exp: "4 yrs", score: 88, checks: [true, true, true, true] },
+  { id: "D", role: "Site supervisor", exp: "3 yrs", score: 67, checks: [true, true, false, true] },
+  { id: "E", role: "Customer service lead", exp: "8 yrs", score: 95, checks: [true, true, true, true] },
+  { id: "F", role: "Bookkeeper", exp: "5 yrs", score: 84, checks: [true, true, true, true] },
+];
+const checks = ["Right to work", "Available in 2 weeks", "Salary in range", "Experience matches"];
+---
+<section class="chapter signature sig-jess" aria-labelledby="sig-jess-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="mono chapter-no reveal">WATCH HER SCREEN THE PIPELINE</p>
+      <h2 id="sig-jess-title" class="reveal">Every applicant called.<br /><span class="grad">Only the best shortlisted.</span></h2>
+      <p class="section-sub reveal">
+        Jess calls each applicant, runs your checks, scores the match and writes the strongest straight to your
+        ATS. The rest stay on file, so nobody falls through.
+      </p>
+    </div>
+
+    <div class="jp reveal" data-jess-pipeline data-candidates={JSON.stringify(candidates)} data-checks={JSON.stringify(checks)}>
+      <div class="jp-col jp-queue">
+        <p class="mono jp-label">Applicants <b data-jp-left>{candidates.length}</b></p>
+        <ul class="jp-chips">
+          {candidates.map((c) => (
+            <li data-id={c.id}><span class="jp-av">{c.id}</span><span><b>Candidate {c.id}</b><small>{c.role}</small></span></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="jp-col jp-stage" aria-live="polite">
+        <p class="mono jp-label"><span class="ol-live"><i></i>Jess · screening call</span></p>
+        <article class="jp-card" data-jp-card>
+          <header>
+            <span class="jp-av jp-av-lg" data-jp-av>A</span>
+            <span><b data-jp-name>Candidate A</b><small data-jp-role>Payroll officer · 6 yrs</small></span>
+            <span class="jp-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+          </header>
+          <ul class="jp-checks">
+            {checks.map((c) => <li><span class="jp-tick" aria-hidden="true"></span>{c}</li>)}
+          </ul>
+          <div class="jp-score">
+            <svg viewBox="0 0 44 44" aria-hidden="true"><circle class="jp-ring-bg" cx="22" cy="22" r="19" /><circle class="jp-ring" cx="22" cy="22" r="19" pathLength="100" /></svg>
+            <span><b data-jp-score>0</b><small>% match</small></span>
+            <p class="jp-verdict" data-jp-verdict></p>
+          </div>
+        </article>
+      </div>
+
+      <div class="jp-col jp-short">
+        <p class="mono jp-label">Shortlist → ATS <b data-jp-short>0</b></p>
+        <ul class="jp-list" data-jp-list></ul>
+        <p class="jp-file">On file for later: <b data-jp-file>0</b></p>
+      </div>
+    </div>
+    <p class="sig-note">Simulated example. Not real candidates or calls.</p>
+  </div>
+</section>
+
+<script>
+  type Cand = { id: string; role: string; exp: string; score: number; checks: boolean[] };
+  const root = document.querySelector<HTMLElement>("[data-jess-pipeline]");
+  if (root) {
+    const cands: Cand[] = JSON.parse(root.dataset.candidates!);
+    const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+    const card = $("[data-jp-card]");
+    const ticks = [...card.querySelectorAll<HTMLElement>(".jp-checks li")];
+    const list = $("[data-jp-list]");
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let short = 0, file = 0;
+
+    const load = (c: Cand) => {
+      $("[data-jp-av]").textContent = c.id;
+      $("[data-jp-name]").textContent = `Candidate ${c.id}`;
+      $("[data-jp-role]").textContent = `${c.role} · ${c.exp}`;
+      ticks.forEach((t) => delete t.dataset.ok);
+      $("[data-jp-score]").textContent = "0";
+      card.style.setProperty("--score", "0");
+      card.dataset.state = "calling";
+      $("[data-jp-verdict]").textContent = "";
+      root.querySelector(`.jp-chips [data-id="${c.id}"]`)?.classList.add("is-active");
+    };
+    const score = (c: Cand, done: () => void) => {
+      const start = performance.now();
+      card.dataset.state = "scoring";
+      card.style.setProperty("--score", String(c.score));
+      const tick = (now: number) => {
+        const k = still ? 1 : Math.min(1, (now - start) / 900);
+        $("[data-jp-score]").textContent = String(Math.round(c.score * (1 - Math.pow(1 - k, 3))));
+        if (k < 1) requestAnimationFrame(tick);
+        else done();
+      };
+      requestAnimationFrame(tick);
+    };
+    const settle = (c: Cand) => {
+      const pass = c.score >= 80;
+      card.dataset.state = pass ? "pass" : "file";
+      $("[data-jp-verdict]").textContent = pass ? "Shortlisted · written to ATS" : "Kept on file";
+      const chip = root.querySelector(`.jp-chips [data-id="${c.id}"]`);
+      chip?.classList.remove("is-active");
+      chip?.classList.add("is-done");
+      $("[data-jp-left]").textContent = String(root.querySelectorAll(".jp-chips li:not(.is-done)").length);
+      if (pass) {
+        short++;
+        const li = document.createElement("li");
+        li.innerHTML = `<span class="jp-av">${c.id}</span><span><b>Candidate ${c.id}</b><small>${c.role}</small></span><span class="jp-pct">${c.score}%</span>`;
+        list.appendChild(li);
+        $("[data-jp-short]").textContent = String(short);
+      } else {
+        file++;
+        $("[data-jp-file]").textContent = String(file);
+      }
+    };
+    const reset = () => {
+      short = 0; file = 0;
+      list.innerHTML = "";
+      root.querySelectorAll(".jp-chips li").forEach((l) => l.classList.remove("is-done", "is-active"));
+      $("[data-jp-short]").textContent = "0";
+      $("[data-jp-file]").textContent = "0";
+      $("[data-jp-left]").textContent = String(cands.length);
+    };
+
+    if (still) {
+      cands.forEach((c) => { load(c); c.checks.forEach((ok, j) => (ticks[j].dataset.ok = String(ok))); card.style.setProperty("--score", String(c.score)); $("[data-jp-score]").textContent = String(c.score); settle(c); });
+    } else {
+      let visible = false, timer = 0, i = 0, gen = 0;
+      const wait = (ms: number, fn: () => void, g: number) => { timer = window.setTimeout(() => g === gen && fn(), ms); };
+      const run = () => {
+        const g = ++gen;
+        if (!visible) return;
+        if (i >= cands.length) return wait(3600, () => { reset(); i = 0; run(); }, g);
+        const c = cands[i];
+        load(c);
+        c.checks.forEach((ok, j) => wait(700 + j * 520, () => (ticks[j].dataset.ok = String(ok)), g));
+        wait(700 + c.checks.length * 520 + 200, () => score(c, () => {
+          if (g !== gen) return;
+          settle(c);
+          i++;
+          wait(1300, run, g);
+        }), g);
+      };
+      new IntersectionObserver(([e]) => {
+        visible = e.isIntersecting;
+        clearTimeout(timer);
+        gen++;
+        if (visible) run();
+      }, { threshold: 0.3 }).observe(root);
+    }
+  }
+</script>

@@ -41,7 +41,11 @@
   if (ribbon) {
     const ctx = ribbon.getContext("2d");
     const root = getComputedStyle(document.documentElement);
-    const colours = ["--edu", "--prop", "--rest", "--care"].map((v) => root.getPropertyValue(v).trim()).concat("#b48cff");
+    // On a professional's page the wave takes their colours; elsewhere the full JOBGEN.AI spectrum.
+    const persona = document.body.dataset.persona ? getComputedStyle(document.body) : null;
+    const colours = persona
+      ? ["--p1", "--p2", "--p3", "--p1", "--p2"].map((v) => persona.getPropertyValue(v).trim())
+      : ["--edu", "--prop", "--rest", "--care"].map((v) => root.getPropertyValue(v).trim()).concat("#b48cff");
     const lines = colours.map((colour, i) => ({ colour, phase: i * 1.9, speed: 0.55 + i * 0.13, freq: 1.1 + i * 0.32, boost: 0 }));
     // which line flares for each rotating word: buyer, booking, after-hours, missed
     const lineForWord = [1, 0, 4, 2];
