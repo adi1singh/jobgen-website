@@ -343,6 +343,18 @@
   );
   $$(".reveal").forEach((el) => reveal.observe(el));
 
+  /* ---------- Before → after scenes play once they're properly in view ---------- */
+  const scenes = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("play");
+        scenes.unobserve(e.target);
+      }),
+    { threshold: 0.9 },
+  );
+  $$("[data-scene]").forEach((el) => scenes.observe(el));
+
   /* ---------- Booking calendar loads when it's close to view ---------- */
   const calendar = $(".booking iframe");
   if (calendar) {

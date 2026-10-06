@@ -1412,7 +1412,7 @@ section h2 {
   line-height: 1.42;
   animation: up 0.4s var(--ease) both;
 }
-.msg.olivia {
+.msg.ai {
   align-self: flex-start;
   border-bottom-left-radius: 6px;
   background: color-mix(in srgb, var(--tint) 22%, #16151d);

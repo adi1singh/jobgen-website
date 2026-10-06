@@ -34,7 +34,14 @@ const LIVE: Record<string, string[]> = {
   jess: ["Payroll officer · 92% match · shortlisted", "Written to your ATS · interview booked", "Bookkeeper · kept on file for later"],
 };
 
-const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` }));
+// Each problem card plays a small before → after (illustrative): what slips through today, then the same
+// work handled.
+const SCENES: Record<string, [string, string][]> = {
+  jenny: [["Missed call · 6:04pm", "Answered · enquiry logged"], ["Missed call · 7:15pm", "Answered · booked for Tue 9am"], ["Voicemail · 9:48pm", "Answered · message passed on"]],
+  olivia: [["Owner · last spoke months ago", "Called · report requested"], ["Owner · no reply yet", "Called · appraisal booked"], ["Owner · still on the list", "Called · not selling, noted"]],
+  jess: [["Applicant · waiting since Monday", "Screened · shortlisted"], ["Applicant · not read yet", "Screened · interview booked"], ["Applicant · not read yet", "Screened · kept on file"]],
+};
+const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}`, scene: SCENES[w.key] ?? [] }));
 ---
 <Base
   title="AI receptionist, AI sales agent & AI recruiter | JOBGEN.AI"
@@ -103,6 +110,14 @@ const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` }
             <a href={p.href}>
               <span class="picker-problem mono">{p.problem}</span>
               <strong>{p.promise}</strong>
+              <span class="picker-scene" data-scene aria-hidden="true">
+                {p.scene.map(([before, after], k) => (
+                  <span class="scene-row" style={`--k: ${k}`}>
+                    <span class="scene-before"><i></i>{before}</span>
+                    <span class="scene-after"><i></i>{after}</span>
+                  </span>
+                ))}
+              </span>
               <span class="picker-who"><span class="dot"></span>{p.label}<span class="arrow" aria-hidden="true">→</span></span>
             </a>
           </li>
@@ -111,15 +126,15 @@ const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` }
     </div>
   </section>
 
-  <!-- 02 · THE PROBLEM, IN NUMBERS -->
-  <MissedCalls eyebrow="02 · THE COST OF A MISSED CALL" />
+  <!-- 03 · THE COST OF A MISSED CALL -->
+  <MissedCalls eyebrow="03 · THE COST OF A MISSED CALL" />
 
-  <!-- 03 · MEET THE TEAM -->
+  <!-- 04 · MEET THE TEAM -->
   <section class="chapter team" id="team" aria-labelledby="team-title">
     <div class="aurora aurora-soft" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">03 · MEET THE TEAM</p>
+        <p class="mono chapter-no reveal">04 · MEET THE TEAM</p>
         <h2 id="team-title" class="reveal">Specialists,<br /><span class="grad">not one chatbot.</span></h2>
         <p class="section-sub reveal">
           Every JobGen.AI professional does one job and does it well. Pick the one that fits the work.
@@ -152,11 +167,11 @@ const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` }
   </section>
 
 
-  <!-- 04 · WHAT CUSTOMERS SAY -->
+  <!-- 05 · WHAT CUSTOMERS SAY -->
   <section class="chapter proof light" id="proof" aria-labelledby="proof-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">04 · WHAT CUSTOMERS SAY</p>
+        <p class="mono chapter-no reveal">05 · WHAT CUSTOMERS SAY</p>
         <h2 id="proof-title" class="reveal">Calls answered.<br /><span class="muted">Teams back on the work.</span></h2>
       </div>
       <VideoTestimonial />
@@ -164,14 +179,14 @@ const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` }
     </div>
   </section>
 
-  <!-- 05 · HOW IT WORKS -->
-  <HowItWorks eyebrow="05 · HOW IT WORKS" />
+  <!-- 06 · HOW IT WORKS -->
+  <HowItWorks eyebrow="06 · HOW IT WORKS" />
 
-  <!-- 06 · WITH YOUR PEOPLE -->
+  <!-- 07 · WITH YOUR PEOPLE -->
   <section class="chapter people" aria-labelledby="people-title">
     <div class="wrap people-grid">
       <div>
-        <p class="mono chapter-no reveal">06 · WITH YOUR PEOPLE</p>
+        <p class="mono chapter-no reveal">07 · WITH YOUR PEOPLE</p>
         <h2 id="people-title" class="reveal">We automate work,<br /><span class="muted">not replace people.</span></h2>
         <p class="section-sub reveal">
           Your AI workforce handles the repetitive, round-the-clock work, so your team spends its day on the
@@ -210,8 +225,8 @@ const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` }
     </div>
   </section>
 
-  <!-- 07 · PLAIN ANSWERS -->
-  <Faq eyebrow="07 · PLAIN ANSWERS" />
+  <!-- 08 · PLAIN ANSWERS -->
+  <Faq eyebrow="08 · PLAIN ANSWERS" />
 
   <!-- FROM OUR FOUNDER (the full note and our story are on the About page) -->
   {founderLive && (

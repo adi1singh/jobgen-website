@@ -385,14 +385,14 @@
     voiceToggle.checked = false;
     voiceToggle.disabled = true;
   }
-  function speak(text, id, who = "olivia") {
+  function speak(text, id, who = "ai") {
     return new Promise((resolve) => {
       if (!synth || !voiceToggle.checked || !synth.getVoices().length) return resolve();
       const u = new SpeechSynthesisUtterance(text.replace(/&/g, "and"));
-      const v = who === "olivia" ? voice : callerVoice;
+      const v = who === "ai" ? voice : callerVoice;
       if (v) u.voice = v;
-      u.rate = who === "olivia" ? 1.03 : 1.08;
-      u.pitch = who === "olivia" ? 1.05 : 0.9;
+      u.rate = who === "ai" ? 1.03 : 1.08;
+      u.pitch = who === "ai" ? 1.05 : 0.9;
       const done = () => resolve();
       u.onend = done;
       u.onerror = done;
@@ -438,7 +438,7 @@
   function bubble(who, text) {
     const p = document.createElement("p");
     p.className = "msg " + who;
-    p.textContent = who === "olivia" ? "" : text;
+    p.textContent = who === "ai" ? "" : text;
     body.appendChild(p);
     body.scrollTop = body.scrollHeight;
     return p;
@@ -462,7 +462,7 @@
     const node = tree.nodes[nodeId];
     phone.classList.add("speaking");
     status.textContent = "Jenny is speaking";
-    const el = bubble("olivia", node.say);
+    const el = bubble("ai", node.say);
     await Promise.all([typeInto(el, node.say, id), speak(node.say, id)]);
     if (id !== session) return;
     phone.classList.remove("speaking");
@@ -542,7 +542,7 @@
 
   async function call() {
     setListening(false);
-    document.dispatchEvent(new Event("olivia:demo-start"));
+    document.dispatchEvent(new Event("jobgen:demo-start"));
     const id = ++session;
     synth?.cancel();
     body.innerHTML = "";
@@ -561,7 +561,7 @@
     const script = window.JOBGEN_CALLS?.[industry];
     if (!script) return;
     const id = ++session;
-    document.dispatchEvent(new Event("olivia:demo-start"));
+    document.dispatchEvent(new Event("jobgen:demo-start"));
     synth?.cancel();
     setListening(true);
     body.innerHTML = "";
@@ -574,11 +574,11 @@
     setState("live");
     for (const line of script.lines) {
       if (id !== session) return;
-      const olivia = line.who === "olivia";
-      phone.classList.toggle("speaking", olivia);
-      status.textContent = olivia ? "Jenny is speaking" : "Caller is speaking";
+      const ai = line.who === "ai";
+      phone.classList.toggle("speaking", ai);
+      status.textContent = ai ? "Jenny is speaking" : "Caller is speaking";
       const el = bubble(line.who, line.text);
-      if (olivia) await Promise.all([typeInto(el, line.text, id), speak(line.text, id, "olivia")]);
+      if (ai) await Promise.all([typeInto(el, line.text, id), speak(line.text, id, "ai")]);
       else await Promise.all([speak(line.text, id, "caller"), wait(voiceToggle.checked ? 0 : 900 + line.text.length * 25)]);
       await wait(350);
     }

@@ -71,8 +71,16 @@ section("UAT-1 · Sarah, dental clinic owner, phone (390×844): “What is this,
   await wait(1200);
   const listen = await inView(p, "#listen");
   check("“Hear a real call” takes her straight to the recordings", listen && listen.top < 200 && listen.top > -400, JSON.stringify(listen));
-  const played = await p.locator("audio").first().evaluate(async (a) => { a.muted = true; try { await a.play(); } catch (e) { return "play failed: " + e.message; } await new Promise((r) => setTimeout(r, 2500)); a.pause(); return a.currentTime; });
-  check("The real recording actually plays", typeof played === "number" && played > 1, `currentTime ${played}`);
+  const call = p.locator("[data-recording]").first();
+  await p.evaluate(() => document.querySelectorAll("audio").forEach((a) => (a.muted = true)));
+  check("Our player replaces the browser’s controls (the call’s own waveform)", (await call.locator("[data-player]").isVisible()) && !(await call.locator("audio").isVisible()) && (await call.locator(".player-wave line").count()) > 0);
+  await call.locator("[data-play]").tap();
+  await wait(2500);
+  const playing = await call.evaluate((c) => ({ t: c.querySelector("audio").currentTime, label: c.querySelector("[data-play]").getAttribute("aria-label"), now: c.querySelector("[data-now]").textContent }));
+  check("The real recording actually plays, and the button becomes Pause", playing.t > 1 && /^Pause/.test(playing.label) && playing.now !== "0:00", JSON.stringify(playing));
+  await call.locator("[data-play]").tap();
+  await wait(300);
+  check("Pressing again pauses it", await call.evaluate((c) => c.querySelector("audio").paused && /^Play/.test(c.querySelector("[data-play]").getAttribute("aria-label"))));
   check("Transcript opens and follows along when playing", await p.locator("[data-recording] details").first().evaluate((d) => d.open) && (await p.locator("li.is-now").count()) > 0);
   check("Recording is labelled REAL and says personal details are removed", (await p.locator(".real-tag").count()) >= 2 && /personal details removed/i.test(await p.locator("#listen").innerText()));
   await p.locator(".header-book").tap();
@@ -260,6 +268,19 @@ section("UAT-4 · Sam, keyboard-only visitor (1280×720) + automated accessibili
   await p.keyboard.press("Enter");
   await wait(3200);
   check("Calculate works with Enter", await p.locator("[data-calc-reveal]").isVisible());
+  // a real call by keyboard: play, then skip ahead with the arrow keys
+  await p.evaluate(() => document.querySelectorAll("audio").forEach((a) => (a.muted = true)));
+  const rec = p.locator("[data-recording]").first();
+  await rec.locator("[data-play]").focus();
+  await p.keyboard.press("Enter");
+  await wait(1200);
+  await p.keyboard.press("Tab");
+  const onSeek = await p.evaluate(() => document.activeElement.classList.contains("player-seek"));
+  const before = await rec.evaluate((c) => c.querySelector("audio").currentTime);
+  await p.keyboard.press("ArrowRight");
+  await wait(300);
+  const after = await rec.evaluate((c) => { const a = c.querySelector("audio"); a.pause(); return a.currentTime; });
+  check("A real call plays with Enter, and the arrow keys skip ahead 5 seconds", onSeek && before > 0.3 && after - before >= 4.5, `seek focused ${onSeek}, ${before.toFixed(1)}s → ${after.toFixed(1)}s`);
   // tab through whole page: every stop must show a visible focus indicator
   await p.evaluate(() => document.activeElement.blur());
   await p.evaluate(() => window.scrollTo(0, 0));
@@ -369,7 +390,35 @@ section("UAT-6 · Ken, reduced-motion setting on a slow 3G phone (390×844)");
   check("Olivia’s list shows its finished state instantly", (await p.locator("[data-ol-called]").textContent()) === "7");
   await p.goto(BASE + "/recruiter-agent/"); await wait(500);
   check("Jess’s pipeline shows its finished state instantly", (await p.locator("[data-jp-short]").textContent()) === "4");
+  await p.goto(BASE + "/");
+  const scene = p.locator("#problem .picker-scene").first();
+  await scene.scrollIntoViewIfNeeded();
+  await wait(400);
+  check("Problem cards switch to the handled state without animating", await scene.evaluate((s) => s.classList.contains("play") && getComputedStyle(s.querySelector(".scene-after")).opacity === "1"));
+  await c.addInitScript(() => addEventListener("pagereveal", (e) => (window.__vt = !!e.viewTransition)));
+  await p.locator(".footer a", { hasText: "Pricing" }).first().tap();
+  await p.waitForURL(/\/pricing\//);
+  await wait(300);
+  check("Pages change without a cross-fade", (await p.evaluate(() => window.__vt)) === false);
   await c.close();
+
+  // Everyone else: the next page is fetched while they hover, and pages cross-fade with the header held.
+  // A plain context: Chromium makes no speculative prefetches while requests are being intercepted.
+  const c2 = await b.newContext({ viewport: { width: 1440, height: 900 } });
+  await c2.addInitScript(() => addEventListener("pagereveal", (e) => (window.__vt = !!e.viewTransition)));
+  const q = await c2.newPage();
+  const prefetched = [];
+  q.on("request", (r) => /prefetch/.test(r.headers()["sec-purpose"] || "") && prefetched.push(new URL(r.url()).pathname));
+  await q.goto(BASE + "/", { waitUntil: "networkidle" });
+  const link = q.locator(".site-nav a", { hasText: "Pricing" }).first();
+  await link.hover();
+  await wait(700);
+  check("Hovering a link fetches that page ahead (speculation rules)", prefetched.includes("/pricing/"), prefetched.join(", "));
+  await link.click();
+  await q.waitForURL(/\/pricing\//);
+  await wait(300);
+  check("Pages cross-fade into each other (view transitions)", (await q.evaluate(() => window.__vt)) === true);
+  await c2.close();
 }
 
 /* ================= UAT-7: Content integrity: every page, every link, every width ================= */
@@ -449,9 +498,8 @@ section("UAT-8 · Ella, sceptical operations director (desktop): “What’s the
     await q.close();
   }
   // Honesty audit: percentages, multipliers and money/time-saved claims only where they are the visitor's
-  // own inputs, pricing maths, labelled examples, or the press release.
-  // Allowed: the visitor's own estimates, pricing maths, labelled simulations, and the press release (its
-  // figures are the ABS's, named in the release).
+  // own inputs, pricing maths, labelled examples, or the press release (its figures are the ABS's, named
+  // in the release).
   const ALLOW = "[data-missed-calls], .estimator, .lengths, .news-article, .news-list, .jp, .member-live, .ol-board, script, style, noscript";
   const offenders = [];
   for (const path of PAGES) {
@@ -473,6 +521,23 @@ section("UAT-8 · Ella, sceptical operations director (desktop): “What’s the
     await q.close();
   }
   check("Honesty audit: no unsourced percentages or savings claims on any page", offenders.length === 0, offenders.slice(0, 6).join(" | "));
+  // Each professional's pages only talk about that professional (links to the others aside). Catches the
+  // receptionist's old name, Olivia, surviving anywhere on Jenny's pages.
+  const property = ["/olivia/", "/industries/property/", "/solutions/property-outreach/"];
+  const own = (path) => (path === "/recruiter-agent/" ? "Jess" : property.includes(path) ? "Olivia" : "Jenny");
+  const mixed = [];
+  for (const path of PAGES.filter((x) => /^\/(receptionist|olivia|recruiter-agent|industries\/.|solutions\/.)/.test(x))) {
+    const q = await page(c, path);
+    const others = ["Jenny", "Olivia", "Jess"].filter((n) => n !== own(path));
+    const found = await q.evaluate((names) => {
+      const main = document.querySelector("main").cloneNode(true);
+      main.querySelectorAll("a, nav, script, style").forEach((e) => e.remove());
+      return names.filter((n) => new RegExp("\\b" + n + "\\b", "i").test(main.textContent));
+    }, others);
+    if (found.length) mixed.push(`${path}: ${found.join(", ")}`);
+    await q.close();
+  }
+  check("Each professional’s pages name only that professional", mixed.length === 0, mixed.join(" | "));
   await c.close();
 }
 
@@ -603,6 +668,44 @@ section("UAT-12 · Noah wants to hear it live, or watch a customer talk about it
   check("On jobgen.ai, “Try a live demo” opens the live demo in place", (await p2.locator("#voiceDemoModal").count()) === 1 && (await p2.evaluate(() => document.querySelector("jobgen-voice-demo")?.getAttribute("default-product"))) === "receptionist");
   check("Opening the demo submits nothing", posted.filter((m) => m !== "GET").length === 0, posted.join(","));
   await c2.close();
+}
+
+/* ================= UAT-13: Jenny's interactive demo ================= */
+section("UAT-13 · Tom, practice manager, steers a simulated call on Jenny’s page (1280×800)");
+{
+  const c = await ctx({ viewport: { width: 1280, height: 800 } });
+  const p = await page(c, "/receptionist/");
+  const sent = [];
+  p.on("request", (r) => r.method() !== "GET" && sent.push(`${r.method()} ${r.url()}`));
+  await p.locator(".hero-actions a", { hasText: "Try a demo call" }).click();
+  await wait(900);
+  const box = await inView(p, "#try");
+  check("“Try a demo call” takes him to the demo", box && box.top < 200 && box.top > -300, JSON.stringify(box));
+  check("The demo says it is simulated", /SIMULATED CALL/.test(await p.locator("#try").innerText()));
+  // He turns the read-aloud voice off with the switch (it's off already where the browser has no speech).
+  if (await p.locator("#voice").isChecked()) await p.locator(".voice-toggle i").click();
+  await p.locator('.try-pick [data-industry="trades"]').click();
+  check("Picking a business updates the phone", (await p.locator("#phone-name").textContent()) === "Kestrel Plumbing" && (await p.locator("#call-btn").getAttribute("aria-label")) === "Call Kestrel Plumbing");
+  await p.locator("#call-btn").click();
+  check("Calling rings, and the button becomes Hang up", (await p.locator("#phone").getAttribute("data-state")) === "ringing" && (await p.locator("#call-btn").getAttribute("aria-label")) === "Hang up");
+  // He always picks the first reply until Jenny wraps up.
+  let turns = 0;
+  for (; turns < 8; turns++) {
+    await p.waitForFunction(() => document.querySelector("#phone-replies button") || !document.querySelector("#inbox-cta").hidden, null, { timeout: 20000 });
+    if (await p.locator("#inbox-cta").isVisible()) break;
+    await p.locator("#phone-replies button").first().click();
+  }
+  const recap = await p.locator("#phone-body .recap").innerText().catch(() => "");
+  check("The call ends with the summary his team would get", /EXAMPLE CALL SUMMARY/i.test(recap) && /Would go to/i.test(recap), `${turns} replies`);
+  check("…which lands in the team inbox preview, with a next step", (await p.locator("#inbox-list .inbox-item").count()) === 1 && (await p.locator("#inbox-cta").isVisible()));
+  check("Focus moves to the next step (keyboard and screen readers)", await p.evaluate(() => !!document.activeElement?.closest(".next-step")));
+  check("Jenny names herself as Jenny throughout", !/olivia/i.test(await p.locator("#try").innerText()));
+  await p.locator("#listen-btn").click();
+  await wait(4000);
+  check("“Just listen” plays a full example call", (await p.locator("#phone-body .msg").count()) >= 1 && /Stop the example call/.test(await p.locator("#listen-label").textContent()));
+  await p.locator("#listen-btn").click();
+  check("The demo sends nothing anywhere", sent.length === 0, sent.join(" | "));
+  await c.close();
 }
 
 await b.close();

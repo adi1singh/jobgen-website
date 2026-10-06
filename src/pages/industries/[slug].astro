@@ -83,7 +83,7 @@ const quoteFrom = ind.slug === "property" ? "Buta Deogun" : ind.slug === "accoun
           ))}
         </div>
         {ind.cases.map((c, i) => (
-          <article class="case" role="tabpanel" id={`case-${i}`} aria-labelledby={`case-tab-${i}`} hidden={i !== 0} tabindex="0">
+          <div class="case" role="tabpanel" id={`case-${i}`} aria-labelledby={`case-tab-${i}`} hidden={i !== 0} tabindex="0">
             <p class="case-note mono">Illustrative workflow · sample data</p>
             <blockquote>{c.request}</blockquote>
             <dl>
@@ -91,7 +91,7 @@ const quoteFrom = ind.slug === "property" ? "Buta Deogun" : ind.slug === "accoun
             </dl>
             <p class="case-outcome"><span class="mono">RECORDED NEXT STEP</span>{c.outcome}</p>
             <p class="case-next">{c.next}</p>
-          </article>
+          </div>
         ))}
       </div>
     </div>

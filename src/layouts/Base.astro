@@ -29,6 +29,10 @@ const {
   persona,
   noindex = false,
 } = Astro.props;
+// Same-site pages are fetched ahead when a visitor hovers or presses a link (Chrome's speculation rules).
+const speculation = {
+  prefetch: [{ where: { and: [{ href_matches: "/*" }, { not: { selector_matches: "[target=_blank], [download], [data-live-demo]" } }] }, eagerness: "moderate" }],
+};
 // Who we are, for search engines and link previews (facts from jobgen.ai/about).
 const organization = {
   "@context": "https://schema.org",
@@ -74,6 +78,7 @@ const image = new URL(ogImage, Astro.site);
     <!-- Without JavaScript, nothing waits for a scroll animation to appear -->
     <noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
     <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    <script type="speculationrules" set:html={JSON.stringify(speculation)} />
     <slot name="head" />
     <link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/styles/site.css" />

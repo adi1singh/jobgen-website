@@ -1,5 +1,6 @@
 ---
 import type { Recording } from "../data/recordings";
+import WAVES from "../data/waveforms.json";
 interface Props {
   rec: Recording;
   /** How the AI speaker is labelled in the transcript, e.g. "Jenny". */
@@ -7,16 +8,50 @@ interface Props {
 }
 const { rec, aiLabel = "AI" } = Astro.props;
 // Each recording ships as Opus (small, plays almost everywhere) with the original .m4a as a fallback.
-const minutes = `${Math.floor(rec.duration / 60)}:${String(Math.round(rec.duration % 60)).padStart(2, "0")}`;
+const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+const minutes = clock(Math.round(rec.duration));
+const TINTS: Record<string, string> = { jenny: "var(--edu)", olivia: "var(--prop)" };
+const tint = TINTS[rec.product ?? ""] ?? "var(--edu)";
+// The call's own waveform (scripts/waveforms.mjs), each bar coloured by who is speaking at that point.
+const bars = (WAVES as Record<string, number[]>)[rec.id] ?? [];
+const who = bars.map((_, i) => {
+  const t = ((i + 0.5) / bars.length) * rec.duration;
+  let speaker = rec.transcript[0]?.speaker ?? "ai";
+  for (const line of rec.transcript) if (line.time <= t) speaker = line.speaker;
+  return speaker;
+});
 ---
-<article class="recording reveal" data-recording>
+<article class="recording reveal" data-recording style={`--tint: ${tint}`}>
   <header>
     <p class="mono">{rec.industry} · {rec.direction}</p>
     <span class="real-tag mono">REAL RECORDING</span>
   </header>
   <h3>{rec.title}</h3>
   <p class="recording-desc">{rec.description}</p>
-  <audio controls preload="none">
+  {bars.length > 0 && (
+    <div class="player" data-player data-duration={rec.duration} hidden>
+      <button type="button" class="player-play" data-play data-label={`the real call: ${rec.title} (${minutes})`} aria-label={`Play the real call: ${rec.title} (${minutes})`}>
+        <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" /></svg>
+        <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
+      </button>
+      <div class="player-track">
+        <svg class="player-wave" viewBox={`0 0 ${bars.length} 100`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          {bars.map((h, i) => <line class={who[i]} x1={i + 0.5} x2={i + 0.5} y1={50 - h / 2} y2={50 + h / 2} />)}
+        </svg>
+        <div class="player-done">
+          <svg class="player-wave" viewBox={`0 0 ${bars.length} 100`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            {bars.map((h, i) => <line class={who[i]} x1={i + 0.5} x2={i + 0.5} y1={50 - h / 2} y2={50 + h / 2} />)}
+          </svg>
+        </div>
+        <input class="player-seek" type="range" min="0" max={Math.floor(rec.duration)} step="1" value="0" aria-label={`Position in the call: ${rec.title}`} aria-valuetext={`0:00 of ${minutes}`} />
+      </div>
+      <p class="player-meta">
+        <span class="player-key" aria-hidden="true"><i class="ai"></i>{aiLabel}<i class="caller"></i>Caller</span>
+        <span class="player-time mono"><span data-now>0:00</span> / {minutes}</span>
+      </p>
+    </div>
+  )}
+  <audio controls preload="none" data-audio>
     <source src={rec.audio.replace(/\.m4a$/, ".webm")} type="audio/webm; codecs=opus" />
     <source src={rec.audio} type="audio/mp4" />
     <a href={rec.audio}>Download the recording ({minutes})</a>
@@ -36,12 +71,88 @@ const minutes = `${Math.floor(rec.duration / 60)}:${String(Math.round(rec.durati
 </article>
 
 <script>
-  // Follow along: highlight the transcript line being spoken, and open the transcript on play.
+  const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
   document.querySelectorAll<HTMLElement>("[data-recording]").forEach((card) => {
-    const audio = card.querySelector("audio");
+    const audio = card.querySelector<HTMLAudioElement>("[data-audio]");
+    if (!audio) return;
+
+    // Our own player (the call's waveform, coloured by speaker) replaces the browser's controls.
+    // Without JavaScript the browser's controls stay.
+    const player = card.querySelector<HTMLElement>("[data-player]");
+    if (player) {
+      const button = player.querySelector<HTMLButtonElement>("[data-play]")!;
+      const track = player.querySelector<HTMLElement>(".player-track")!;
+      const seek = player.querySelector<HTMLInputElement>(".player-seek")!;
+      const now = player.querySelector<HTMLElement>("[data-now]")!;
+      const label = button.dataset.label;
+      const total = Number(player.dataset.duration);
+      const length = () => (Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : total);
+      let dragging = false;
+      let frame = 0;
+      let shown = -1;
+
+      audio.controls = false;
+      audio.hidden = true;
+      player.hidden = false;
+
+      const paint = () => {
+        const t = audio.currentTime;
+        track.style.setProperty("--p", String(Math.min(1, t / length())));
+        const s = Math.floor(t);
+        if (s !== shown) {
+          shown = s;
+          now.textContent = clock(t);
+          if (!dragging) seek.value = String(s);
+          seek.setAttribute("aria-valuetext", `${clock(t)} of ${clock(length())}`);
+        }
+      };
+      const loop = () => {
+        paint();
+        frame = requestAnimationFrame(loop);
+      };
+      const state = (playing: boolean) => {
+        card.classList.toggle("is-playing", playing);
+        button.setAttribute("aria-label", `${playing ? "Pause" : "Play"} ${label}`);
+        cancelAnimationFrame(frame);
+        if (playing) loop();
+        else paint();
+      };
+
+      button.addEventListener("click", () => {
+        if (audio.paused) {
+          card.classList.add("is-loading");
+          audio.play().catch(() => card.classList.remove("is-loading"));
+        } else audio.pause();
+      });
+      audio.addEventListener("playing", () => card.classList.remove("is-loading"));
+      audio.addEventListener("waiting", () => card.classList.add("is-loading"));
+      audio.addEventListener("play", () => state(true));
+      audio.addEventListener("pause", () => state(false));
+      audio.addEventListener("ended", () => state(false));
+      audio.addEventListener("seeked", paint);
+
+      seek.addEventListener("pointerdown", () => (dragging = true));
+      addEventListener("pointerup", () => (dragging = false));
+      seek.addEventListener("input", () => {
+        audio.currentTime = Number(seek.value);
+        shown = -1;
+        paint();
+      });
+      // Arrow keys move five seconds, not one.
+      seek.addEventListener("keydown", (e) => {
+        const step = e.key === "ArrowRight" || e.key === "ArrowUp" ? 5 : e.key === "ArrowLeft" || e.key === "ArrowDown" ? -5 : 0;
+        if (!step) return;
+        e.preventDefault();
+        audio.currentTime = Math.max(0, Math.min(length(), audio.currentTime + step));
+        shown = -1;
+        paint();
+      });
+    }
+
+    // Follow along: highlight the transcript line being spoken, and open the transcript on play.
     const details = card.querySelector("details");
     const lines = [...card.querySelectorAll<HTMLLIElement>("li[data-t]")];
-    if (!audio || !lines.length) return;
+    if (!lines.length) return;
     let current = -1;
     audio.addEventListener("play", () => {
       if (details) details.open = true;
