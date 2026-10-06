@@ -158,6 +158,12 @@
       const missedMonth = Math.round(((calls * missedPct) / 100) * 22);
       const total = Math.round(missedMonth / 3) * value;
       $("#calc-missed").textContent = missedMonth.toLocaleString();
+      const box = inCalls.closest("[data-missed-calls]");
+      if (box) {
+        box.dataset.missed = missedMonth;
+        box.dataset.lost = total;
+        document.dispatchEvent(new CustomEvent("missedcalls", { detail: { missed: missedMonth, lost: total } }));
+      }
       cancelAnimationFrame(raf);
       const from = shown, start = performance.now();
       const tick = (now) => {

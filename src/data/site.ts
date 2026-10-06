@@ -6,7 +6,7 @@ export const LINKS = {
   login: "https://sales.jobgen.ai/login",
   jobSeekers: "https://candidates.jobgen.ai/",
   webDevelopment: "/web-development/",
-  pricing: "https://sales.jobgen.ai/pricing",
+  pricing: "/pricing/",
   partners: "https://jobgen.ai/partners/",
   about: "https://jobgen.ai/about/",
   news: "https://jobgen.ai/news",

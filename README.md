@@ -33,13 +33,22 @@ On Vercel, import this repo; it detects Astro (build `npm run build`, output `di
   and child care outbound calls → to be confirmed, not shown yet). Audio files are in `public/audio/`.
 - `src/pages/index.astro`: home page, told as a story in chapters: hero ("Grow your business with an
   AI workforce") → 01 The problem (pick what's falling through: calls → Jenny, owners → Olivia,
-  applicants → Jess, website → web team) → 02 Meet the team → 03 Real calls + testimonials →
+  applicants → Jess, website → web team) → the missed-call calculator → 02 Meet the team → 03 Real calls + testimonials →
   04 With your people → 05 Our story + founder note → book a demo.
 - `src/pages/receptionist.astro`: Jenny's page (the approved design).
 - `src/pages/olivia.astro`: Olivia, AI sales agent: two real property calls and the Buta Deogun testimonial.
 - `src/pages/recruiter-agent.astro`: Jess: capabilities, how she works with consultants, and the two
   recruitment testimonials. No call recording is shown until a real one is approved.
 - `src/pages/web-development.astro`: services, the four client projects, the four-stage process, industries.
+- `src/pages/pricing.astro`: the per-conversation estimator from sales.jobgen.ai (same maths and
+  defaults: $0.300 a conversation, $41.15 for 100), a USD/AUD toggle, missed calls vs answering them,
+  price by call length, and pricing notes.
+- `src/data/pricing.ts`: the estimator's rates and formula, copied exactly from sales.jobgen.ai/pricing.
+  Prices are set in USD; change them here and the page follows. AUD uses the day's European Central
+  Bank reference rate from api.frankfurter.dev (free, no key), labelled approximate. If the rate
+  can't load, the page stays in USD. Visitors in an Australian time zone see AUD by default.
+- `src/components/MissedCalls.astro`: "What are missed calls costing you?", used on the home page,
+  Jenny's page and the pricing page (scripted in `public/js/app.js`).
 - `src/components/PageHero.astro`, `Badge.astro`, `BookDemo.astro`: shared hero, name badge and booking section.
 - `src/data/founder.ts`: the founder note (see below).
 - `public/styles/site.css`: the approved stylesheet, unchanged apart from font paths.
@@ -70,7 +79,7 @@ sends them (edit `note`, `mission` and `vision`, nothing else needs to change).
 1. ✅ Rename the receptionist to Jenny (in jobgen-olivia-redesign)
 2. ✅ Astro, shared layout, Jenny's page with a real recording and testimonials
 3. ✅ Home page (story + problem picker + founder note with Kush's photo; placeholder words), Olivia, Jess and Web development pages
-4. Pricing: rebuild the sales.jobgen.ai estimator with a USD/AUD toggle (live exchange rate)
+4. ✅ Pricing: the sales.jobgen.ai estimator with a USD/AUD toggle (live exchange rate)
 5. Industries, solutions, partners, about and news pages (existing copy, lightly tidied)
 6. Boss review on the Vercel preview → point jobgen.ai here → redirects (sales.jobgen.ai marketing
    pages, /coach → candidates.jobgen.ai); login and sign-up stay on sales.jobgen.ai

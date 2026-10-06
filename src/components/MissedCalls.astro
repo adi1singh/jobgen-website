@@ -1,0 +1,43 @@
+---
+// "What are missed calls costing you?": the visitor's own numbers, wired up in /js/app.js.
+// Used on the home page, Jenny's page and the pricing page. The latest result is also kept on
+// [data-missed-calls] (data-missed, data-lost) and announced with a "missedcalls" event, so the
+// pricing page can set it against what answering those calls would cost.
+interface Props {
+  eyebrow?: string;
+  cta?: { label: string; href: string };
+}
+const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", href: "#book" } } = Astro.props;
+---
+<section class="cost" id="cost" aria-labelledby="cost-title">
+  <div class="wrap cost-grid">
+    <div>
+      <p class="mono reveal">{eyebrow}</p>
+      <h2 id="cost-title" class="reveal">What are missed calls <span class="muted">costing you?</span></h2>
+      <p class="section-sub reveal">Move the sliders to match your business. Your numbers, not ours. All estimates are in AUD.</p>
+      <slot name="aside" />
+    </div>
+    <div class="calc reveal" data-missed-calls>
+      <label class="slider">
+        <span class="slider-top"><span>Calls you get a day</span><output id="out-calls" for="in-calls">30</output></span>
+        <input type="range" id="in-calls" min="5" max="200" step="5" value="30" />
+      </label>
+      <label class="slider">
+        <span class="slider-top"><span>Share you can’t answer</span><output id="out-missed" for="in-missed">20%</output></span>
+        <input type="range" id="in-missed" min="5" max="60" step="5" value="20" />
+      </label>
+      <label class="slider">
+        <span class="slider-top"><span>New customer value (AUD)</span><output id="out-value" for="in-value">A$150</output></span>
+        <input type="range" id="in-value" min="20" max="2000" step="10" value="150" />
+      </label>
+      <div class="calc-result" aria-live="polite">
+        <p class="mono">WALKING TO WHOEVER PICKS UP FIRST</p>
+        <p class="calc-number" id="calc-number">A$6,600</p>
+        <p class="calc-sub">a month, from <b id="calc-missed">132</b> missed calls.</p>
+        <slot name="result" />
+        <a class="btn btn-light" href={cta.href}>{cta.label} <span aria-hidden="true">→</span></a>
+      </div>
+      <p class="calc-note">An estimate to start the conversation, not a promise. Assumes 1 in 3 missed callers would have become a customer, over 22 working days a month.</p>
+    </div>
+  </div>
+</section>

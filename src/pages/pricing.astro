@@ -1,0 +1,456 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import MissedCalls from "../components/MissedCalls.astro";
+import BookDemo from "../components/BookDemo.astro";
+import { LINKS } from "../data/site";
+import {
+  DIRECTIONS, PRODUCTS, MODELS, VOICES, TRANSCRIPTION, PHONE, DEFAULTS, estimate, perConversation, fmtUSD,
+} from "../data/pricing";
+
+// Rendered with the default setup so the numbers are right before any script runs.
+const d = DEFAULTS;
+const est = estimate(d);
+const lengths = [1, 2, 3, 4, 5].map((m) => ({ m, price: perConversation(d, m).total }));
+const maxLen = Math.max(...lengths.map((l) => l.price));
+const product = PRODUCTS.find((p) => p.id === d.product)!;
+const minutesLabel = (m: number) => {
+  const s = Math.round(m * 60);
+  return s < 60 ? `${s} sec` : `${Math.floor(s / 60)} min${s % 60 ? ` ${s % 60} sec` : ""}`;
+};
+const label = (list: { id: string; label: string }[], id: string) => list.find((x) => x.id === id)?.label;
+const setupLine = [
+  label(MODELS, d.model),
+  label(VOICES, d.voice),
+  label(TRANSCRIPTION, d.transcription),
+  d.telephone === "managed" ? `JobGen Telephone (${PHONE[d.numberType].label.toLowerCase()})` : "Your telephone",
+].join(" · ");
+---
+<Base
+  title="Pricing: price every conversation | JOBGEN.AI"
+  description="Estimate what your AI workforce costs per conversation. Choose inbound or outbound, your product area, call volume and call length, and see the price in USD or AUD."
+  ogTitle="Price every conversation with confidence. JOBGEN.AI pricing."
+  ogDescription="Choose your call type, product area and conversation length to see the price your team would pay."
+  ogImage="/og/pricing.png"
+  ogImageAlt="JOBGEN.AI pricing: price every conversation with confidence."
+  bookBarText="Talk through your pricing"
+>
+  <PageHero
+    eyebrow="SIMPLE, TRANSPARENT PRICING"
+    sub="Choose your call type, product area and conversation length to see the price your team would pay. Every number updates as you go."
+    primary={{ label: "See your price", href: "#estimate" }}
+    secondary={{ label: "Book a demo", href: "#book" }}
+  >
+    <span class="h1-line">Price every conversation</span>
+    <span class="h1-line h1-muted">with confidence.</span>
+  </PageHero>
+
+  <!-- 01 · ESTIMATOR -->
+  <section class="chapter estimator" id="estimate" aria-labelledby="estimate-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">01 · CONFIGURE YOUR PLAN</p>
+        <h2 id="estimate-title" class="reveal">See your price<br /><span class="grad">in seconds.</span></h2>
+        <p class="section-sub reveal">Compare Property, Education and Accounting using the same call volume and average call length.</p>
+      </div>
+
+      <div class="est" data-estimator>
+        <div class="est-controls">
+          <fieldset class="est-group">
+            <legend><b>Call direction</b><small>Choose how conversations begin</small></legend>
+            <div class="opts opts-2" role="radiogroup" aria-label="Call direction" data-key="direction">
+              {DIRECTIONS.map((o) => (
+                <button type="button" role="radio" aria-checked={String(o.id === d.direction)} data-value={o.id}>
+                  <b>{o.label}</b><small>{o.detail}</small>
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset class="est-group">
+            <legend><b>Product area</b><small data-out="productDetail">{product[d.direction].detail}</small></legend>
+            <div class="opts opts-3" role="radiogroup" aria-label="Product area" data-key="product">
+              {PRODUCTS.map((o) => (
+                <button type="button" role="radio" aria-checked={String(o.id === d.product)} data-value={o.id}>
+                  <b>{o.label}</b><small>{o.detail}</small>
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <label class="slider est-slider">
+            <span class="slider-top"><span>Monthly calls<small>Number of conversations</small></span><output data-out="calls">{d.calls.toLocaleString("en-US")}</output></span>
+            <input type="range" min="1" max="1000" step="1" value={d.calls} data-key="calls" aria-label="Monthly calls" />
+            <span class="slider-ends"><span>1 call</span><span>1,000 calls</span></span>
+          </label>
+
+          <label class="slider est-slider">
+            <span class="slider-top"><span>Average call length<small>Connected time per conversation</small></span><output data-out="minutes">{minutesLabel(d.minutes)}</output></span>
+            <input type="range" min="0.5" max="10" step="0.05" value={d.minutes} data-key="minutes" aria-label="Average call length in minutes" />
+            <span class="slider-ends"><span>30 sec</span><span>10 min</span></span>
+          </label>
+
+          <details class="est-more">
+            <summary>
+              <span><b>Fine-tune your setup</b><small data-out="setup">{setupLine}</small></span>
+              <span class="est-more-icon" aria-hidden="true">+</span>
+            </summary>
+            <div class="est-more-body">
+              <fieldset class="est-group">
+                <legend><b>AI model</b><small>Choose the conversation experience</small></legend>
+                <div class="opts opts-3" role="radiogroup" aria-label="AI model" data-key="model">
+                  {MODELS.map((o) => (
+                    <button type="button" role="radio" aria-checked={String(o.id === d.model)} data-value={o.id}>
+                      <b>{o.label}</b><small>{o.detail}</small>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset class="est-group">
+                <legend><b>Voice</b><small>Choose how your assistant sounds</small></legend>
+                <div class="opts opts-3" role="radiogroup" aria-label="Voice" data-key="voice">
+                  {VOICES.map((o) => (
+                    <button type="button" role="radio" aria-checked={String(o.id === d.voice)} data-value={o.id}>
+                      <b>{o.label}</b><small>{o.detail}</small>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset class="est-group">
+                <legend><b>Transcription</b><small>Choose how callers are understood</small></legend>
+                <div class="opts opts-2" role="radiogroup" aria-label="Transcription" data-key="transcription">
+                  {TRANSCRIPTION.map((o) => (
+                    <button type="button" role="radio" aria-checked={String(o.id === d.transcription)} data-value={o.id}>
+                      <b>{o.label}</b><small>{o.detail}</small>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset class="est-group">
+                <legend><b>Telephone</b><small>Choose whose telephone infrastructure you use</small></legend>
+                <div class="opts opts-2" role="radiogroup" aria-label="Telephone" data-key="telephone">
+                  <button type="button" role="radio" aria-checked={String(d.telephone === "existing")} data-value="existing">
+                    <b>Your telephone</b><small>Keep your provider and number</small>
+                  </button>
+                  <button type="button" role="radio" aria-checked={String(d.telephone === "managed")} data-value="managed">
+                    <b>JobGen Telephone</b><small>JobGen manages the number</small>
+                  </button>
+                </div>
+                <div class="est-phone" data-managed hidden={d.telephone !== "managed"}>
+                  <div class="seg" role="radiogroup" aria-label="Phone number type" data-key="numberType">
+                    {(["local", "mobile"] as const).map((k) => (
+                      <button type="button" role="radio" aria-checked={String(k === d.numberType)} data-value={k}>{PHONE[k].label}</button>
+                    ))}
+                  </div>
+                  <label class="est-number">
+                    <span>Numbers needed<small>JobGen manages the telephone number</small></span>
+                    <input type="number" min="0" max="99" value={d.numbers} data-key="numbers" inputmode="numeric" />
+                  </label>
+                  <label class="voice-toggle est-toggle">
+                    <input type="checkbox" checked={d.streaming} data-key="streaming" />
+                    <i></i>
+                    <span>Include audio streaming<small>Connect the call to your AI assistant</small></span>
+                  </label>
+                </div>
+                <p class="est-own" data-existing hidden={d.telephone === "managed"}>
+                  Use your own telephone provider and number. The estimate covers the AI conversation experience only.
+                </p>
+              </fieldset>
+            </div>
+          </details>
+        </div>
+
+        <aside class="est-summary" aria-label="Your estimate">
+          <div class="est-summary-top">
+            <p class="mono">YOUR ESTIMATE</p>
+            <div class="seg seg-cur" role="radiogroup" aria-label="Currency">
+              <button type="button" role="radio" aria-checked="true" data-cur="USD">USD</button>
+              <button type="button" role="radio" aria-checked="false" data-cur="AUD" disabled title="Loading today’s exchange rate">AUD</button>
+            </div>
+          </div>
+          <div aria-live="polite">
+            <p class="est-label">Estimated price / conversation</p>
+            <p class="calc-number est-per" data-out="per">{fmtUSD(est.per.total, 3)}</p>
+            <p class="est-monthly">
+              <span>For <b data-out="callsText">{d.calls.toLocaleString("en-US")}</b> conversations</span>
+              <strong data-out="monthly">{fmtUSD(est.monthly)}</strong>
+              <small>Estimated monthly price</small>
+            </p>
+          </div>
+          <dl class="est-break">
+            <div><dt>AI conversation</dt><dd data-out="ai">{fmtUSD(est.per.ai, 3)}</dd></div>
+            <div><dt>Voice and transcription</dt><dd data-out="voice">{fmtUSD(est.per.voice, 3)}</dd></div>
+            <div><dt>Telephone and streaming</dt><dd data-out="line">{fmtUSD(est.per.line, 3)}</dd></div>
+            <div class="est-break-month"><dt data-out="rentalLabel">Number rental, per month</dt><dd data-out="rental">{fmtUSD(est.rental)}</dd></div>
+          </dl>
+          <p class="est-who" data-out="who"><span class="dot" style="--tint: var(--prop)"></span>Outbound property calls are <a href="/olivia/">Olivia’s</a> work.</p>
+          <div class="est-actions">
+            <a class="btn btn-light" href={LINKS.startFree}>Start free <span aria-hidden="true">→</span></a>
+            <a class="btn btn-ghost" href="#book">Book a demo</a>
+          </div>
+          <p class="est-fx" data-out="fx">Prices are estimates in USD.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 · MISSING VS ANSWERING -->
+  <MissedCalls eyebrow="02 · MISSING THEM VS ANSWERING THEM" cta={{ label: "Book a demo", href: "#book" }}>
+    <p slot="result" class="calc-vs" data-vs>
+      Answering them with Jenny: about <b data-out="answer">…</b> a month, at the setup above.
+    </p>
+  </MissedCalls>
+
+  <!-- 03 · CONVERSATION LENGTH -->
+  <section class="chapter lengths light" aria-labelledby="lengths-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">03 · CONVERSATION LENGTH</p>
+        <h2 id="lengths-title" class="reveal">Longer calls,<br /><span class="muted">clearly priced.</span></h2>
+        <p class="section-sub reveal">See how the estimated conversation price changes as a call continues, at the setup above.</p>
+      </div>
+      <ol class="length-grid">
+        {lengths.map((l) => (
+          <li class="reveal" style={`--h: ${(l.price / maxLen) * 100}%`} data-len={l.m}>
+            <span class="mono">At {l.m} minute{l.m === 1 ? "" : "s"}</span>
+            <span class="length-bar" aria-hidden="true"><i></i></span>
+            <strong data-out={`len${l.m}`}>{fmtUSD(l.price, 3)}</strong>
+            <small>Estimated price / conversation</small>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- 04 · INCLUDED + NOTES -->
+  <section class="chapter included" aria-labelledby="included-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">04 · INCLUDED IN YOUR ESTIMATE</p>
+        <h2 id="included-title" class="reveal">One clear number,<br /><span class="muted">built from your setup.</span></h2>
+        <p class="section-sub reveal">Choose the experience you want and adjust the call pattern to match your team.</p>
+      </div>
+      <div class="service-grid included-grid">
+        <article class="service reveal"><span class="mono">01</span><h3>AI conversations</h3><p>Your selected AI model handles the conversation for your chosen product area.</p></article>
+        <article class="service reveal"><span class="mono">02</span><h3>Natural voice</h3><p>Choose the voice experience that matches your brand and callers.</p></article>
+        <article class="service reveal"><span class="mono">03</span><h3>Live transcription</h3><p>Your assistant can understand callers in real time throughout the conversation.</p></article>
+        <article class="service reveal"><span class="mono">04</span><h3 data-out="phoneTitle">JobGen Telephone</h3><p data-out="phoneText">Use JobGen Telephone with your chosen number type and audio connection.</p></article>
+      </div>
+      <div class="price-notes reveal">
+        <div>
+          <p class="mono">PRICING NOTES</p>
+          <h3>Designed to stay simple.</h3>
+          <p>Prices are estimates in USD and update as you change your call pattern, product area and setup. AUD amounts are approximate, converted at today’s reference rate.</p>
+        </div>
+        <ul class="capabilities">
+          <li>No hidden setup in the estimate</li>
+          <li>Change your calling provider anytime</li>
+          <li>Adjust your plan as usage grows</li>
+        </ul>
+        <p class="price-notes-more">
+          Pricing for <a href="/recruiter-agent/">Jess</a> and for <a href={LINKS.webDevelopment}>web development</a> isn’t in this estimator. Book a call and we’ll take you through it.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <BookDemo
+    eyebrow="30 MINUTES · YOUR CALLS, YOUR NUMBERS"
+    line1="Make every call"
+    line2="count."
+    sub="Bring your call volumes and we’ll work through the estimate with you. Here’s what we’ll cover together."
+    agenda={[
+      { title: "Hear them live.", text: "Hear Jenny, Olivia or Jess handle a real conversation." },
+      { title: "Check your numbers.", text: "Go through your call volume, call length and the setup that fits." },
+      { title: "Plan the start.", text: "Review what getting started involves and the options that suit your business." },
+    ]}
+  />
+
+  <Fragment slot="scripts">
+    <script>
+      import { DEFAULTS, PRODUCTS, MODELS, VOICES, TRANSCRIPTION, PHONE, estimate, perConversation, type Setup } from "../data/pricing";
+
+      const root = document.querySelector<HTMLElement>("[data-estimator]");
+      if (root) {
+        const s: Setup = { ...DEFAULTS };
+        const out = (k: string) => document.querySelectorAll<HTMLElement>(`[data-out="${k}"]`);
+        const set = (k: string, v: string) => out(k).forEach((el) => (el.textContent = v));
+        const label = (list: { id: string; label: string }[], id: string) => list.find((x) => x.id === id)?.label ?? "";
+        const minutesLabel = (m: number) => {
+          const sec = Math.round(m * 60);
+          return sec < 60 ? `${sec} sec` : `${Math.floor(sec / 60)} min${sec % 60 ? ` ${sec % 60} sec` : ""}`;
+        };
+
+        // Currency: prices are set in USD; AUD uses the day's ECB reference rate (Frankfurter).
+        const FX_KEY = "jg-fx-usd-aud", CUR_KEY = "jg-currency";
+        let cur: "USD" | "AUD" = "USD";
+        let fx: { rate: number; date: string } | null = null;
+        const store = {
+          get(k: string) { try { return localStorage.getItem(k); } catch { return null; } },
+          set(k: string, v: string) { try { localStorage.setItem(k, v); } catch { /* storage unavailable */ } },
+        };
+        const money = (usd: number, digits = 2) => {
+          const aud = cur === "AUD" && fx;
+          return new Intl.NumberFormat("en-US", {
+            style: "currency", currency: aud ? "AUD" : "USD", minimumFractionDigits: digits, maximumFractionDigits: digits,
+          }).format(Number.isFinite(usd) ? usd * (aud ? fx!.rate : 1) : 0);
+        };
+        const curButtons = document.querySelectorAll<HTMLButtonElement>("[data-cur]");
+        const fxNote = () => {
+          const when = fx ? new Date(fx.date + "T00:00:00").toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : "";
+          if (cur === "AUD" && fx) return `Approximate AUD: prices are set in USD and converted at 1 USD = A$${fx.rate.toFixed(4)}, the ECB reference rate for ${when}.`;
+          if (fx) return "Prices are estimates in USD. Switch to AUD for an approximate conversion at today’s rate.";
+          return "Prices are estimates in USD.";
+        };
+
+        let missed = 0;
+        const render = () => {
+          const product = PRODUCTS.find((p) => p.id === s.product) ?? PRODUCTS[0];
+          const e = estimate(s);
+          set("per", money(e.per.total, 3));
+          set("monthly", money(e.monthly));
+          set("ai", money(e.per.ai, 3));
+          set("voice", money(e.per.voice, 3));
+          set("line", money(e.per.line, 3));
+          set("rental", money(e.rental));
+          set("rentalLabel", s.telephone === "managed" ? `Number rental, per month (${s.numbers || 0} ${PHONE[s.numberType].label.toLowerCase()})` : "Number rental, per month");
+          set("calls", Number(s.calls).toLocaleString("en-US"));
+          set("callsText", Number(s.calls).toLocaleString("en-US"));
+          set("minutes", minutesLabel(s.minutes));
+          set("productDetail", product[s.direction].detail);
+          set("setup", [label(MODELS, s.model), label(VOICES, s.voice), label(TRANSCRIPTION, s.transcription),
+            s.telephone === "managed" ? `JobGen Telephone (${PHONE[s.numberType].label.toLowerCase()})` : "Your telephone"].join(" · "));
+          set("phoneTitle", s.telephone === "managed" ? "JobGen Telephone" : "Your telephone");
+          set("phoneText", s.telephone === "managed"
+            ? "Use JobGen Telephone with your chosen number type and audio connection."
+            : "Keep your current telephone provider and use the AI conversation layer alongside it.");
+          set("fx", fxNote());
+
+          // Who does this work
+          const who = out("who")[0];
+          if (who) {
+            if (s.direction === "inbound") who.innerHTML = `<span class="dot" style="--tint: var(--edu)"></span>Inbound calls are answered by <a href="/receptionist/">Jenny</a>, your AI receptionist.`;
+            else if (s.product === "property") who.innerHTML = `<span class="dot" style="--tint: var(--prop)"></span>Outbound property calls are <a href="/olivia/">Olivia’s</a> work.`;
+            who.hidden = s.direction === "outbound" && s.product !== "property";
+          }
+
+          // Price at 1–5 minutes, with bars relative to the 5-minute price
+          const lens = [1, 2, 3, 4, 5].map((m) => perConversation(s, m).total);
+          const max = Math.max(...lens) || 1;
+          lens.forEach((p, i) => {
+            set(`len${i + 1}`, money(p, 3));
+            document.querySelector<HTMLElement>(`[data-len="${i + 1}"]`)?.style.setProperty("--h", `${(p / max) * 100}%`);
+          });
+
+          // Missed calls vs answering them (inbound, same setup)
+          // The missed-call figures are in AUD, so this stays in AUD whenever today's rate is known.
+          if (missed) {
+            const usd = estimate({ ...s, direction: "inbound", calls: missed }).monthly;
+            set("answer", fx
+              ? "A$" + Math.round(usd * fx.rate).toLocaleString("en-AU")
+              : "US$" + Math.round(usd).toLocaleString("en-US"));
+          }
+
+          root.querySelectorAll<HTMLInputElement>('input[type="range"]').forEach((el) =>
+            el.style.setProperty("--fill", ((+el.value - +el.min) / (+el.max - +el.min)) * 100 + "%"));
+          root.querySelector<HTMLElement>("[data-managed]")!.hidden = s.telephone !== "managed";
+          root.querySelector<HTMLElement>("[data-existing]")!.hidden = s.telephone === "managed";
+        };
+
+        // Option pills (radio groups): click, and arrow keys move the choice
+        root.querySelectorAll<HTMLElement>('[role="radiogroup"][data-key]').forEach((group) => {
+          const key = group.dataset.key as keyof Setup;
+          const buttons = [...group.querySelectorAll<HTMLButtonElement>('[role="radio"]')];
+          const choose = (b: HTMLButtonElement, focus = false) => {
+            buttons.forEach((x) => {
+              x.setAttribute("aria-checked", String(x === b));
+              x.tabIndex = x === b ? 0 : -1;
+            });
+            (s as Record<string, unknown>)[key] = b.dataset.value;
+            if (focus) b.focus();
+            render();
+          };
+          buttons.forEach((b, i) => {
+            b.tabIndex = b.getAttribute("aria-checked") === "true" ? 0 : -1;
+            b.addEventListener("click", () => choose(b));
+            b.addEventListener("keydown", (ev) => {
+              const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[ev.key];
+              if (!step) return;
+              ev.preventDefault();
+              choose(buttons[(i + step + buttons.length) % buttons.length], true);
+            });
+          });
+        });
+        root.querySelectorAll<HTMLInputElement>("input[data-key]").forEach((el) => {
+          el.addEventListener("input", () => {
+            const key = el.dataset.key!;
+            if (el.type === "checkbox") (s as Record<string, unknown>)[key] = el.checked;
+            else if (key === "numbers") s.numbers = Math.min(99, Math.max(0, Math.round(+el.value || 0)));
+            else (s as Record<string, unknown>)[key] = +el.value;
+            render();
+          });
+        });
+
+        // Currency toggle
+        const setCur = (c: "USD" | "AUD", remember = true) => {
+          if (c === "AUD" && !fx) return;
+          cur = c;
+          curButtons.forEach((b) => { b.setAttribute("aria-checked", String(b.dataset.cur === c)); b.tabIndex = b.dataset.cur === c ? 0 : -1; });
+          if (remember) store.set(CUR_KEY, c);
+          render();
+        };
+        curButtons.forEach((b) => {
+          b.addEventListener("click", () => setCur(b.dataset.cur as "USD" | "AUD"));
+          b.addEventListener("keydown", (ev) => {
+            if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(ev.key)) return;
+            ev.preventDefault();
+            const next = [...curButtons].find((x) => x !== b && !x.disabled);
+            if (next) { setCur(next.dataset.cur as "USD" | "AUD"); next.focus(); }
+          });
+        });
+        const useRate = (rate: number, date: string) => {
+          fx = { rate, date };
+          const aud = document.querySelector<HTMLButtonElement>('[data-cur="AUD"]')!;
+          aud.disabled = false;
+          aud.title = "";
+          const saved = store.get(CUR_KEY);
+          const inAustralia = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone.startsWith("Australia/"); } catch { return false; } })();
+          setCur(saved === "AUD" || (!saved && inAustralia) ? "AUD" : "USD", false);
+        };
+        const audUnavailable = () => {
+          const aud = document.querySelector<HTMLButtonElement>('[data-cur="AUD"]')!;
+          aud.title = "Today’s exchange rate couldn’t be loaded, so prices are shown in USD";
+          set("fx", "Prices are estimates in USD. The AUD conversion is unavailable right now.");
+        };
+        (async () => {
+          try {
+            const cached = JSON.parse(store.get(FX_KEY) || "null");
+            if (cached && Date.now() - cached.at < 6 * 3600e3 && cached.rate > 0) return useRate(cached.rate, cached.date);
+          } catch { /* ignore a bad cache */ }
+          try {
+            const ctl = new AbortController();
+            const t = setTimeout(() => ctl.abort(), 6000);
+            const res = await fetch("https://api.frankfurter.dev/v1/latest?base=USD&symbols=AUD", { signal: ctl.signal });
+            clearTimeout(t);
+            const data = await res.json();
+            const rate = Number(data?.rates?.AUD);
+            if (!(rate > 0.5 && rate < 5)) throw new Error("unexpected rate");
+            store.set(FX_KEY, JSON.stringify({ rate, date: data.date, at: Date.now() }));
+            useRate(rate, data.date);
+          } catch {
+            audUnavailable();
+          }
+        })();
+
+        // The missed-call calculator on this page
+        const box = document.querySelector<HTMLElement>("[data-missed-calls]");
+        if (box?.dataset.missed) missed = +box.dataset.missed;
+        document.addEventListener("missedcalls", (ev) => {
+          missed = (ev as CustomEvent).detail.missed;
+          render();
+        });
+        render();
+      }
+    </script>
+  </Fragment>
+</Base>

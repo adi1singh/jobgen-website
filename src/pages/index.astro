@@ -4,6 +4,7 @@ import PageHero from "../components/PageHero.astro";
 import RealRecording from "../components/RealRecording.astro";
 import Testimonials from "../components/Testimonials.astro";
 import BookDemo from "../components/BookDemo.astro";
+import MissedCalls from "../components/MissedCalls.astro";
 import { WORKFORCE, LINKS } from "../data/site";
 import { RECORDINGS } from "../data/recordings";
 import { TESTIMONIALS } from "../data/testimonials";
@@ -89,6 +90,9 @@ const problems = [
       </ul>
     </div>
   </section>
+
+  <!-- 01 · THE PROBLEM, IN NUMBERS -->
+  <MissedCalls eyebrow="01 · THE COST OF A MISSED CALL" />
 
   <!-- 02 · MEET THE TEAM -->
   <section class="chapter team" id="team" aria-labelledby="team-title">
