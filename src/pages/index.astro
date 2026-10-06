@@ -5,6 +5,10 @@ import RealRecording from "../components/RealRecording.astro";
 import Testimonials from "../components/Testimonials.astro";
 import BookDemo from "../components/BookDemo.astro";
 import MissedCalls from "../components/MissedCalls.astro";
+import LogoStrip from "../components/LogoStrip.astro";
+import VideoTestimonial from "../components/VideoTestimonial.astro";
+import HowItWorks from "../components/HowItWorks.astro";
+import Faq from "../components/Faq.astro";
 import { WORKFORCE } from "../data/site";
 import { RECORDINGS } from "../data/recordings";
 import { TESTIMONIALS } from "../data/testimonials";
@@ -61,6 +65,8 @@ const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` }
     </div>
   </PageHero>
 
+  <LogoStrip />
+
   <!-- 01 · HEAR A REAL CALL -->
   <section class="chapter proof listen light" id="listen" aria-labelledby="listen-title">
     <div class="wrap">
@@ -71,6 +77,11 @@ const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` }
       </div>
       <div class="proof-recordings home-calls">
         {calls.map((rec) => <RealRecording rec={rec} aiLabel={labels[rec.product ?? ""] ?? "AI"} />)}
+      </div>
+      <div class="listen-live reveal">
+        <p><b>Rather talk to one yourself?</b> Try a short live conversation in your browser. Microphone required · Up to 2 minutes · No account needed.</p>
+        <a class="btn btn-ink" href="/demo/" data-live-demo="receptionist">Try a live demo <span aria-hidden="true">→</span></a>
+        <span class="listen-live-status" data-live-demo-status aria-live="polite"></span>
       </div>
     </div>
   </section>
@@ -148,15 +159,19 @@ const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` }
         <p class="mono chapter-no reveal">04 · WHAT CUSTOMERS SAY</p>
         <h2 id="proof-title" class="reveal">Calls answered.<br /><span class="muted">Teams back on the work.</span></h2>
       </div>
+      <VideoTestimonial />
       <Testimonials items={quotes} />
     </div>
   </section>
 
-  <!-- 05 · WITH YOUR PEOPLE -->
+  <!-- 05 · HOW IT WORKS -->
+  <HowItWorks eyebrow="05 · HOW IT WORKS" />
+
+  <!-- 06 · WITH YOUR PEOPLE -->
   <section class="chapter people" aria-labelledby="people-title">
     <div class="wrap people-grid">
       <div>
-        <p class="mono chapter-no reveal">05 · WITH YOUR PEOPLE</p>
+        <p class="mono chapter-no reveal">06 · WITH YOUR PEOPLE</p>
         <h2 id="people-title" class="reveal">We automate work,<br /><span class="muted">not replace people.</span></h2>
         <p class="section-sub reveal">
           Your AI workforce handles the repetitive, round-the-clock work, so your team spends its day on the
@@ -181,7 +196,22 @@ const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` }
         </li>
       </ol>
     </div>
+    <div class="wrap">
+      <p class="mono boundaries-title reveal">YOUR BOUNDARIES, BUILT IN · YOU DECIDE WHERE THEY STOP</p>
+      <ul class="boundaries">
+        {[
+          ["Knowledge", "Your approved business facts and answers."],
+          ["Identity", "Verification before customer-specific information."],
+          ["Outreach", "Selected contacts, DNC checks and configured schedules."],
+          ["Exceptions", "Urgent or unsupported requests go to your chosen team."],
+          ["Review", "Call records, transcripts and follow-up status."],
+        ].map(([t, d]) => <li class="reveal"><b>{t}</b><span>{d}</span></li>)}
+      </ul>
+    </div>
   </section>
+
+  <!-- 07 · PLAIN ANSWERS -->
+  <Faq eyebrow="07 · PLAIN ANSWERS" />
 
   <!-- FROM OUR FOUNDER (the full note and our story are on the About page) -->
   {founderLive && (

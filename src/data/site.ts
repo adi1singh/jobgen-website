@@ -16,6 +16,7 @@ export const LINKS = {
   about: "/about/",
   news: "/news/",
   careers: "https://recruiter.jobgen.ai/jobs/jobgen-ai-4",
+  linkedin: "https://www.linkedin.com/company/jobgenai/",
   contact: "mailto:hello@jobgen.ai",
   privacy: "https://www.jobgen.ai/privacy/",
   terms: "https://www.jobgen.ai/terms/",
@@ -69,4 +70,17 @@ export const WORKFORCE = [
       "ATS writeback (Bullhorn, JobDiva, Ceipal)",
     ],
   },
+];
+
+// Teams JobGen.AI works with: customers and partners named on jobgen.ai (testimonials and the partners
+// page). Logos are the ones published there.
+export const CLIENTS = [
+  { name: "ONETEC Communications", logo: "/partners/onetec.webp", w: 200, h: 68 },
+  { name: "M&S Business Solutions", logo: "/partners/ms-business.webp", w: 600, h: 224 },
+  { name: "McGill Institute", logo: "/partners/mcgill-institute-transparent.png", w: 360, h: 92 },
+  { name: "Prima Recruitment & Consultancy", logo: "/partners/prima-white.webp", w: 571, h: 158 },
+  { name: "Jolie Recruitment", logo: "/partners/jolie-recruitment-white.png", w: 509, h: 217 },
+  { name: "Buta Deogun Property", logo: "/partners/buta-deogun-property.png", w: 900, h: 160 },
+  { name: "Multi Dynamic", logo: "/partners/multi-dynamic-white.webp", w: 960, h: 186 },
+  { name: "Study and Work", logo: "/partners/studyandwork-trimmed.png", w: 234, h: 186 },
 ];

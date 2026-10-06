@@ -15,6 +15,11 @@ const { article: a } = Astro.props as { article: (typeof NEWS)[number] };
   ogImage={a.image}
   ogImageAlt={a.title}
 >
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [["Home", "/"], ["News", "/news/"], [a.title, `/news/${a.slug}/`]].map(([name, path], i) => ({ "@type": "ListItem", position: i + 1, name, item: `https://jobgen.ai${path}` })),
+  })} />
   <article class="news-article">
     <div class="wrap news-wrap">
       <a class="news-back" href="/news/">← Back to News</a>

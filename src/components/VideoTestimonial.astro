@@ -1,0 +1,53 @@
+---
+// A real customer's video testimonial, from JobGen's YouTube channel (the one jobgen.ai shows).
+// Nothing loads from YouTube until the visitor presses play (youtube-nocookie, privacy-enhanced).
+// The poster is cropped from the video's thumbnail to the speaker only.
+import { TESTIMONIALS } from "../data/testimonials";
+interface Props {
+  videoId?: string;
+  name?: string;
+  title?: string;
+}
+const {
+  videoId = "CA_NEg3xJz0",
+  name = "Mandar Gokhale",
+  title = "Mandar Gokhale’s Jenny AI receptionist testimonial",
+} = Astro.props;
+const quote = TESTIMONIALS.find((t) => t.name === name);
+// Same name highlight as the other testimonials.
+const TINTS: Record<string, string> = { Jenny: "var(--edu)", Olivia: "var(--prop)", Jess: "var(--care)" };
+const parts = (text: string) => text.split(/\b(Jenny|Olivia|Jess)\b/);
+---
+<figure class="video-quote reveal" data-video-quote>
+  <div class="video-frame">
+    <button type="button" class="video-play" data-video-id={videoId} data-video-title={title}>
+      <img src="/testimonials/mandar-poster.webp" alt="" width="576" height="720" loading="lazy" />
+      <span class="video-play-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" /></svg>
+      </span>
+      <span class="video-play-label mono">WATCH · CUSTOMER STORY<span class="sr-only">: play {title} (video)</span></span>
+    </button>
+  </div>
+  <div class="video-quote-body">
+    <p class="mono">IN THEIR OWN WORDS</p>
+    {quote && <blockquote>“{parts(quote.quote).map((p) => (TINTS[p] ? <span class="quote-name" style={`--tint: ${TINTS[p]}`}>{p}</span> : p))}”</blockquote>}
+    <figcaption><b>{name}</b>{quote && <span> · {quote.detail}</span>}</figcaption>
+    <p class="video-note">Video on YouTube. It loads only when you press play.</p>
+  </div>
+</figure>
+
+<script is:inline>
+  document.querySelectorAll(".video-play:not([data-bound])").forEach((btn) => {
+    btn.dataset.bound = "";
+    btn.addEventListener("click", () => {
+      const frame = document.createElement("iframe");
+      frame.src = `https://www.youtube-nocookie.com/embed/${btn.dataset.videoId}?autoplay=1&rel=0`;
+      frame.title = btn.dataset.videoTitle;
+      frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      frame.allowFullscreen = true;
+      frame.referrerPolicy = "strict-origin-when-cross-origin";
+      btn.replaceWith(frame);
+      frame.focus();
+    });
+  });
+</script>

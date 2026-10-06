@@ -1,0 +1,60 @@
+---
+// Not found. Old addresses from jobgen.ai and sales.jobgen.ai land here after the switch, so the page
+// guesses what the visitor wanted from the address and offers it first.
+import Base from "../layouts/Base.astro";
+import { WORKFORCE, LINKS } from "../data/site";
+const popular = [
+  ...WORKFORCE.map((w) => ({ label: `${w.name} · ${w.role}`, href: w.href })),
+  { label: "Industries", href: LINKS.industries },
+  { label: "Pricing", href: LINKS.pricing },
+  { label: "About JobGen.AI", href: LINKS.about },
+];
+---
+<Base title="Page not found | JOBGEN.AI" description="This page has moved or no longer exists." noindex bookHref={LINKS.calendly} bookBarText="See your AI workforce in 30 minutes">
+  <section class="hero page-hero notfound" aria-labelledby="hero-title">
+    <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="wrap hero-inner">
+      <p class="hero-eyebrow mono">404 · PAGE NOT FOUND</p>
+      <h1 id="hero-title"><span class="h1-line">This call</span> <span class="h1-line h1-muted">went to voicemail.</span></h1>
+      <p class="hero-sub">The page you asked for has moved or no longer exists. Here’s where you might have been heading.</p>
+      <p class="notfound-guess" data-guess hidden>Looking for <a href="/" data-guess-link>the home page</a>?</p>
+      <div class="hero-actions">
+        <a class="btn btn-light" href="/">Go to the home page <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href={LINKS.calendly} target="_blank" rel="noopener">Book a demo</a>
+      </div>
+      <ul class="notfound-links" aria-label="Popular pages">
+        {popular.map((p) => <li><a href={p.href}>{p.label}</a></li>)}
+      </ul>
+    </div>
+  </section>
+  <Fragment slot="scripts">
+    <script is:inline>
+      // Best guess from the old address, e.g. /industries/plumbing or sales.jobgen.ai/pricing.
+      (() => {
+        const path = location.pathname.toLowerCase();
+        const guesses = [
+          [/plumb|electric|account|medical|dental|legal|law|automotive|home-services|property-industry/, "/industries/", "our industry pages"],
+          [/industr/, "/industries/", "our industry pages"],
+          [/after-hours|overflow|booking|outreach|solution/, "/solutions/", "our solutions"],
+          [/pric|cost|plan/, "/pricing/", "pricing"],
+          [/olivia|property|real-?estate|sales/, "/olivia/", "Olivia, our AI sales agent for real estate"],
+          [/jess|recruit|candidate-screen|ats/, "/recruiter-agent/", "Jess, our AI recruitment assistant"],
+          [/jenny|reception|front-?desk|call/, "/receptionist/", "Jenny, our AI receptionist"],
+          [/web|site|work/, "/web-development/", "web development"],
+          [/partner/, "/partners/", "our partners"],
+          [/news|press|media/, "/news/", "the newsroom"],
+          [/about|team|founder|story/, "/about/", "our story"],
+          [/demo/, "/demo/", "the live demo"],
+          [/coach|job-?seek|emma|resume|career/, "https://candidates.jobgen.ai/", "Emma for job seekers"],
+        ];
+        const hit = guesses.find(([re]) => re.test(path));
+        if (!hit) return;
+        const box = document.querySelector("[data-guess]");
+        const link = box.querySelector("[data-guess-link]");
+        link.href = hit[1];
+        link.textContent = hit[2];
+        box.hidden = false;
+      })();
+    </script>
+  </Fragment>
+</Base>

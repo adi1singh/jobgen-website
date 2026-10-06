@@ -10,7 +10,7 @@ const BASE = process.argv[2] || "http://localhost:8770";
 const OUT = process.argv[3] || "./tests/uat/out";
 mkdirSync(OUT, { recursive: true });
 const AXE = readFileSync(process.env.AXE_PATH || require.resolve("axe-core/axe.min.js"), "utf8");
-const PAGES = ["/", "/receptionist/", "/olivia/", "/recruiter-agent/", "/web-development/", "/pricing/", "/about/",
+const PAGES = ["/", "/receptionist/", "/olivia/", "/recruiter-agent/", "/web-development/", "/pricing/", "/about/", "/demo/",
   "/industries/", "/industries/property/", "/industries/plumbing/", "/industries/electricians/", "/industries/accounting/",
   "/industries/medical/", "/industries/legal/", "/industries/automotive/", "/industries/home-services/",
   "/solutions/", "/solutions/after-hours/", "/solutions/overflow/", "/solutions/booking/", "/solutions/property-outreach/",
@@ -407,7 +407,7 @@ section("UAT-7 · Content integrity: links, headings, previews, alt text, every 
   }
   check(`All ${internal.size} internal links work (incl. #anchors)`, broken.length === 0, broken.join(" | "));
   const ext = await (await page(c, "/")).evaluate(() => [...new Set([...document.querySelectorAll('a[href^="http"]')].map((a) => new URL(a.href).host))]);
-  check("External links only go to JobGen-owned or booking domains", ext.every((h) => /jobgen\.ai$|calendly\.com$|primarecruitment|onetec|jolierecruitment|butadeogunproperty|msbusinesssolutions|studyandwork/.test(h)), ext.join(", "));
+  check("External links only go to JobGen-owned or booking domains", ext.every((h) => /jobgen\.ai$|calendly\.com$|^www\.linkedin\.com$|primarecruitment|onetec|jolierecruitment|butadeogunproperty|msbusinesssolutions|studyandwork/.test(h)), ext.join(", "));
   const overflow = [];
   for (const w of [320, 360, 390, 768, 820, 1024, 1280, 1440, 1920]) {
     const c3 = await ctx({ viewport: { width: w, height: 900 } });

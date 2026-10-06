@@ -13,8 +13,8 @@ const featured = [
   { area: "PROPERTY", name: "Megha Raj Poudel", role: "CEO · Multi Dynamic", text: "A people-focused real estate network supporting agents, property owners and buyers through collaborative local teams.", photo: "/partners/megha-raj-poudel.webp", logo: "/partners/multi-dynamic-white.webp", org: "Multi Dynamic", url: "" },
 ];
 const meetings = [
-  { area: "PROPERTY", name: "Buta Deogun", role: "Principal / Elite Agent · Buta Deogun Property", photo: "/partners/jobgen-buta-deogun.webp", alt: "JobGen.AI meeting Buta Deogun of Buta Deogun Property", url: "https://www.butadeogunproperty.com.au/" },
-  { area: "ACCOUNTING", name: "Mandar Gokhale", role: "Accountant & Owner · M&S Business Solutions", photo: "/partners/jobgen-ms-business.webp", alt: "JobGen.AI meeting Mandar Gokhale of M&S Business Solutions", url: "https://www.msbusinesssolutions.com.au/" },
+  { area: "PROPERTY", name: "Buta Deogun", role: "Principal / Elite Agent · Buta Deogun Property", photo: "/partners/jobgen-buta-deogun.webp", w: 900, h: 900, alt: "JobGen.AI meeting Buta Deogun of Buta Deogun Property", url: "https://www.butadeogunproperty.com.au/" },
+  { area: "ACCOUNTING", name: "Mandar Gokhale", role: "Accountant & Owner · M&S Business Solutions", photo: "/partners/jobgen-ms-business.webp", w: 520, h: 924, alt: "JobGen.AI meeting Mandar Gokhale of M&S Business Solutions", url: "https://www.msbusinesssolutions.com.au/" },
 ];
 const network = [
   { area: "TELECOMMUNICATIONS", org: "ONETEC Communications", logo: "/partners/onetec.webp", url: "https://onetec.com.au/" },
@@ -55,7 +55,7 @@ const network = [
               <h3>{p.name}</h3>
               <p class="partner-role">{p.role}</p>
               <p>{p.text}</p>
-              {p.url && <a class="partner-link" href={p.url} target="_blank" rel="noopener">Visit website <span aria-hidden="true">↗</span></a>}
+              {p.url && <a class="partner-link" href={p.url} target="_blank" rel="noopener">Visit website<span class="sr-only">: {p.org} (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>}
             </div>
           </li>
         ))}
@@ -72,12 +72,12 @@ const network = [
       <ul class="meet-grid">
         {meetings.map((m) => (
           <li class="meet reveal">
-            <img src={m.photo} alt={m.alt} loading="lazy" />
+            <img src={m.photo} alt={m.alt} width={m.w} height={m.h} loading="lazy" />
             <div>
               <span class="mono">{m.area}</span>
               <h3>{m.name}</h3>
               <p>{m.role}</p>
-              <a class="partner-link" href={m.url} target="_blank" rel="noopener">Visit website <span aria-hidden="true">↗</span></a>
+              <a class="partner-link" href={m.url} target="_blank" rel="noopener">Visit website<span class="sr-only">: {m.role.split(" · ")[1]} (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
             </div>
           </li>
         ))}

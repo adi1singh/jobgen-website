@@ -14,6 +14,8 @@ interface Props {
   bookBarText?: string;
   // Colours the page in one professional's palette (hero light, headline, accents).
   persona?: "jenny" | "olivia" | "jess";
+  /** Keep this page out of search results (e.g. the 404 page). */
+  noindex?: boolean;
 }
 const {
   title,
@@ -25,7 +27,22 @@ const {
   bookHref = "#book",
   bookBarText = "See your AI workforce in 30 minutes",
   persona,
+  noindex = false,
 } = Astro.props;
+// Who we are, for search engines and link previews (facts from jobgen.ai/about).
+const organization = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "JobGen.AI",
+  legalName: "JobGen AI Pty Ltd",
+  url: "https://jobgen.ai/",
+  logo: "https://jobgen.ai/icons/icon-512.png",
+  foundingDate: "2024",
+  founder: { "@type": "Person", name: "Kushagra (Kush) Bhatia" },
+  sameAs: ["https://www.linkedin.com/company/jobgenai/"],
+  address: { "@type": "PostalAddress", streetAddress: "60 Martin Place", addressLocality: "Sydney", addressRegion: "NSW", postalCode: "2000", addressCountry: "AU" },
+  email: "hello@jobgen.ai",
+};
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const image = new URL(ogImage, Astro.site);
 ---
@@ -49,10 +66,15 @@ const image = new URL(ogImage, Astro.site);
     <meta property="og:image:alt" content={ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={image} />
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23294cff'/%3E%3Cpath d='M18 18v20q0 12 14 12t14-12V18h-9v20q0 4-5 4t-5-4V18z' fill='white'/%3E%3C/svg%3E"
-    />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <!-- Without JavaScript, nothing waits for a scroll animation to appear -->
+    <noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript>
+    <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    <slot name="head" />
     <link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/styles/site.css" />
     <link rel="stylesheet" href="/styles/layout.css" />
@@ -72,5 +94,6 @@ const image = new URL(ogImage, Astro.site);
     <Footer />
     <slot name="scripts" />
     <script is:inline src="/js/app.js"></script>
+    <script is:inline src="/js/live-demo.js" defer></script>
   </body>
 </html>

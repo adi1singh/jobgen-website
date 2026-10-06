@@ -1,0 +1,109 @@
+---
+// Live voice demo, replacing jobgen.ai/demo/. Both tools are JobGen's own, served by sales.jobgen.ai,
+// and only run on jobgen.ai; elsewhere (the preview) the buttons open the current jobgen.ai/demo/.
+// Copy from jobgen.ai/demo/.
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import BookDemo from "../components/BookDemo.astro";
+import { WORKFORCE } from "../data/site";
+const products: Record<string, string> = { jenny: "receptionist", olivia: "sales", jess: "recruiter" };
+---
+<Base
+  title="Live AI voice demo | JOBGEN.AI"
+  description="Talk to Jenny, Olivia or Jess live, or describe the voice agent you want to build and try a conversation. Microphone required, up to 2 minutes, no account needed."
+  ogTitle="Talk to your AI workforce, live. JOBGEN.AI"
+  ogDescription="Choose a real-world scenario and try a short conversation. Microphone required · Up to 2 minutes · No account needed."
+  ogImage="/og/home.png"
+  ogImageAlt="JOBGEN.AI: Grow your business with an AI workforce."
+>
+  <PageHero
+    eyebrow="LIVE VOICE DEMO"
+    sub="Choose a real-world scenario and try a short conversation, or describe the voice agent you want to build."
+    primary={{ label: "Start a conversation", href: "#try" }}
+    secondary={{ label: "Book a demo", href: "#book" }}
+  >
+    <span class="h1-line">Meet your AI workforce.</span>
+    <span class="h1-line h1-muted">Live.</span>
+  </PageHero>
+
+  <section class="chapter demo-live light" id="try" aria-labelledby="try-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">01 · TALK TO ONE NOW</p>
+        <h2 id="try-title" class="reveal">Pick who you want<br /><span class="muted">to talk to.</span></h2>
+        <p class="section-sub reveal">Microphone required · Up to 2 minutes · No account needed</p>
+      </div>
+      <ul class="demo-pick">
+        {WORKFORCE.map((w) => (
+          <li class="reveal" style={`--tint: ${w.tint}`}>
+            <a href="/demo/" data-live-demo={products[w.key]}>
+              <span class="member-voice" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+              <span class="demo-pick-body">
+                <b>Talk to {w.name}</b>
+                <small>{w.role}</small>
+              </span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="demo-status" data-live-demo-status aria-live="polite"></p>
+
+      <div class="demo-build reveal">
+        <div>
+          <p class="mono">02 · BUILD YOUR OWN VOICE AGENT</p>
+          <h3>Describe your idea, meet your agent, and try a live conversation.</h3>
+        </div>
+        <a class="btn btn-ghost" href="https://jobgen.ai/demo/" data-builder>Build your own <span aria-hidden="true">→</span></a>
+      </div>
+      <p class="demo-note">
+        Demos run on jobgen.ai and ask for your name, email and phone before a conversation starts. Rather hear a
+        real customer call first? <a href="/#listen">Listen to one</a>.
+      </p>
+    </div>
+  </section>
+
+  <dialog class="builder" data-builder-dialog aria-labelledby="builder-title">
+    <header>
+      <h2 id="builder-title">Build your own voice agent</h2>
+      <button type="button" data-builder-close aria-label="Close the voice agent builder">✕</button>
+    </header>
+    <iframe title="Custom voice agent builder" data-src="https://sales.jobgen.ai/demo-builder/embed" allow="microphone https://sales.jobgen.ai; autoplay https://sales.jobgen.ai; clipboard-write https://sales.jobgen.ai"></iframe>
+  </dialog>
+
+  <BookDemo
+    eyebrow="30 MINUTES · SYDNEY AND SAN FRANCISCO"
+    line1="Prefer a person"
+    line2="on the call?"
+    sub="Pick a time and we’ll run your own scenario with you, live."
+    agenda={[{ title: "Hear them live" }, { title: "Map the work slipping through" }, { title: "Setup and pricing" }]}
+  />
+
+  <Fragment slot="scripts">
+    <script is:inline>
+      // The builder is embedded only on jobgen.ai (sales.jobgen.ai allows framing there); elsewhere the
+      // button keeps its link to jobgen.ai/demo/.
+      (() => {
+        const onJobgen = ["jobgen.ai", "www.jobgen.ai"].includes(location.hostname);
+        const btn = document.querySelector("[data-builder]");
+        const dialog = document.querySelector("[data-builder-dialog]");
+        if (!btn || !dialog) return;
+        if (!onJobgen) {
+          btn.target = "_blank";
+          btn.rel = "noopener";
+          return;
+        }
+        const frame = dialog.querySelector("iframe");
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (!frame.src) frame.src = frame.dataset.src;
+          dialog.showModal();
+        });
+        dialog.querySelector("[data-builder-close]").addEventListener("click", () => dialog.close());
+        addEventListener("message", (e) => {
+          if (e.origin === "https://sales.jobgen.ai" && e.data?.type === "jobgen:close-builder") dialog.close();
+        });
+      })();
+    </script>
+  </Fragment>
+</Base>

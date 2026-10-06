@@ -20,7 +20,7 @@ const industries = INDUSTRIES.filter((i) => i.related.includes(sol.slug));
 const calls = sol.slug === "property-outreach" ? RECORDINGS.filter((r) => r.product === "olivia") : [];
 ---
 <Base
-  title={`${sol.label}: ${sol.headline} | JOBGEN.AI`}
+  title={`${sol.label} | ${agent.name} by JOBGEN.AI`}
   description={sol.intro}
   ogTitle={`${sol.headline} ${sol.label} with ${agent.name}, by JOBGEN.AI.`}
   ogDescription={sol.intro}
@@ -29,6 +29,11 @@ const calls = sol.slug === "property-outreach" ? RECORDINGS.filter((r) => r.prod
   persona={sol.agent === "olivia" ? "olivia" : undefined}
   bookBarText={sol.cta}
 >
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [["Home", "/"], ["Solutions", "/solutions/"], [sol.label, `/solutions/${sol.slug}/`]].map(([name, path], i) => ({ "@type": "ListItem", position: i + 1, name, item: `https://jobgen.ai${path}` })),
+  })} />
   <PageHero
     name={agent.name}
     role={agent.role}

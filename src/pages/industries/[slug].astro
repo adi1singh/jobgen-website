@@ -17,7 +17,7 @@ const others = INDUSTRIES.filter((i) => i.slug !== ind.slug);
 const quoteFrom = ind.slug === "property" ? "Buta Deogun" : ind.slug === "accounting" ? "Mandar Gokhale" : "George Limberis";
 ---
 <Base
-  title={`${ind.label}: ${ind.headline} | JOBGEN.AI`}
+  title={ind.agent === "olivia" ? `AI sales agent for ${ind.label.toLowerCase()} | JOBGEN.AI` : `AI receptionist for ${ind.label.toLowerCase()} | JOBGEN.AI`}
   description={ind.intro}
   ogTitle={`${ind.headline} ${agent.name} for ${ind.label.toLowerCase()}, by JOBGEN.AI.`}
   ogDescription={ind.intro}
@@ -26,6 +26,11 @@ const quoteFrom = ind.slug === "property" ? "Buta Deogun" : ind.slug === "accoun
   persona={ind.agent === "olivia" ? "olivia" : undefined}
   bookBarText={`Bring us a real ${ind.shortLabel.toLowerCase()} enquiry`}
 >
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [["Home", "/"], ["Industries", "/industries/"], [ind.label, `/industries/${ind.slug}/`]].map(([name, path], i) => ({ "@type": "ListItem", position: i + 1, name, item: `https://jobgen.ai${path}` })),
+  })} />
   <PageHero
     name={agent.name}
     role={agent.role}
