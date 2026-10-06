@@ -6,6 +6,7 @@ interface Props {
   aiLabel?: string;
 }
 const { rec, aiLabel = "AI" } = Astro.props;
+// Each recording ships as Opus (small, plays almost everywhere) with the original .m4a as a fallback.
 const minutes = `${Math.floor(rec.duration / 60)}:${String(Math.round(rec.duration % 60)).padStart(2, "0")}`;
 ---
 <article class="recording reveal" data-recording>
@@ -15,7 +16,9 @@ const minutes = `${Math.floor(rec.duration / 60)}:${String(Math.round(rec.durati
   </header>
   <h3>{rec.title}</h3>
   <p class="recording-desc">{rec.description}</p>
-  <audio controls preload="none" src={rec.audio}>
+  <audio controls preload="none">
+    <source src={rec.audio.replace(/\.m4a$/, ".webm")} type="audio/webm; codecs=opus" />
+    <source src={rec.audio} type="audio/mp4" />
     <a href={rec.audio}>Download the recording ({minutes})</a>
   </audio>
   <p class="recording-result"><span class="mono">OUTCOME CAPTURED</span>{rec.outcome}</p>

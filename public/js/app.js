@@ -197,6 +197,7 @@
       put("#as-cust2", num(r.customers));
       put("#calc-missed", num(r.missedMonth));
       put("#calc-number", aud(0));
+      $("[data-calc-zero]", box).hidden = r.customers > 0;
       steps.forEach((li) => li.classList.remove("is-shown"));
       box.classList.remove("is-result");
       reveal.hidden = false;
@@ -235,16 +236,35 @@
         status.innerHTML = html;
         status.dataset.tone = tone;
       };
+      // Each field explains its own problem right beneath it, and the message clears as soon as it's fixed.
+      const rules = {
+        email: (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? "" : v ? "That email looks incomplete. Check the part after the @." : "Please enter your email."),
+        phone: (v) => {
+          const digits = v.replace(/\D/g, "").length;
+          if (!v) return "Please enter a phone number we can call.";
+          if (/[^\d\s()+-]/.test(v)) return "Use numbers only, with spaces or + if you like.";
+          return digits >= 8 && digits <= 15 ? "" : "That number looks too short. Include the area code.";
+        },
+      };
+      const validate = (name) => {
+        const input = form.elements[name];
+        const msg = rules[name](input.value.trim());
+        input.setAttribute("aria-invalid", String(!!msg));
+        $(`[data-error-for="${name}"]`, form).textContent = msg;
+        return !msg;
+      };
+      Object.keys(rules).forEach((name) => {
+        const input = form.elements[name];
+        input.addEventListener("blur", () => input.value.trim() && validate(name));
+        input.addEventListener("input", () => input.getAttribute("aria-invalid") === "true" && validate(name));
+      });
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = form.elements.email.value.trim(), phone = form.elements.phone.value.trim();
-        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
-        const phoneOk = phone.replace(/\D/g, "").length >= 8;
-        form.elements.email.setAttribute("aria-invalid", String(!emailOk));
-        form.elements.phone.setAttribute("aria-invalid", String(!phoneOk));
-        if (!emailOk || !phoneOk) {
-          say(!emailOk ? "Please enter a valid email address." : "Please enter a phone number we can call.", "error");
-          (!emailOk ? form.elements.email : form.elements.phone).focus();
+        const okEmail = validate("email"), okPhone = validate("phone");
+        if (!okEmail || !okPhone) {
+          say("");
+          (!okEmail ? form.elements.email : form.elements.phone).focus();
           return;
         }
         const endpoint = form.dataset.endpoint;

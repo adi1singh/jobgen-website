@@ -1,0 +1,49 @@
+# User acceptance tests
+
+`uat.mjs` plays real visitors with real goals through the built site in a browser, and checks what they
+see and can do. Run it before every merge.
+
+```sh
+npm run build
+npx astro preview --port 8770 &          # or any static server on dist/
+npm i --no-save playwright axe-core
+npx playwright install chromium
+node tests/uat/uat.mjs http://localhost:8770
+```
+
+It prints PASS/FAIL per check, saves screenshots and `results.json` to `tests/uat/out/`, and exits
+non-zero if anything fails. Calendly and the exchange-rate service are stubbed so results are repeatable.
+
+## The visitors
+
+| # | Who | Goal | What we check |
+|---|-----|------|---------------|
+| 1 | Sarah, dental clinic owner, phone 390×844 | “What is this, can I trust it, how do I book?” | Headline, CTA and Jenny/Olivia/Jess on the first screen; no next section peeking; “Hear a real call” → recordings that actually play, with the transcript following; header “Book a demo” lands on the calendar; tap targets ≥ 44px |
+| 2 | Raj, real estate principal, desktop | “Is Olivia for agencies like mine?” | Menu names her “AI sales agent for real estate”; her own colours; list animation completes with counters matching the rows; labelled as simulated; jump to her real calls; booking |
+| 3 | Mia, ops manager, phone 360×740 | “What are missed calls costing us?” | No number until Calculate; working revealed step by step; correct maths for 15 combinations incl. extremes; field-level errors that clear when fixed; honest “not connected yet” thank-you with no request sent; stale result hidden after changes; largest result fits 320px; under-one-customer result explained |
+| 4 | Sam, keyboard only, 1280×720 | Use the whole site without a mouse | Skip link; menu opens with Enter, closes with Escape and returns focus; sliders and Calculate by keyboard; every Tab stop shows a focus ring; axe WCAG 2.1 AA on all 7 pages with no serious or critical issues |
+| 5 | Priya, finance lead in Sydney | “What will this cost us, in AUD?” | AUD first for Australia; matches sales.jobgen.ai ($0.300 / $41.15, 1–5 minute prices) and × today’s rate; labelled approximate; USD choice remembered; numbers box clamps 0–99; USD fallback when the rate can’t load |
+| 6 | Ken, reduced motion on slow 3G | Read and use the site without motion | LCP < 4s, CLS < 0.1, first load < 1.5 MB; scroll bar off; calculator and both signatures show their final state instantly |
+| 7 | Content integrity | Nothing broken anywhere | One h1, title and description per page; alt text; preview images exist; every internal link and #anchor resolves; only JobGen/Calendly external links; no sideways scroll at 9 widths (320 → 1920 incl. tablets); no unexpected third-party requests |
+
+## Design principles the tests hold the site to
+
+- **Hick’s law:** few choices at each decision: two hero buttons, three problems, one booking ask.
+- **Fitts’s law:** primary actions big and close; every tap target ≥ 44px, sliders included.
+- **Jakob’s law:** familiar patterns: logo home top-left, nav in the header, booking at the end.
+- **Foot-in-the-door / commitment:** the calculator asks for numbers first and only then for an email and phone.
+- **Goal-gradient & peak-end:** the working counts up step by step to the result; every page ends on the calendar.
+- **Von Restorff:** the Calculate button is the one full-spectrum button on the page.
+- **Social proof at the decision point:** real recordings straight after the hero; testimonials word for word.
+- **Forms (NN/g):** visible labels, errors next to the field, cleared as soon as they’re fixed.
+
+## First run (Oct 2026): 82/98 → 98/98 after fixes
+
+Olivia’s “Booked” counter counted a retry as a booking · form errors only at the bottom and not
+clearing · “A$0 a month” with no explanation · 6px slider touch area and sub-44px buttons · pricing
+“Numbers needed” box showing 150 while charging 99 · recordings only in .m4a (now Opus first, .m4a
+fallback, 5× smaller) · no focus ring on the recording player · colour contrast on the aurora, cream
+headings and footer · logo link name · an invalid ARIA attribute in Jenny’s demo.
+
+Not covered here: real Calendly booking (third party), the lead form’s destination (not connected
+yet), real exchange-rate responses, and real devices (run on a phone before launch).

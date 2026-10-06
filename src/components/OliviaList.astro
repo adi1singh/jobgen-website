@@ -3,13 +3,14 @@
 // Every outcome is one of her published capabilities: report requests, selling horizons,
 // appraisal and callback booking, and respecting do-not-contact preferences.
 const rows = [
+  // `report`: a property report was sent. `booked`: an appraisal or agent callback was booked.
   { initials: "PA", suburb: "Parramatta", home: "3-bed house", lead: "normal", tag: "No answer", note: "Retry booked · Thu 5:30pm" },
-  { initials: "RY", suburb: "Ryde", home: "2-bed unit", lead: "warm", tag: "Report requested", note: "Property report sent by SMS" },
-  { initials: "CH", suburb: "Castle Hill", home: "4-bed house", lead: "hot", tag: "Selling in 3 months", note: "Appraisal booked · Sat 10am" },
+  { initials: "RY", suburb: "Ryde", home: "2-bed unit", lead: "warm", tag: "Report requested", note: "Property report sent by SMS", report: true },
+  { initials: "CH", suburb: "Castle Hill", home: "4-bed house", lead: "hot", tag: "Selling in 3 months", note: "Appraisal booked · Sat 10am", booked: true },
   { initials: "EP", suburb: "Epping", home: "Townhouse", lead: "normal", tag: "Not selling", note: "Don’t call for 12 months" },
-  { initials: "BH", suburb: "Baulkham Hills", home: "4-bed house", lead: "warm", tag: "6–12 months", note: "Agent callback · Tue 2pm" },
-  { initials: "WM", suburb: "Westmead", home: "2-bed unit", lead: "warm", tag: "Report requested", note: "Property report sent by email" },
-  { initials: "KV", suburb: "Kellyville", home: "5-bed house", lead: "hot", tag: "Talking to agents", note: "Agent callback · today 4pm" },
+  { initials: "BH", suburb: "Baulkham Hills", home: "4-bed house", lead: "warm", tag: "6–12 months", note: "Agent callback · Tue 2pm", booked: true },
+  { initials: "WM", suburb: "Westmead", home: "2-bed unit", lead: "warm", tag: "Report requested", note: "Property report sent by email", report: true },
+  { initials: "KV", suburb: "Kellyville", home: "5-bed house", lead: "hot", tag: "Talking to agents", note: "Agent callback · today 4pm", booked: true },
 ];
 ---
 <section class="chapter signature sig-olivia" aria-labelledby="sig-olivia-title">
@@ -35,7 +36,7 @@ const rows = [
       </div>
       <ol class="ol-rows">
         {rows.map((r) => (
-          <li class="ol-row" data-lead={r.lead}>
+          <li class="ol-row" data-lead={r.lead} data-report={r.report ? "" : undefined} data-booked={r.booked ? "" : undefined}>
             <span class="ol-avatar" aria-hidden="true">{r.initials}</span>
             <span class="ol-who"><b>Owner · {r.suburb}</b><small>{r.home}</small></span>
             <span class="ol-status">
@@ -50,7 +51,7 @@ const rows = [
         <div data-lead="hot"><dt>Hot</dt><dd data-ol-total="hot">0</dd></div>
         <div data-lead="warm"><dt>Warm</dt><dd data-ol-total="warm">0</dd></div>
         <div><dt>Reports sent</dt><dd data-ol-total="report">0</dd></div>
-        <div><dt>Booked</dt><dd data-ol-total="booked">0</dd></div>
+        <div><dt>Appraisals &amp; callbacks</dt><dd data-ol-total="booked">0</dd></div>
       </dl>
       <p class="sig-note">Simulated example. Not real owners or calls. <a href="#proof">Hear a real Olivia call →</a></p>
     </div>
@@ -77,11 +78,10 @@ const rows = [
       row.dataset.state = "done";
       called.textContent = String(i + 1);
       const lead = row.dataset.lead!;
-      const text = row.textContent || "";
       if (lead === "hot") bump("hot");
       if (lead === "warm") bump("warm");
-      if (/report sent/i.test(text)) bump("report");
-      if (/booked ·|callback ·/i.test(text)) bump("booked");
+      if ("report" in row.dataset) bump("report");
+      if ("booked" in row.dataset) bump("booked");
     };
     const reset = () => {
       rows.forEach((r) => delete r.dataset.state);

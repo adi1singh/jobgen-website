@@ -201,7 +201,7 @@
 .footer-offices {
   font-size: 13px !important;
   line-height: 1.7;
-  color: var(--faint) !important;
+  color: var(--muted) !important;
 }
 .footer-head {
   margin: 0 0 6px;
@@ -2943,4 +2943,117 @@
   margin-top: 6px;
   border-top: 1px solid var(--line-strong);
   border-radius: 0 0 12px 12px;
+}
+.lead-error {
+  min-height: 0;
+  font-size: 12.5px;
+  color: #ff9a85;
+}
+.lead-error:empty {
+  display: none;
+}
+.calc-zero {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--prop);
+}
+.calc-zero[hidden] {
+  display: none;
+}
+
+/* Fitts: every slider has a 44px-tall touch area; the visible track stays 6px */
+.slider input[type="range"] {
+  height: 44px;
+  margin: -19px 0;
+  background: transparent;
+}
+.slider input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--rest) 0, var(--prop) var(--fill, 50%), rgba(255, 255, 255, 0.12) var(--fill, 50%));
+}
+.slider input[type="range"]::-webkit-slider-thumb {
+  margin-top: -9px;
+}
+.slider input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.slider input[type="range"]::-moz-range-progress {
+  height: 6px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--rest), var(--prop));
+}
+.slider input[type="range"]:focus-visible {
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+/* …and buttons and links people tap are at least 44px */
+.header-book,
+.menu-btn {
+  min-height: 44px;
+}
+.menu-btn {
+  min-width: 44px;
+}
+.member-link,
+.lead-alt,
+.founder-more,
+.about-more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* Keyboard: the recording player and the booking calendar show focus like everything else */
+audio:focus,
+audio:focus-within,
+iframe:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Contrast (WCAG 2.1 AA): greys nudged just enough to read on the aurora, cream and dark footer */
+h2 .muted {
+  color: #7a7771;
+}
+.light h2 .muted {
+  color: #857f75;
+}
+/* at the top of the page the header sits on the bright aurora: a soft dark fade keeps its text readable */
+.header:not(.scrolled) {
+  background: linear-gradient(180deg, rgba(11, 11, 13, 0.7), rgba(11, 11, 13, 0.38));
+}
+.header:not(.scrolled) .nav-start,
+.nav-start {
+  color: #d9d6cf;
+}
+.header .brand-tag {
+  color: #d9d6cf;
+}
+.header .brand span {
+  color: #c4c1ba;
+}
+.footer-offices,
+.footer-legal p,
+.footer-brand .brand span {
+  color: var(--muted);
+}
+.team .chapter-no,
+.team .section-sub,
+.try-copy > .mono,
+.try-copy > .section-sub {
+  color: #bdbab3;
+}
+.jp-checks li,
+.ol-queued,
+.sig-note {
+  color: var(--muted);
+}
+.ol-avatar {
+  color: #b5b2ac;
+}
+.ol-totals dt {
+  color: #a9a6a0;
 }

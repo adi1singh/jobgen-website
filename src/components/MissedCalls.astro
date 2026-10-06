@@ -68,6 +68,7 @@ const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", hre
           <p class="mono">ESTIMATED REVENUE OPPORTUNITY</p>
           <p class="calc-number" id="calc-number">A$0</p>
           <p class="calc-sub">a month, from <b id="calc-missed">132</b> missed calls.</p>
+          <p class="calc-zero" data-calc-zero hidden>That’s less than one new customer a month at these numbers. Try your busiest week, or a higher customer value.</p>
           <slot name="result" />
           <p class="calc-note">An estimate to start the conversation, not a promise. Every number is yours to change, apart from the 22 working days.</p>
         </div>
@@ -79,11 +80,13 @@ const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", hre
             <div class="lead-fields">
               <label>
                 <span>Email</span>
-                <input type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@yourbusiness.com.au" required maxlength="200" />
+                <input type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@yourbusiness.com.au" required maxlength="200" aria-describedby="lead-email-error" />
+                <small class="lead-error" id="lead-email-error" data-error-for="email"></small>
               </label>
               <label>
                 <span>Phone</span>
-                <input type="tel" name="phone" autocomplete="tel" placeholder="04xx xxx xxx" required maxlength="40" />
+                <input type="tel" name="phone" autocomplete="tel" placeholder="04xx xxx xxx" required maxlength="40" aria-describedby="lead-phone-error" />
+                <small class="lead-error" id="lead-phone-error" data-error-for="phone"></small>
               </label>
             </div>
             <label class="lead-hp" aria-hidden="true">Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>

@@ -385,6 +385,8 @@ const setupLine = [
             else (s as Record<string, unknown>)[key] = +el.value;
             render();
           });
+          // when they leave the box, show the number actually used (0–99 whole numbers)
+          if (el.dataset.key === "numbers") el.addEventListener("change", () => (el.value = String(s.numbers)));
         });
 
         // Currency toggle
