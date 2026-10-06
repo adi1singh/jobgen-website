@@ -4,11 +4,17 @@ interface Props {
   items: Testimonial[];
 }
 const { items } = Astro.props;
+
+// Jenny, Olivia and Jess are picked out in their own colour wherever a quote names them.
+const TINTS: Record<string, string> = { Jenny: "var(--edu)", Olivia: "var(--prop)", Jess: "var(--care)" };
+const parts = (quote: string) => quote.split(/\b(Jenny|Olivia|Jess)\b/);
 ---
 <div class="testimonials">
   {items.map((t) => (
     <figure class="quote reveal">
-      <blockquote>“{t.quote}”</blockquote>
+      <blockquote>
+        “{parts(t.quote).map((p) => (TINTS[p] ? <span class="quote-name" style={`--tint: ${TINTS[p]}`}>{p}</span> : p))}”
+      </blockquote>
       <figcaption><b>{t.name}</b> · {t.detail}</figcaption>
     </figure>
   ))}
