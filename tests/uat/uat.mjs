@@ -2,7 +2,8 @@
 // See tests/uat/README.md. Usage: node tests/uat/uat.mjs [baseURL] [outDir]
 // Needs Playwright (with Chromium) and axe-core: npm i --no-save playwright axe-core && npx playwright install chromium
 import { createRequire } from "node:module";
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { extname } from "node:path";
 const require = createRequire(import.meta.url);
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright");
 
@@ -423,6 +424,185 @@ section("UAT-7 · Content integrity: links, headings, previews, alt text, every 
   check("No sideways scrolling on any page at 9 widths (phones, tablets, desktops)", overflow.length === 0, overflow.join(" | "));
   check("No unexpected third-party requests", external.length === 0, [...new Set(external)].slice(0, 5).join(", "));
   await c.close();
+}
+
+/* ================= UAT-8: Ella, sceptical buyer: honesty and objections ================= */
+section("UAT-8 · Ella, sceptical operations director (desktop): “What’s the catch? Are these numbers real?”");
+{
+  const c = await ctx();
+  const p = await page(c, "/");
+  const faq = p.locator("#faq details");
+  check("Homepage answers the big objections in a FAQ", (await faq.count()) >= 5);
+  await p.locator("#faq summary", { hasText: "cannot answer" }).click();
+  check("“What if the AI can’t answer?” is answered plainly", /escalates instead of guessing/.test(await p.locator("#faq").evaluate((el) => el.textContent)));
+  const ld = await p.evaluate(() => [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => JSON.parse(s.textContent)));
+  const faqLd = ld.find((x) => x["@type"] === "FAQPage");
+  check("FAQ is also published for search engines, matching the page", faqLd && faqLd.mainEntity.length === (await faq.count()));
+  check("Live-demo and video prompts don’t load anything until asked", (await p.evaluate(() => document.querySelectorAll('iframe[src*="youtube"], script[src*="voice-demo-widget"]').length)) === 0);
+  // every simulation is labelled as one
+  const labels = await p.evaluate(() => [...document.querySelectorAll(".member-live")].every((m) => /example/i.test(m.textContent)));
+  check("Team tickers are labelled as examples", labels);
+  await p.close();
+  for (const [path, sel] of [["/olivia/", ".ol-board"], ["/recruiter-agent/", ".sig-jess"]]) {
+    const q = await page(c, path);
+    check(`${path}: animation says it is simulated`, /Simulated example/.test(await q.locator(sel).innerText()));
+    await q.close();
+  }
+  // Honesty audit: percentages, multipliers and money/time-saved claims only where they are the visitor's
+  // own inputs, pricing maths, labelled examples, or the press release.
+  // Allowed: the visitor's own estimates, pricing maths, labelled simulations, and the press release (its
+  // figures are the ABS's, named in the release).
+  const ALLOW = "[data-missed-calls], .estimator, .lengths, .news-article, .news-list, .jp, .member-live, .ol-board, script, style, noscript";
+  const offenders = [];
+  for (const path of PAGES) {
+    const q = await page(c, path);
+    const hits = await q.evaluate((allow) => {
+      const out = [];
+      const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const re = /(\b\d+(?:[.,]\d+)?\s?%|\b\d+(?:\.\d+)?x\b|\bsav(?:e|ed|ing)s?\b[^.]{0,30}(?:\$|hours?)|\$\s?\d[\d,]*(?:k|K)?\s*(?:a|per)\s*(?:year|month))/;
+      for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+        const t = n.textContent;
+        if (!re.test(t)) continue;
+        const el = n.parentElement;
+        if (!el || el.closest(allow) || el.closest("[hidden]")) continue;
+        out.push(t.trim().slice(0, 80));
+      }
+      return out;
+    }, ALLOW);
+    hits.forEach((h) => offenders.push(`${path}: “${h}”`));
+    await q.close();
+  }
+  check("Honesty audit: no unsourced percentages or savings claims on any page", offenders.length === 0, offenders.slice(0, 6).join(" | "));
+  await c.close();
+}
+
+/* ================= UAT-9: Search crawler with JavaScript off ================= */
+section("UAT-9 · A search engine crawler (no JavaScript): can it read and index everything?");
+{
+  const c = await b.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 900 } });
+  let hiddenTotal = 0;
+  const meta = [];
+  for (const path of PAGES) {
+    const p = await c.newPage();
+    await p.goto(BASE + path);
+    hiddenTotal += await p.evaluate(() => [...document.querySelectorAll(".reveal")].filter((e) => getComputedStyle(e).opacity === "0").length);
+    const m = await p.evaluate(() => ({
+      title: document.title,
+      desc: document.querySelector('meta[name="description"]')?.content || "",
+      canonical: document.querySelector('link[rel="canonical"]')?.href || "",
+      ld: [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => { try { JSON.parse(s.textContent); return true; } catch { return false; } }),
+    }));
+    meta.push({ path, ...m });
+    await p.close();
+  }
+  check("Without JavaScript, no content is left invisible", hiddenTotal === 0, `${hiddenTotal} hidden blocks`);
+  const longTitles = meta.filter((m) => m.title.length > 65).map((m) => `${m.path} (${m.title.length})`);
+  check("Every title fits in a search result (≤ 65 characters)", longTitles.length === 0, longTitles.join(", "));
+  const badDesc = meta.filter((m) => m.desc.length < 50 || m.desc.length > 200).map((m) => `${m.path} (${m.desc.length})`);
+  check("Every page has a useful description (50–200 characters)", badDesc.length === 0, badDesc.join(", "));
+  check("Every page has a canonical address on jobgen.ai", meta.every((m) => m.canonical.startsWith("https://jobgen.ai/")));
+  check("All structured data parses", meta.every((m) => m.ld.length > 0 && m.ld.every(Boolean)));
+  const robots = await c.request.get(BASE + "/robots.txt");
+  check("robots.txt allows crawling and points to the sitemap", robots.status() === 200 && /Sitemap: https:\/\/jobgen\.ai\/sitemap\.xml/.test(await robots.text()));
+  const sm = await c.request.get(BASE + "/sitemap.xml");
+  const locs = [...(await sm.text()).matchAll(/<loc>https:\/\/jobgen\.ai([^<]*)<\/loc>/g)].map((x) => x[1]);
+  const dead = [];
+  for (const l of locs) if ((await c.request.get(BASE + l)).status() !== 200) dead.push(l);
+  check(`Sitemap lists ${locs.length} pages and every one exists`, sm.status() === 200 && locs.length >= PAGES.length && dead.length === 0, dead.join(", "));
+  const nf = await c.request.get(BASE + "/404.html");
+  check("The 404 page exists and is kept out of search results", nf.status() === 200 && /<meta name="robots" content="noindex"/.test(await nf.text()));
+  const icons = await Promise.all(["/icons/icon.svg", "/icons/apple-touch-icon.png", "/site.webmanifest"].map((u) => c.request.get(BASE + u).then((r) => r.status())));
+  check("Icon, home-screen icon and manifest exist", icons.every((s) => s === 200), icons.join(","));
+  await c.close();
+}
+
+/* ================= UAT-10: Lisa on an iPad, and a phone held sideways ================= */
+section("UAT-10 · Lisa on an iPad (820×1180) and a phone held sideways (844×390)");
+{
+  for (const [w, h] of [[820, 1180], [844, 390]]) {
+    const c = await ctx({ viewport: { width: w, height: h }, isMobile: true, hasTouch: true });
+    const p = await page(c, "/");
+    await wait(1200);
+    const hdr = await p.evaluate(() => {
+      const brand = document.querySelector(".brand").getBoundingClientRect();
+      const book = document.querySelector(".header-book").getBoundingClientRect();
+      const menu = document.querySelector(".menu-btn").getBoundingClientRect();
+      return { overlap: brand.right > book.left || book.right > menu.left + 1, menuVisible: menu.width > 0 };
+    });
+    check(`${w}×${h}: header items don’t collide`, !hdr.overlap, JSON.stringify(hdr));
+    await p.locator(".menu-btn").tap();
+    check(`${w}×${h}: menu opens and lists the workforce`, (await p.locator("#mobile-menu a").count()) >= 8);
+    await p.keyboard.press("Escape");
+    check(`${w}×${h}: no sideways scrolling`, (await p.evaluate(() => document.documentElement.scrollWidth)) <= w);
+    const heroH1 = await inView(p, "h1");
+    check(`${w}×${h}: headline on the first screen`, heroH1.top >= 0 && heroH1.top < h, JSON.stringify(heroH1));
+    await p.screenshot({ path: `${OUT}/uat10-${w}x${h}.png` });
+    check("No script errors", p.errors.length === 0, p.errors.join(" | "));
+    await c.close();
+  }
+}
+
+/* ================= UAT-11: Someone following an old link ================= */
+section("UAT-11 · Someone following an old jobgen.ai or sales.jobgen.ai link");
+{
+  const html404 = await (await b.newContext()).request.get(BASE + "/404.html").then((r) => r.text());
+  const c = await ctx();
+  const olds = { "/industries/plumbing-old": "/industries/", "/pricing/annual": "/pricing/", "/coach/start": "https://candidates.jobgen.ai/", "/solutions/overflow-handling": "/solutions/", "/receptionist-old": "/receptionist/" };
+  await c.route(/\/(industries\/plumbing-old|pricing\/annual|coach\/start|solutions\/overflow-handling|receptionist-old|totally-unknown)$/, (r) => r.fulfill({ status: 404, contentType: "text/html", body: html404 }));
+  for (const [from, to] of Object.entries(olds)) {
+    const p = await page(c, from);
+    await wait(150);
+    const href = await p.locator("[data-guess-link]").getAttribute("href");
+    check(`Old link ${from} is pointed to ${to}`, (await p.locator("[data-guess]").isVisible()) && href === to, href);
+    await p.close();
+  }
+  const p = await page(c, "/totally-unknown");
+  check("Unknown address still offers popular pages and the home page", (await p.locator(".notfound-links a").count()) >= 5 && (await p.locator('.hero-actions a[href="/"]').count()) === 1);
+  check("404 booking goes straight to the calendar page", (await p.locator(".header-book").getAttribute("href")).includes("calendly.com"));
+  await c.close();
+  const vercel = JSON.parse(readFileSync(new URL("../../vercel.json", import.meta.url), "utf8"));
+  check("Redirects: /coach goes to candidates.jobgen.ai", vercel.redirects.some((r) => r.source === "/coach" && r.destination.startsWith("https://candidates.jobgen.ai")));
+}
+
+/* ================= UAT-12: Wants to try it or watch a customer ================= */
+section("UAT-12 · Noah wants to hear it live, or watch a customer talk about it");
+{
+  // On the preview the live demo opens the current jobgen.ai/demo/ in a new tab.
+  const c = await ctx();
+  await c.route(/jobgen\.ai\/demo/, (r) => r.fulfill({ status: 200, contentType: "text/html", body: "<h1>jobgen.ai demo</h1>" }));
+  const p = await page(c, "/");
+  const [popup] = await Promise.all([c.waitForEvent("page"), p.locator(".listen-live [data-live-demo]").click()]);
+  await popup.waitForLoadState();
+  check("Off jobgen.ai, “Try a live demo” opens the current live demo in a new tab", popup.url() === "https://jobgen.ai/demo/", popup.url());
+  // The video only loads on play, from youtube-nocookie.
+  await c.route(/youtube-nocookie\.com/, (r) => r.fulfill({ status: 200, contentType: "text/html", body: "<body>video</body>" }));
+  await p.locator(".video-play").scrollIntoViewIfNeeded();
+  await p.locator(".video-play").click();
+  const src = await p.locator(".video-frame iframe").getAttribute("src");
+  check("Pressing play loads the customer video (privacy-enhanced YouTube)", /^https:\/\/www\.youtube-nocookie\.com\/embed\/CA_NEg3xJz0/.test(src || ""), src);
+  await c.close();
+  // On jobgen.ai the widget opens in place (sales.jobgen.ai stubbed; nothing is submitted).
+  const DIST = new URL("../../dist", import.meta.url).pathname;
+  const types = { ".html": "text/html", ".css": "text/css", ".js": "application/javascript", ".webp": "image/webp", ".png": "image/png", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".json": "application/json", ".webmanifest": "application/manifest+json", ".webm": "audio/webm", ".m4a": "audio/mp4", ".jpg": "image/jpeg" };
+  const c2 = await b.newContext({ viewport: { width: 1440, height: 900 } });
+  const posted = [];
+  await c2.route("https://jobgen.ai/**", (r) => {
+    let pth = new URL(r.request().url()).pathname;
+    if (pth.endsWith("/")) pth += "index.html";
+    const f = DIST + pth;
+    if (!existsSync(f)) return r.fulfill({ status: 404, body: "" });
+    r.fulfill({ status: 200, contentType: types[extname(f)] || "application/octet-stream", body: readFileSync(f) });
+  });
+  await c2.route(/sales\.jobgen\.ai\/voice-demo-widget\.js/, (r) => r.fulfill({ status: 200, contentType: "application/javascript", body: "class W extends HTMLElement{};customElements.define('jobgen-voice-demo',W);window.JobGenVoiceDemo={open(){const d=document.createElement('div');d.id='voiceDemoModal';d.textContent='Live voice demo';document.body.appendChild(d);}};" }));
+  await c2.route(/sales\.jobgen\.ai\/api\//, (r) => { posted.push(r.request().method()); r.abort(); });
+  await c2.route(/calendly|fonts\.g/, (r) => r.abort());
+  const p2 = await c2.newPage();
+  await p2.goto("https://jobgen.ai/");
+  await p2.locator(".listen-live [data-live-demo]").click();
+  await wait(800);
+  check("On jobgen.ai, “Try a live demo” opens the live demo in place", (await p2.locator("#voiceDemoModal").count()) === 1 && (await p2.evaluate(() => document.querySelector("jobgen-voice-demo")?.getAttribute("default-product"))) === "receptionist");
+  check("Opening the demo submits nothing", posted.filter((m) => m !== "GET").length === 0, posted.join(","));
+  await c2.close();
 }
 
 await b.close();

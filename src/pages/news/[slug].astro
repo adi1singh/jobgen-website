@@ -8,7 +8,7 @@ export function getStaticPaths() {
 const { article: a } = Astro.props as { article: (typeof NEWS)[number] };
 ---
 <Base
-  title={`${a.title} | JOBGEN.AI`}
+  title={`${a.seoTitle ?? a.title} | JOBGEN.AI`}
   description={a.summary}
   ogTitle={a.title}
   ogDescription={a.summary}

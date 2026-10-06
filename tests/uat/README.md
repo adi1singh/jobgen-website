@@ -22,10 +22,15 @@ non-zero if anything fails. Calendly and the exchange-rate service are stubbed s
 | 2 | Raj, real estate principal, desktop | “Is Olivia for agencies like mine?” | Menu names her “AI sales agent for real estate”; her own colours; list animation completes with counters matching the rows; labelled as simulated; jump to her real calls; booking |
 | 2b | Dana, plumbing business owner, phone | “Will it handle an urgent job?” | Phone menu → Industries → Plumbing; the page uses Jenny (never the old receptionist name); the urgent-leak example and what she won’t promise; “Where Jenny stops”; “See an example” jump; related solution link |
 | 3 | Mia, ops manager, phone 360×740 | “What are missed calls costing us?” | No number until Calculate; working revealed step by step; correct maths for 15 combinations incl. extremes; field-level errors that clear when fixed; honest “not connected yet” thank-you with no request sent; stale result hidden after changes; largest result fits 320px; under-one-customer result explained |
-| 4 | Sam, keyboard only, 1280×720 | Use the whole site without a mouse | Skip link; menu opens with Enter, closes with Escape and returns focus; sliders and Calculate by keyboard; every Tab stop shows a focus ring; axe WCAG 2.1 AA on all 24 pages with no serious or critical issues |
+| 4 | Sam, keyboard only, 1280×720 | Use the whole site without a mouse | Skip link; menu opens with Enter, closes with Escape and returns focus; sliders and Calculate by keyboard; every Tab stop shows a focus ring; axe WCAG 2.1 AA on all 25 pages with no serious or critical issues |
 | 5 | Priya, finance lead in Sydney | “What will this cost us, in AUD?” | AUD first for Australia; matches sales.jobgen.ai ($0.300 / $41.15, 1–5 minute prices) and × today’s rate; labelled approximate; USD choice remembered; numbers box clamps 0–99; USD fallback when the rate can’t load |
 | 6 | Ken, reduced motion on slow 3G | Read and use the site without motion | LCP < 4s, CLS < 0.1, first load < 1.5 MB; scroll bar off; calculator and both signatures show their final state instantly |
-| 7 | Content integrity (all 24 pages) | Nothing broken anywhere | One h1, title and description per page; alt text; preview images exist; every internal link and #anchor resolves; only JobGen/Calendly external links; no sideways scroll at 9 widths (320 → 1920 incl. tablets); no unexpected third-party requests |
+| 7 | Content integrity (all 25 pages) | Nothing broken anywhere | One h1, title and description per page; alt text; preview images exist; every internal link and #anchor resolves; only JobGen/Calendly/partner external links; no sideways scroll at 9 widths (320 → 1920 incl. tablets); no unexpected third-party requests |
+| 8 | Ella, sceptical operations director | “What’s the catch? Are these numbers real?” | FAQ answers the objections (incl. what happens when the AI can’t answer) and matches its FAQPage data; the live demo and video load nothing until asked; tickers and animations labelled as examples or simulated; honesty audit: no percentages, multipliers or savings claims outside the visitor’s own estimates, pricing maths, labelled simulations and the press release |
+| 9 | A search crawler without JavaScript | Can it read and index everything? | Nothing hidden without JS; titles ≤ 65 characters; descriptions 50–200; canonical on jobgen.ai; structured data parses; robots.txt and a sitemap whose every entry exists; 404 kept out of search; icons and manifest |
+| 10 | Lisa, iPad (820×1180) and a phone sideways (844×390) | Use it on in-between screens | Header items don’t collide; menu opens with the workforce; no sideways scroll; headline on the first screen; no script errors |
+| 11 | Someone with an old jobgen.ai or sales.jobgen.ai link | Land somewhere useful | The 404 page guesses the right page from the old address (industries, pricing, coach → candidates.jobgen.ai, solutions, receptionist); popular pages and booking offered; vercel.json sends /coach to candidates.jobgen.ai |
+| 12 | Noah, wants to hear it live or watch a customer | Try it without friction | Off jobgen.ai the live-demo buttons open jobgen.ai/demo/ in a new tab; on jobgen.ai they open JobGen’s own widget in place and submit nothing by themselves; the customer video loads (youtube-nocookie) only on play |
 
 ## Design principles the tests hold the site to
 
@@ -41,6 +46,8 @@ non-zero if anything fails. Calendly and the exchange-rate service are stubbed s
 ## History
 
 - Step 5 (industries, solutions, partners, news): 175/175 after fixing tab and card-number contrast and adding booking to the news pages.
+- Visitors 8–12 (sceptic, crawler, tablet, old links, live demo): 214/218 → 218/218 after shortening the
+  home and press-release search titles and the home description.
 
 ### First run (Oct 2026): 82/98 → 98/98 after fixes
 

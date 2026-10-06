@@ -8,6 +8,8 @@ export const NEWS = [
     place: "Sydney, Australia",
     readTime: "4 min read",
     title: "With Job Vacancies Down 30%, Australians Are Rethinking How They Apply for Jobs",
+    // Shorter for search results; the page keeps the release's own headline.
+    seoTitle: "Job vacancies down 30%: Australians rethink applying",
     summary: "Job vacancies are 30.3% below their 2022 peak. With fewer roles and more competition, job seekers are using AI to apply smarter, not just more.",
     image: "/news/AustraliaJobMarket.webp",
     pdf: "/news/JobGenMedia.pdf",
