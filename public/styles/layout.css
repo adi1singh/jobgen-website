@@ -1621,3 +1621,41 @@
   background: color-mix(in srgb, var(--tint) 24%, transparent);
   color: color-mix(in srgb, var(--tint) 55%, #000);
 }
+
+/* every hero: lift the voice wave closer to the buttons so it isn't cut off at the bottom of the screen */
+.hero .hero-inner {
+  z-index: 2;
+}
+.hero .voice-ribbon {
+  pointer-events: none;
+}
+@media (min-width: 621px) {
+  .hero .voice-ribbon {
+    margin-top: -50px;
+  }
+}
+/* home hero: the voice wave runs behind the team strip instead of below it, so it stays on screen */
+.page-hero:has(.team-strip) .voice-ribbon {
+  margin-top: -118px;
+  pointer-events: none;
+}
+.page-hero .team-strip {
+  position: relative;
+  z-index: 2;
+}
+@media (max-width: 1000px) {
+  .page-hero:has(.team-strip) .voice-ribbon {
+    margin-top: -96px;
+  }
+}
+@media (max-height: 820px) and (min-width: 621px) {
+  .hero {
+    padding-top: 64px;
+  }
+  .hero .voice-ribbon {
+    margin-top: -72px;
+  }
+  .page-hero:has(.team-strip) .voice-ribbon {
+    margin-top: -118px;
+  }
+}
