@@ -1,0 +1,72 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+interface Props {
+  title: string;
+  description: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  ogImageAlt?: string;
+  /** Where the header's "Book a demo" goes (defaults to the page's own #book section). */
+  bookHref?: string;
+  /** Text in the phone booking bar that appears after the hero. */
+  bookBarText?: string;
+}
+const {
+  title,
+  description,
+  ogTitle = title,
+  ogDescription = description,
+  ogImage = "/og/jenny.png",
+  ogImageAlt = title,
+  bookHref = "#book",
+  bookBarText = "See your AI workforce in 30 minutes",
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const image = new URL(ogImage, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#0b0b0d" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="JOBGEN.AI · AI workforce" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={image} />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23294cff'/%3E%3Cpath d='M18 18v20q0 12 14 12t14-12V18h-9v20q0 4-5 4t-5-4V18z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/styles/site.css" />
+    <link rel="stylesheet" href="/styles/layout.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header bookHref={bookHref} />
+    <main id="main">
+      <slot />
+    </main>
+    <!-- Phones: booking is one tap away once the hero is out of view -->
+    <div class="book-bar" id="book-bar" hidden>
+      <span>{bookBarText}</span>
+      <a class="btn btn-light btn-small" href={bookHref}>Book a demo</a>
+    </div>
+    <Footer />
+    <slot name="scripts" />
+    <script is:inline src="/js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+---
+import type { Recording } from "../data/recordings";
+interface Props {
+  rec: Recording;
+  /** How the AI speaker is labelled in the transcript, e.g. "Jenny". */
+  aiLabel?: string;
+}
+const { rec, aiLabel = "AI" } = Astro.props;
+const minutes = `${Math.floor(rec.duration / 60)}:${String(Math.round(rec.duration % 60)).padStart(2, "0")}`;
+---
+<article class="recording reveal" data-recording>
+  <header>
+    <p class="mono">{rec.industry} · {rec.direction}</p>
+    <span class="real-tag mono">REAL RECORDING</span>
+  </header>
+  <h3>{rec.title}</h3>
+  <p class="recording-desc">{rec.description}</p>
+  <audio controls preload="none" src={rec.audio}>
+    <a href={rec.audio}>Download the recording ({minutes})</a>
+  </audio>
+  <p class="recording-result"><span class="mono">OUTCOME CAPTURED</span>{rec.outcome}</p>
+  <details class="recording-transcript">
+    <summary>Read the transcript <span>· {minutes} · personal details omitted</span></summary>
+    <ol>
+      {rec.transcript.map((line) => (
+        <li class={line.speaker} data-t={line.time}>
+          <span class="who">{line.speaker === "ai" ? aiLabel : "Caller"}</span>
+          <p>{line.text}</p>
+        </li>
+      ))}
+    </ol>
+  </details>
+</article>
+
+<script>
+  // Follow along: highlight the transcript line being spoken, and open the transcript on play.
+  document.querySelectorAll<HTMLElement>("[data-recording]").forEach((card) => {
+    const audio = card.querySelector("audio");
+    const details = card.querySelector("details");
+    const lines = [...card.querySelectorAll<HTMLLIElement>("li[data-t]")];
+    if (!audio || !lines.length) return;
+    let current = -1;
+    audio.addEventListener("play", () => {
+      if (details) details.open = true;
+      document.querySelectorAll("audio").forEach((other) => other !== audio && other.pause());
+    });
+    audio.addEventListener("timeupdate", () => {
+      const t = audio.currentTime;
+      let i = -1;
+      for (let k = 0; k < lines.length; k++) if (Number(lines[k].dataset.t) <= t) i = k;
+      if (i === current) return;
+      lines[current]?.classList.remove("is-now");
+      current = i;
+      if (i < 0) return;
+      lines[i].classList.add("is-now");
+      const list = lines[i].parentElement;
+      if (list) list.scrollTop = lines[i].offsetTop - list.offsetTop - list.clientHeight / 3;
+    });
+  });
+</script>

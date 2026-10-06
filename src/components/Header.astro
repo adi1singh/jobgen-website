@@ -1,0 +1,100 @@
+---
+import { LINKS, WORKFORCE } from "../data/site";
+interface Props {
+  /** Where "Book a demo" goes: the page's own booking section, or Calendly. */
+  bookHref?: string;
+}
+const { bookHref = LINKS.calendly } = Astro.props;
+const external = bookHref.startsWith("http");
+---
+<header class="header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/" aria-label="JOBGEN.AI, AI workforce, home">JOBGEN<span>.AI</span><em class="brand-tag mono">AI WORKFORCE</em></a>
+    <nav class="nav site-nav" aria-label="Main">
+      <div class="nav-group">
+        <button type="button" class="nav-trigger" aria-expanded="false" aria-controls="workforce-menu">
+          AI workforce
+          <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" /></svg>
+        </button>
+        <div class="nav-menu" id="workforce-menu" hidden>
+          {WORKFORCE.map((w) => (
+            <a href={w.href}>
+              <b>{w.name}</b>
+              <small>{w.role}</small>
+            </a>
+          ))}
+        </div>
+      </div>
+      <a href={LINKS.webDevelopment}>Web development</a>
+      <a href={LINKS.pricing}>Pricing</a>
+      <a href={LINKS.jobSeekers}>For job seekers</a>
+    </nav>
+    <div class="header-actions">
+      <a class="nav-start" href={LINKS.startFree}>Start free</a>
+      <a class="btn btn-light btn-small header-book" href={bookHref} {...(external ? { target: "_blank", rel: "noopener" } : {})}>Book a demo</a>
+      <button type="button" class="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu" hidden>
+    <div class="wrap">
+      <p class="mono mobile-label">AI WORKFORCE</p>
+      {WORKFORCE.map((w) => (
+        <a class="mobile-product" href={w.href}>
+          <b>{w.name}</b>
+          <small>{w.role}</small>
+        </a>
+      ))}
+      <div class="mobile-links">
+        <a href={LINKS.webDevelopment}>Web development</a>
+        <a href={LINKS.pricing}>Pricing</a>
+        <a href={LINKS.jobSeekers}>For job seekers</a>
+        <a href={LINKS.startFree}>Start free</a>
+        <a href={LINKS.login}>Log in</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  // "AI workforce" dropdown and the phone menu: click to toggle, Escape or clicking away closes.
+  const trigger = document.querySelector<HTMLButtonElement>(".nav-trigger");
+  const menu = document.getElementById("workforce-menu");
+  const menuBtn = document.querySelector<HTMLButtonElement>(".menu-btn");
+  const mobile = document.getElementById("mobile-menu");
+
+  const setDropdown = (open: boolean) => {
+    if (!trigger || !menu) return;
+    trigger.setAttribute("aria-expanded", String(open));
+    menu.hidden = !open;
+  };
+  const setMobile = (open: boolean) => {
+    if (!menuBtn || !mobile) return;
+    menuBtn.setAttribute("aria-expanded", String(open));
+    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    mobile.hidden = !open;
+    document.body.classList.toggle("menu-open", open);
+  };
+
+  trigger?.addEventListener("click", () => setDropdown(menu?.hidden ?? true));
+  menuBtn?.addEventListener("click", () => setMobile(mobile?.hidden ?? true));
+  mobile?.addEventListener("click", (e) => {
+    if ((e.target as HTMLElement).closest("a")) setMobile(false);
+  });
+  document.addEventListener("click", (e) => {
+    if (menu && !menu.hidden && !(e.target as HTMLElement).closest(".nav-group")) setDropdown(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (menu && !menu.hidden) {
+      setDropdown(false);
+      trigger?.focus();
+    }
+    if (mobile && !mobile.hidden) {
+      setMobile(false);
+      menuBtn?.focus();
+    }
+  });
+  matchMedia("(min-width: 1001px)").addEventListener("change", (e) => e.matches && setMobile(false));
+</script>

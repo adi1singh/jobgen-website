@@ -1,0 +1,16 @@
+---
+// The approved name badge: voice-wave icon · Name │ role │ JOBGEN.AI WORKFORCE
+interface Props {
+  name: string;
+  role: string;
+}
+const { name, role } = Astro.props;
+---
+<div class="product" aria-label={`${name}, ${role}, part of the JOBGEN.AI workforce`}>
+  <span class="product-voice" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+  <span class="product-name">{name}</span>
+  <span class="product-sep" aria-hidden="true"></span>
+  <span class="product-role">{role}</span>
+  <span class="product-sep product-wide" aria-hidden="true"></span>
+  <span class="product-by product-wide mono"><b>JOBGEN.AI</b> workforce</span>
+</div>
