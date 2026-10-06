@@ -1,0 +1,672 @@
+[
+  {
+    "id": "education-support",
+    "industry": "Education",
+    "direction": "Inbound call",
+    "title": "Student course enquiry",
+    "description": "A student checks their next class, tuition and current enrolment.",
+    "outcome": "Course and tuition details confirmed",
+    "duration": 68.6,
+    "audio": "/audio/real-call-education.m4a",
+    "areas": [
+      "education"
+    ],
+    "transcript": [
+      {
+        "time": 0,
+        "speaker": "ai",
+        "text": "Hi Shiqi, thank you for calling McGill Institute."
+      },
+      {
+        "time": 2.8,
+        "speaker": "ai",
+        "text": "This is Jenny, AI receptionist."
+      },
+      {
+        "time": 4.44,
+        "speaker": "ai",
+        "text": "This call might be transcribed."
+      },
+      {
+        "time": 5.96,
+        "speaker": "ai",
+        "text": "How may I help you today?"
+      },
+      {
+        "time": 7.36,
+        "speaker": "caller",
+        "text": "Hey Jenny, I just want to check when is my next class."
+      },
+      {
+        "time": 13.56,
+        "speaker": "ai",
+        "text": "Could you please provide your student number?"
+      },
+      {
+        "time": 16.26,
+        "speaker": "caller",
+        "text": "[Student number redacted]"
+      },
+      {
+        "time": 23.1,
+        "speaker": "ai",
+        "text": "Your next class is scheduled for today, Tuesday at 2 p.m. in Computer Lab 3."
+      },
+      {
+        "time": 27.38,
+        "speaker": "ai",
+        "text": "It’s a Cloud Lab session for your Diploma of Information Technology."
+      },
+      {
+        "time": 30.64,
+        "speaker": "ai",
+        "text": "If you have any other questions, feel free to ask."
+      },
+      {
+        "time": 33.72,
+        "speaker": "caller",
+        "text": "Okay, so what is the total tuition for this term?"
+      },
+      {
+        "time": 36.7,
+        "speaker": "caller",
+        "text": "And how many courses did I enrol in?"
+      },
+      {
+        "time": 41.38,
+        "speaker": "ai",
+        "text": "Your total tuition for this term is $37,500."
+      },
+      {
+        "time": 44.72,
+        "speaker": "ai",
+        "text": "You are enrolled in two courses."
+      },
+      {
+        "time": 46.2,
+        "speaker": "ai",
+        "text": "One: Diploma of Leadership and Management, course code BSB50420."
+      },
+      {
+        "time": 50.72,
+        "speaker": "ai",
+        "text": "Diploma of Information Technology, course code ICT50220."
+      },
+      {
+        "time": 55.36,
+        "speaker": "ai",
+        "text": "If you have any other questions, feel free to ask."
+      },
+      {
+        "time": 58.6,
+        "speaker": "caller",
+        "text": "No, thank you."
+      },
+      {
+        "time": 63.1,
+        "speaker": "ai",
+        "text": "You’re welcome, Shiqi."
+      },
+      {
+        "time": 64.36,
+        "speaker": "ai",
+        "text": "If you have any more questions in the future, feel free to reach out."
+      },
+      {
+        "time": 67.22,
+        "speaker": "ai",
+        "text": "Have a great day."
+      }
+    ]
+  },
+  {
+    "id": "property-report",
+    "industry": "Property",
+    "direction": "Outbound call",
+    "title": "Property value follow-up",
+    "description": "A homeowner accepts a property report and books an appraisal call.",
+    "outcome": "Appraisal callback booked for Friday",
+    "duration": 95.7,
+    "audio": "/audio/real-call-property-report.m4a",
+    "areas": [
+      "property"
+    ],
+    "transcript": [
+      {
+        "time": 0.62,
+        "speaker": "ai",
+        "text": "I don’t believe we have spoken before."
+      },
+      {
+        "time": 2.56,
+        "speaker": "ai",
+        "text": "The reason for my call is that a lot of homeowners in your area are curious to know what their property is worth in today’s market."
+      },
+      {
+        "time": 8.26,
+        "speaker": "ai",
+        "text": "We are providing a digital property value report at no cost."
+      },
+      {
+        "time": 11.88,
+        "speaker": "ai",
+        "text": "Would you like us to email you one?"
+      },
+      {
+        "time": 15.9,
+        "speaker": "caller",
+        "text": "All right, sounds okay to me."
+      },
+      {
+        "time": 20.42,
+        "speaker": "ai",
+        "text": "Great, thank you. Just to confirm, is [email address redacted] the best email address for us to send the free property report to?"
+      },
+      {
+        "time": 31.44,
+        "speaker": "caller",
+        "text": "Yeah, the email is okay."
+      },
+      {
+        "time": 35.64,
+        "speaker": "ai",
+        "text": "Perfect, thank you."
+      },
+      {
+        "time": 36.92,
+        "speaker": "ai",
+        "text": "Before I arrange the report, just to confirm, are you still residing at [property address redacted]?"
+      },
+      {
+        "time": 44.02,
+        "speaker": "caller",
+        "text": "Yeah, I’m still living over there."
+      },
+      {
+        "time": 48.7,
+        "speaker": "ai",
+        "text": "Thanks for confirming."
+      },
+      {
+        "time": 50.44,
+        "speaker": "ai",
+        "text": "Out of curiosity, have you thought about selling in the next six to twelve months?"
+      },
+      {
+        "time": 54.64,
+        "speaker": "caller",
+        "text": "Um, I can’t guarantee exactly when, but I will keep an eye on the market."
+      },
+      {
+        "time": 64.66,
+        "speaker": "ai",
+        "text": "Totally understand. It’s always good to keep an eye on the market."
+      },
+      {
+        "time": 68.14,
+        "speaker": "ai",
+        "text": "Would you like Buta to give you a call about an in-home appraisal at no cost?"
+      },
+      {
+        "time": 73.58,
+        "speaker": "caller",
+        "text": "Yep, I think that’s fine."
+      },
+      {
+        "time": 76.46,
+        "speaker": "caller",
+        "text": "I can do it this Friday."
+      },
+      {
+        "time": 82.26,
+        "speaker": "ai",
+        "text": "Great, just to confirm, Buta will call you back this Friday. Is that right?"
+      },
+      {
+        "time": 86.44,
+        "speaker": "caller",
+        "text": "Yeah, that’s correct."
+      },
+      {
+        "time": 89.8,
+        "speaker": "ai",
+        "text": "Okay, we’ll arrange for Buta to call you back this Friday."
+      },
+      {
+        "time": 93.16,
+        "speaker": "caller",
+        "text": "Okay, that’s awesome."
+      },
+      {
+        "time": 94.68,
+        "speaker": "caller",
+        "text": "Thank you."
+      },
+      {
+        "time": 95.28,
+        "speaker": "ai",
+        "text": "Thank you."
+      }
+    ]
+  },
+  {
+    "id": "property-listing",
+    "industry": "Property",
+    "direction": "Outbound call",
+    "title": "Stale listing follow-up",
+    "description": "A seller discusses a slow campaign and agrees to a fresh appraisal call.",
+    "outcome": "Agent callback booked for Monday morning",
+    "duration": 94.15,
+    "audio": "/audio/real-call-property-listing.m4a",
+    "areas": [
+      "property"
+    ],
+    "transcript": [
+      {
+        "time": 0,
+        "speaker": "ai",
+        "text": "Hi Shiqi, this is Leo, Buta’s assistant from Buta Deogun."
+      },
+      {
+        "time": 4.14,
+        "speaker": "ai",
+        "text": "I noticed the property at [property address redacted] has been on the market for 97 days."
+      },
+      {
+        "time": 10.76,
+        "speaker": "ai",
+        "text": "I just wanted to check in and see how things have been going with the sale."
+      },
+      {
+        "time": 14.1,
+        "speaker": "ai",
+        "text": "Is it an okay time for a quick chat?"
+      },
+      {
+        "time": 16.86,
+        "speaker": "caller",
+        "text": "Yeah, I’ve got a few minutes from now. How can I help you?"
+      },
+      {
+        "time": 21.16,
+        "speaker": "ai",
+        "text": "Great, thanks for taking the time."
+      },
+      {
+        "time": 23.24,
+        "speaker": "ai",
+        "text": "How has the sale been progressing for you so far?"
+      },
+      {
+        "time": 26.4,
+        "speaker": "caller",
+        "text": "You know, it has been on the market for around 100 days, and it wasn’t really good."
+      },
+      {
+        "time": 35.02,
+        "speaker": "ai",
+        "text": "I’m sorry to hear that."
+      },
+      {
+        "time": 36.56,
+        "speaker": "ai",
+        "text": "It sounds frustrating."
+      },
+      {
+        "time": 38.02,
+        "speaker": "ai",
+        "text": "What kind of buyer interest or feedback have you received so far?"
+      },
+      {
+        "time": 41,
+        "speaker": "ai",
+        "text": "And have there been any offers?"
+      },
+      {
+        "time": 42.52,
+        "speaker": "caller",
+        "text": "Yeah, I got a few ones, but the price is kind of low, so I didn’t accept them."
+      },
+      {
+        "time": 49.9,
+        "speaker": "ai",
+        "text": "Thanks for sharing that."
+      },
+      {
+        "time": 51.38,
+        "speaker": "ai",
+        "text": "Would you be open to a brief, confidential, no-obligation call with Buta for a fresh perspective on the sale?"
+      },
+      {
+        "time": 59.74,
+        "speaker": "caller",
+        "text": "Yeah, why not? If Buta can help me, I’m glad to have one."
+      },
+      {
+        "time": 67.2,
+        "speaker": "ai",
+        "text": "Okay, that’s awesome."
+      },
+      {
+        "time": 69.32,
+        "speaker": "ai",
+        "text": "What day and time would suit you for a callback from Buta?"
+      },
+      {
+        "time": 73.16,
+        "speaker": "caller",
+        "text": "How about next Monday?"
+      },
+      {
+        "time": 75,
+        "speaker": "caller",
+        "text": "Morning or afternoon?"
+      },
+      {
+        "time": 77.36,
+        "speaker": "caller",
+        "text": "That’s fine."
+      },
+      {
+        "time": 79.04,
+        "speaker": "ai",
+        "text": "Just to confirm, Buta will call you back next Monday morning. Is that right?"
+      },
+      {
+        "time": 82.6,
+        "speaker": "caller",
+        "text": "Yeah, yeah, it’s cool."
+      },
+      {
+        "time": 86.32,
+        "speaker": "ai",
+        "text": "Okay, we’ll arrange for Buta to call you back next Monday morning."
+      },
+      {
+        "time": 89.92,
+        "speaker": "caller",
+        "text": "Okay, that’s awesome."
+      },
+      {
+        "time": 91.66,
+        "speaker": "ai",
+        "text": "Thank you. Have a good one."
+      }
+    ]
+  },
+  {
+    "id": "restaurant-booking",
+    "industry": "Restaurant",
+    "direction": "Outbound call",
+    "title": "Birthday table booking",
+    "description": "A diner confirms their plans and requests a booking callback.",
+    "outcome": "Sunday dinner booking callback requested",
+    "duration": 74.3,
+    "audio": "/audio/real-call-restaurant.m4a",
+    "areas": [
+      "restaurant"
+    ],
+    "transcript": [
+      {
+        "time": 0,
+        "speaker": "ai",
+        "text": "Hi, this is Mark calling from Golden Time Restaurant."
+      },
+      {
+        "time": 3.5,
+        "speaker": "ai",
+        "text": "I’m following up on your table inquiry and wanted to check whether you still need help with the booking."
+      },
+      {
+        "time": 8.02,
+        "speaker": "ai",
+        "text": "Have I caught you at an okay time for a quick chat?"
+      },
+      {
+        "time": 10.76,
+        "speaker": "caller",
+        "text": "Hey, yeah. Can I please book a table?"
+      },
+      {
+        "time": 16.54,
+        "speaker": "ai",
+        "text": "Are you still looking to make a table booking with us?"
+      },
+      {
+        "time": 19.76,
+        "speaker": "caller",
+        "text": "Yes, I do."
+      },
+      {
+        "time": 20.88,
+        "speaker": "caller",
+        "text": "I want to book a table."
+      },
+      {
+        "time": 23.1,
+        "speaker": "caller",
+        "text": "This Sunday is my birthday."
+      },
+      {
+        "time": 28.14,
+        "speaker": "ai",
+        "text": "Thanks for letting me know."
+      },
+      {
+        "time": 29.64,
+        "speaker": "ai",
+        "text": "What date, preferred time and number of guests should the team plan for?"
+      },
+      {
+        "time": 32.68,
+        "speaker": "caller",
+        "text": "Okay, it’s going to be this Sunday dinner."
+      },
+      {
+        "time": 35.48,
+        "speaker": "caller",
+        "text": "And there’s only going to be three to four people."
+      },
+      {
+        "time": 41.96,
+        "speaker": "ai",
+        "text": "Thanks, that’s helpful."
+      },
+      {
+        "time": 43.3,
+        "speaker": "ai",
+        "text": "Are there any dietary, allergy, accessibility or seating requirements the team should know about?"
+      },
+      {
+        "time": 48.34,
+        "speaker": "caller",
+        "text": "I don’t think so."
+      },
+      {
+        "time": 52.84,
+        "speaker": "ai",
+        "text": "Would you like the restaurant team to call you to confirm the booking?"
+      },
+      {
+        "time": 56.96,
+        "speaker": "caller",
+        "text": "Um, yeah, I don’t mind the callback."
+      },
+      {
+        "time": 62.9,
+        "speaker": "ai",
+        "text": "Okay, the restaurant team will call you to confirm the booking."
+      },
+      {
+        "time": 65.84,
+        "speaker": "ai",
+        "text": "Is there anything else you’d like to ask about the follow-up?"
+      },
+      {
+        "time": 68.7,
+        "speaker": "caller",
+        "text": "Nah, that’s all good."
+      },
+      {
+        "time": 72.36,
+        "speaker": "ai",
+        "text": "Thanks for your time."
+      },
+      {
+        "time": 73.52,
+        "speaker": "ai",
+        "text": "Have a good one."
+      }
+    ]
+  },
+  {
+    "id": "daycare-tour",
+    "industry": "Daycare / Child care",
+    "direction": "Outbound call",
+    "title": "Child care centre tour",
+    "description": "A parent arranges a centre tour and shares their key priority.",
+    "outcome": "Friday centre tour callback requested",
+    "duration": 89.67,
+    "audio": "/audio/real-call-daycare.m4a",
+    "areas": [
+      "daycare"
+    ],
+    "transcript": [
+      {
+        "time": 0,
+        "speaker": "ai",
+        "text": "Hi Shiqi, this is Olivia from your company."
+      },
+      {
+        "time": 2.4,
+        "speaker": "ai",
+        "text": "I’m calling about your interest in visiting the centre and meeting the team."
+      },
+      {
+        "time": 5.3,
+        "speaker": "ai",
+        "text": "Have I caught you at an okay time to discuss a tour?"
+      },
+      {
+        "time": 9.78,
+        "speaker": "caller",
+        "text": "Hey, yeah, I did call you yesterday."
+      },
+      {
+        "time": 13.12,
+        "speaker": "caller",
+        "text": "How can I help you?"
+      },
+      {
+        "time": 16.8,
+        "speaker": "ai",
+        "text": "I’m calling to follow up on your interest in arranging a tour of the centre."
+      },
+      {
+        "time": 20.1,
+        "speaker": "ai",
+        "text": "Would you still like to arrange a tour?"
+      },
+      {
+        "time": 21.9,
+        "speaker": "caller",
+        "text": "Yeah, I do want to have a look over the centre because I want to leave my kid over there."
+      },
+      {
+        "time": 28.76,
+        "speaker": "ai",
+        "text": "Great, I’m glad to hear that."
+      },
+      {
+        "time": 30.16,
+        "speaker": "ai",
+        "text": "Which days or times generally suit you for a visit?"
+      },
+      {
+        "time": 33.82,
+        "speaker": "caller",
+        "text": "Let me check my calendar."
+      },
+      {
+        "time": 35.66,
+        "speaker": "caller",
+        "text": "Please give me a few seconds."
+      },
+      {
+        "time": 39.46,
+        "speaker": "ai",
+        "text": "Of course, take your time."
+      },
+      {
+        "time": 41.8,
+        "speaker": "caller",
+        "text": "How about this Friday, 4 p.m.?"
+      },
+      {
+        "time": 48.04,
+        "speaker": "ai",
+        "text": "Thanks, that’s helpful."
+      },
+      {
+        "time": 49.44,
+        "speaker": "ai",
+        "text": "What would you most like to see or discuss during the tour?"
+      },
+      {
+        "time": 53.1,
+        "speaker": "caller",
+        "text": "I would say the most important thing would be security, because I have to make sure my kid’s safety is guaranteed."
+      },
+      {
+        "time": 63.32,
+        "speaker": "ai",
+        "text": "That makes sense."
+      },
+      {
+        "time": 64.74,
+        "speaker": "ai",
+        "text": "Ensuring security is very important."
+      },
+      {
+        "time": 66.28,
+        "speaker": "ai",
+        "text": "Would you like a team member to call and confirm a suitable tour time?"
+      },
+      {
+        "time": 72.06,
+        "speaker": "caller",
+        "text": "Yes, actually I’m free for the whole Friday."
+      },
+      {
+        "time": 75.78,
+        "speaker": "caller",
+        "text": "But yeah, I’m fine to get the call."
+      },
+      {
+        "time": 80.08,
+        "speaker": "ai",
+        "text": "Okay, that’s awesome."
+      },
+      {
+        "time": 81.32,
+        "speaker": "ai",
+        "text": "Is there anything else you’d like to ask about the follow-up?"
+      },
+      {
+        "time": 84.2,
+        "speaker": "caller",
+        "text": "No, thank you."
+      },
+      {
+        "time": 87.74,
+        "speaker": "ai",
+        "text": "Thanks for your time."
+      },
+      {
+        "time": 88.9,
+        "speaker": "ai",
+        "text": "Have a good one."
+      }
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+---
+import { LINKS, WORKFORCE } from "../data/site";
+---
+<footer class="footer site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="/">JOBGEN<span>.AI</span></a>
+      <p>The AI workforce, starting at your front desk.</p>
+      <p class="footer-offices">Sydney · 60 Martin Place, NSW 2000<br />San Francisco · 580 California St, CA 94104</p>
+    </div>
+    <div>
+      <p class="mono footer-head">AI WORKFORCE</p>
+      {WORKFORCE.map((w) => <a href={w.href}>{w.name} · {w.role}</a>)}
+    </div>
+    <div>
+      <p class="mono footer-head">COMPANY</p>
+      <a href={LINKS.webDevelopment}>Web development</a>
+      <a href={LINKS.partners}>Partners</a>
+      <a href={LINKS.about}>About</a>
+      <a href={LINKS.news}>News</a>
+      <a href={LINKS.careers}>Careers</a>
+    </div>
+    <div>
+      <p class="mono footer-head">MORE</p>
+      <a href={LINKS.jobSeekers}>For job seekers</a>
+      <a href={LINKS.contact}>Contact</a>
+      <a href={LINKS.login}>Log in</a>
+      <a href={LINKS.privacy}>Privacy</a>
+      <a href={LINKS.terms}>Terms</a>
+    </div>
+  </div>
+  <div class="wrap footer-legal">
+    <p>© 2026 JobGen.AI. JobGen® is a registered trademark.</p>
+  </div>
+</footer>
