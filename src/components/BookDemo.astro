@@ -1,15 +1,20 @@
 ---
 // Booking: a short heading and agenda beside the embedded Calendly calendar. Every "Book a demo"
 // link points at #book, which is the calendar itself, so visitors land ready to pick a time.
+// A real customer quote sits beside the calendar: trust at the moment of decision.
 import { LINKS } from "../data/site";
+import { TESTIMONIALS } from "../data/testimonials";
 interface Props {
   eyebrow?: string;
   line1: string;
   line2: string;
   sub?: string;
   agenda: { title: string; text?: string }[];
+  /** Name of the testimonial to show beside the calendar (word for word from jobgen.ai); null for none. */
+  quoteFrom?: string | null;
 }
-const { eyebrow = "30 MINUTES · YOUR BUSINESS", line1, line2, sub, agenda } = Astro.props;
+const { eyebrow = "30 MINUTES · YOUR BUSINESS", line1, line2, sub, agenda, quoteFrom = "George Limberis" } = Astro.props;
+const quote = quoteFrom ? TESTIMONIALS.find((t) => t.name === quoteFrom) : undefined;
 const embed = `${LINKS.calendly}?embed_type=Inline&hide_gdpr_banner=1&hide_event_type_details=1&background_color=131316&text_color=efede8&primary_color=7b8cff`;
 ---
 <section class="final final-compact" aria-labelledby="final-title">
@@ -23,6 +28,12 @@ const embed = `${LINKS.calendly}?embed_type=Inline&hide_gdpr_banner=1&hide_event
           <li><span class="mono" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>{a.title}</li>
         ))}
       </ol>
+      {quote && (
+        <figure class="book-quote">
+          <blockquote>“{quote.quote}”</blockquote>
+          <figcaption><b>{quote.name}</b> · {quote.detail}</figcaption>
+        </figure>
+      )}
     </div>
     <div class="booking" id="book">
       <iframe title="Book a JOBGEN.AI demo" data-src={embed} loading="lazy"></iframe>
