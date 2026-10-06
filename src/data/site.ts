@@ -7,6 +7,9 @@ export const LINKS = {
   jobSeekers: "https://candidates.jobgen.ai/",
   webDevelopment: "/web-development/",
   pricing: "/pricing/",
+  // Where the calculator's "get in touch" form (email + phone + numbers) is sent, as a JSON POST.
+  // Empty for now: the form shows its thank-you state with a "not connected yet" note and sends nothing.
+  leadEndpoint: "",
   partners: "https://jobgen.ai/partners/",
   about: "/about/",
   news: "https://jobgen.ai/news",

@@ -136,63 +136,157 @@
     });
   else requestAnimationFrame(tickMinis);
 
-  /* ---------- Missed-call calculator ---------- */
-  // Keep the calculator consistent with JobGen's Australian sales context.
+  /* ---------- Missed-call calculator: sliders → Calculate → the working → get in touch ---------- */
+  // The total stays hidden until the visitor presses Calculate. Then the working is revealed line by
+  // line, the estimate counts up, and a short form asks for their email and phone (LINKS.leadEndpoint).
   const inCalls = $("#in-calls");
   if (inCalls) {
-    const inMissed = $("#in-missed"), inValue = $("#in-value"), inConv = $("#in-conv");
-    const money = {
-      factor: 1,
-      fmt: { format: (value) => "A$" + Math.round(value).toLocaleString("en-AU") },
-    };
-    const step = Math.max(5, Math.round((10 * money.factor) / 5) * 5);
-    inValue.step = step;
-    inValue.min = step;
-    inValue.max = Math.round((2000 * money.factor) / step) * step;
-    inValue.value = Math.round((150 * money.factor) / step) * step;
-    let shown = 0, raf = 0;
-    const update = () => {
+    const box = inCalls.closest("[data-missed-calls]");
+    const inMissed = $("#in-missed"), inConv = $("#in-conv"), inValue = $("#in-value");
+    const inputs = [inCalls, inMissed, inConv, inValue].filter(Boolean);
+    const aud = (v) => "A$" + Math.round(v).toLocaleString("en-AU");
+    const num = (v) => Math.round(v).toLocaleString("en-AU");
+    const put = (sel, v) => { const el = $(sel, box); if (el) el.textContent = v; };
+    const goBtn = $("[data-calc-go]", box), goLabel = $("[data-calc-go-label]", box);
+    const staleHint = $("[data-calc-stale]", box), reveal = $("[data-calc-reveal]", box);
+    const steps = $$(".calc-assumptions li", box);
+    let calculated = false, last = null, timers = [];
+
+    const read = () => {
       const calls = +inCalls.value, missedPct = +inMissed.value, value = +inValue.value;
       const conv = inConv ? +inConv.value : 33;
-      [inCalls, inMissed, inValue, inConv].filter(Boolean).forEach((el) =>
-        el.style.setProperty("--fill", ((el.value - el.min) / (el.max - el.min)) * 100 + "%"),
-      );
-      $("#out-calls").textContent = calls;
-      $("#out-missed").textContent = missedPct + "%";
-      $("#out-value").textContent = money.fmt.format(value);
       const missedMonth = Math.round(((calls * missedPct) / 100) * 22);
       const customers = Math.round((missedMonth * conv) / 100);
-      const total = customers * value;
-      if (inConv) $("#out-conv").textContent = conv + "%";
-      const put = (id, v) => { const el = $(id); if (el) el.textContent = v; };
-      put("#as-calls", calls);
-      put("#as-missed", missedPct + "%");
-      put("#as-month", missedMonth.toLocaleString());
-      put("#as-month2", missedMonth.toLocaleString());
-      put("#as-conv", conv + "%");
-      put("#as-cust", customers.toLocaleString());
-      put("#as-cust2", customers.toLocaleString());
-      put("#as-value", money.fmt.format(value));
-      put("#as-total", money.fmt.format(total));
-      $("#calc-missed").textContent = missedMonth.toLocaleString();
-      const box = inCalls.closest("[data-missed-calls]");
-      if (box) {
-        box.dataset.missed = missedMonth;
-        box.dataset.lost = total;
-        document.dispatchEvent(new CustomEvent("missedcalls", { detail: { missed: missedMonth, lost: total } }));
-      }
-      cancelAnimationFrame(raf);
-      const from = shown, start = performance.now();
-      const tick = (now) => {
-        const k = still.matches ? 1 : Math.min(1, (now - start) / 450);
-        shown = Math.round(from + (total - from) * (1 - Math.pow(1 - k, 3)));
-        $("#calc-number").textContent = money.fmt.format(shown);
-        if (k < 1) raf = requestAnimationFrame(tick);
-      };
-      raf = requestAnimationFrame(tick);
+      return { calls, missedPct, conv, value, missedMonth, customers, total: customers * value };
     };
-    [inCalls, inMissed, inValue, inConv].filter(Boolean).forEach((el) => el.addEventListener("input", update));
-    update();
+    // Sliders only update their own labels; the estimate waits for Calculate.
+    const showInputs = () => {
+      const r = read();
+      inputs.forEach((el) => el.style.setProperty("--fill", ((el.value - el.min) / (el.max - el.min)) * 100 + "%"));
+      put("#out-calls", r.calls);
+      put("#out-missed", r.missedPct + "%");
+      put("#out-conv", r.conv + "%");
+      put("#out-value", aud(r.value));
+      // keeps the pricing page's "answering them" comparison in step
+      box.dataset.missed = r.missedMonth;
+      box.dataset.lost = r.total;
+      document.dispatchEvent(new CustomEvent("missedcalls", { detail: { missed: r.missedMonth, lost: r.total } }));
+    };
+    const countUp = (el, to, fmt, ms) => {
+      if (!el) return;
+      const start = performance.now();
+      const tick = (now) => {
+        const k = still.matches ? 1 : Math.min(1, (now - start) / ms);
+        el.textContent = fmt(to * (1 - Math.pow(1 - k, 3)));
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    const calculate = () => {
+      const r = (last = read());
+      timers.forEach(clearTimeout);
+      timers = [];
+      calculated = true;
+      staleHint.hidden = true;
+      goLabel.textContent = "Recalculate";
+      put("#as-calls", num(r.calls));
+      put("#as-missed", r.missedPct + "%");
+      put("#as-conv", r.conv + "%");
+      put("#as-value", aud(r.value));
+      put("#as-month2", num(r.missedMonth));
+      put("#as-cust2", num(r.customers));
+      put("#calc-missed", num(r.missedMonth));
+      put("#calc-number", aud(0));
+      steps.forEach((li) => li.classList.remove("is-shown"));
+      box.classList.remove("is-result");
+      reveal.hidden = false;
+      const gap = still.matches ? 0 : 700;
+      const results = [["#as-month", r.missedMonth, num], ["#as-cust", r.customers, num], ["#as-total", r.total, aud]];
+      steps.forEach((li, i) =>
+        timers.push(setTimeout(() => {
+          li.classList.add("is-shown");
+          countUp($(results[i][0], box), results[i][1], results[i][2], 550);
+        }, i * gap)),
+      );
+      timers.push(setTimeout(() => {
+        box.classList.add("is-result");
+        countUp($("#calc-number", box), r.total, aud, 800);
+      }, steps.length * gap));
+      if (!still.matches) reveal.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    };
+    inputs.forEach((el) =>
+      el.addEventListener("input", () => {
+        showInputs();
+        if (!calculated) return;
+        // the shown estimate no longer matches: fold it away until they recalculate
+        timers.forEach(clearTimeout);
+        reveal.hidden = true;
+        staleHint.hidden = false;
+      }),
+    );
+    goBtn.addEventListener("click", calculate);
+    showInputs();
+
+    // "Get in touch": email + phone + their numbers, sent to the sales team once an endpoint is set.
+    const form = $("[data-lead-form]", box);
+    if (form) {
+      const status = $("[data-lead-status]", form), submit = $("[data-lead-submit]", form);
+      const say = (html, tone = "") => {
+        status.innerHTML = html;
+        status.dataset.tone = tone;
+      };
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = form.elements.email.value.trim(), phone = form.elements.phone.value.trim();
+        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+        const phoneOk = phone.replace(/\D/g, "").length >= 8;
+        form.elements.email.setAttribute("aria-invalid", String(!emailOk));
+        form.elements.phone.setAttribute("aria-invalid", String(!phoneOk));
+        if (!emailOk || !phoneOk) {
+          say(!emailOk ? "Please enter a valid email address." : "Please enter a phone number we can call.", "error");
+          (!emailOk ? form.elements.email : form.elements.phone).focus();
+          return;
+        }
+        const endpoint = form.dataset.endpoint;
+        const done = () => {
+          say("");
+          $("[data-lead-body]", form).hidden = true;
+          $("[data-lead-done]", form).hidden = false;
+        };
+        if (!endpoint) {
+          // Not connected yet: show the thank-you design, clearly marked, and send nothing.
+          done();
+          $("[data-lead-preview]", form).hidden = false;
+          return;
+        }
+        submit.disabled = true;
+        say("Sending…");
+        try {
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, phone, website: form.elements.website.value, calc: last || read(), page: location.pathname }),
+          });
+          if (!res.ok) throw new Error(String(res.status));
+          done();
+          // carry their email into the booking calendar, so picking a time is one step less
+          const cal = $(".booking iframe");
+          if (cal) {
+            const url = new URL(cal.dataset.src);
+            url.searchParams.set("email", email);
+            cal.dataset.src = url.toString();
+            if (cal.src) {
+              url.searchParams.set("embed_domain", location.hostname || "localhost");
+              cal.src = url.toString();
+            }
+          }
+        } catch {
+          say('We couldn’t send that just now. Email us at <a href="mailto:hello@jobgen.ai">hello@jobgen.ai</a> or pick a time below.', "error");
+        } finally {
+          submit.disabled = false;
+        }
+      });
+    }
   }
 
   /* ---------- Phones: a slim booking bar once the hero is out of view ---------- */
