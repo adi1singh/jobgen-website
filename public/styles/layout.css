@@ -605,6 +605,10 @@
 }
 
 /* 05 · our story + founder */
+/* clip rather than hide, so the founder photo can stay in view while the note scrolls */
+.chapter.story {
+  overflow: clip;
+}
 .timeline {
   position: relative;
   display: grid;
@@ -674,16 +678,20 @@
   display: none;
 }
 .founder-photo {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 28px;
+  position: sticky;
+  top: 112px;
+  aspect-ratio: 4 / 5;
+  padding: 4px;
+  border-radius: 30px;
   overflow: hidden;
-  background: conic-gradient(from 200deg, var(--edu), #b48cff, var(--rest), var(--prop), var(--edu));
+  background: conic-gradient(from 200deg, var(--edu), #b48cff, var(--rest), var(--prop), var(--care), var(--edu));
 }
 .founder-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
+  border-radius: 26px;
   display: block;
 }
 .founder-initials {
@@ -1003,6 +1011,8 @@
     gap: 32px;
   }
   .founder-photo {
+    position: relative;
+    top: auto;
     max-width: 280px;
   }
   .service-grid {

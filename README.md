@@ -50,14 +50,14 @@ On Vercel, import this repo; it detects Astro (build `npm run build`, output `di
 ## Founder note
 
 The home page has a founder section for Kush (photo, personal note, mission and vision), driven by
-`src/data/founder.ts`. The facts come from jobgen.ai/about; **the note, mission and vision are a draft
-for Kush to rewrite in his own words**. The section stays hidden on the live site until:
+`src/data/founder.ts`. The facts come from jobgen.ai/about. **The note, mission and vision live on the
+site now are a placeholder** we wrote from those facts; replace them with Kush's own words when he
+sends them (edit `note`, `mission` and `vision`, nothing else needs to change).
 
-1. a photo is added: put it in `public/team/` (square, at least 600×600) and set `photo`, e.g. `"/team/kush.jpg"`;
-2. Kush approves the words: set `approved: true`.
-
-To review the draft before then, add `?founder=preview` to the home page address. It shows with a
-clear DRAFT label.
+- Photo: `public/team/kush.webp`, a 4:5 portrait (720×900). To swap it, replace the file or point
+  `photo` at a new one.
+- To hide the section again, set `approved: false`. It can then still be previewed with
+  `?founder=preview` at the end of the home page address, shown with a DRAFT label.
 
 ## Content rules
 
@@ -69,7 +69,7 @@ clear DRAFT label.
 
 1. ✅ Rename the receptionist to Jenny (in jobgen-olivia-redesign)
 2. ✅ Astro, shared layout, Jenny's page with a real recording and testimonials
-3. ✅ Home page (story + problem picker + founder note), Olivia, Jess and Web development pages
+3. ✅ Home page (story + problem picker + founder note with Kush's photo; placeholder words), Olivia, Jess and Web development pages
 4. Pricing: rebuild the sales.jobgen.ai estimator with a USD/AUD toggle (live exchange rate)
 5. Industries, solutions, partners, about and news pages (existing copy, lightly tidied)
 6. Boss review on the Vercel preview → point jobgen.ai here → redirects (sales.jobgen.ai marketing
