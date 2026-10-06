@@ -6,7 +6,12 @@ import Base from "../layouts/Base.astro";
 import PageHero from "../components/PageHero.astro";
 import BookDemo from "../components/BookDemo.astro";
 import { WORKFORCE } from "../data/site";
-const products: Record<string, string> = { jenny: "receptionist", olivia: "sales", jess: "recruiter" };
+// Named by the kind of call: the demo's own agent names are set on sales.jobgen.ai.
+const scenarios: Record<string, { product: string; title: string; who: string }> = {
+  jenny: { product: "receptionist", title: "A reception call", who: "The kind of call Jenny answers" },
+  olivia: { product: "sales", title: "A property owner call", who: "The kind of call Olivia makes" },
+  jess: { product: "recruiter", title: "A screening call", who: "The kind of call Jess runs" },
+};
 ---
 <Base
   title="Live AI voice demo | JOBGEN.AI"
@@ -30,17 +35,17 @@ const products: Record<string, string> = { jenny: "receptionist", olivia: "sales
     <div class="wrap">
       <div class="section-head">
         <p class="mono chapter-no reveal">01 · TALK TO ONE NOW</p>
-        <h2 id="try-title" class="reveal">Pick who you want<br /><span class="muted">to talk to.</span></h2>
+        <h2 id="try-title" class="reveal">Pick a call<br /><span class="muted">and start talking.</span></h2>
         <p class="section-sub reveal">Microphone required · Up to 2 minutes · No account needed</p>
       </div>
       <ul class="demo-pick">
         {WORKFORCE.map((w) => (
           <li class="reveal" style={`--tint: ${w.tint}`}>
-            <a href="/demo/" data-live-demo={products[w.key]}>
+            <a href="/demo/" data-live-demo={scenarios[w.key].product}>
               <span class="member-voice" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
               <span class="demo-pick-body">
-                <b>Talk to {w.name}</b>
-                <small>{w.role}</small>
+                <b>{scenarios[w.key].title}</b>
+                <small>{scenarios[w.key].who}</small>
               </span>
               <span class="arrow" aria-hidden="true">→</span>
             </a>

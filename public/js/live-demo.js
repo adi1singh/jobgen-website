@@ -43,7 +43,7 @@
       return;
     }
     const product = trigger.getAttribute("data-live-demo") || "receptionist";
-    const status = trigger.parentElement?.querySelector("[data-live-demo-status]");
+    const status = (trigger.closest(".listen-live, section") || document).querySelector("[data-live-demo-status]");
     if (status) status.textContent = "Opening the live demo…";
     load()
       .then(() => {

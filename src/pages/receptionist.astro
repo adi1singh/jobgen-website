@@ -4,11 +4,13 @@ import RealRecording from "../components/RealRecording.astro";
 import Testimonials from "../components/Testimonials.astro";
 import MissedCalls from "../components/MissedCalls.astro";
 import BookDemo from "../components/BookDemo.astro";
+import VideoTestimonial from "../components/VideoTestimonial.astro";
 import { RECORDINGS } from "../data/recordings";
 import { TESTIMONIALS } from "../data/testimonials";
 
 const jennyCalls = RECORDINGS.filter((r) => r.product === "jenny");
-const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
+// Mandar Gokhale appears in the video card, so his written quote isn’t repeated below it.
+const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny" && t.name !== "Mandar Gokhale");
 ---
 <Base
   title="Jenny, AI Receptionist | JOBGEN.AI"
@@ -149,6 +151,12 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
           <div class="proof-recordings">
             {jennyCalls.map((rec) => <RealRecording rec={rec} aiLabel="Jenny" />)}
           </div>
+          <div class="listen-live reveal">
+            <p><b>Rather try a call yourself?</b> Have a short live reception call in your browser. Microphone required · Up to 2 minutes · No account needed.</p>
+            <a class="btn btn-ink" href="/demo/" data-live-demo="receptionist">Try a live call <span aria-hidden="true">→</span></a>
+            <span class="listen-live-status" data-live-demo-status aria-live="polite"></span>
+          </div>
+          <VideoTestimonial />
           <Testimonials items={jennyQuotes} />
         </div>
       </section>
@@ -243,6 +251,14 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
             <details>
               <summary>Which businesses is Jenny for?</summary>
               <p>Any business where the phone rarely stops. The schools, agencies, restaurants, childcare centres and trades on this page are examples; Jenny is set up around your own calls and rules.</p>
+            </details>
+            <details>
+              <summary>How long does setup take?</summary>
+              <p>A straightforward deployment can be live within a few business days. JobGen.AI configures the voice, scripts, calendar connections and handover rules with the business, then runs a test period before handling live calls.</p>
+            </details>
+            <details>
+              <summary>What does Jenny cost?</summary>
+              <p>Pricing depends on the expected call volume and setup. You can <a href="/pricing/">estimate the price per conversation</a>, and we’ll give you pricing for your usage in the demo.</p>
             </details>
             <details>
               <summary>Is the voice in the demo Jenny’s real voice?</summary>

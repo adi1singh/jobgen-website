@@ -4,6 +4,7 @@ import PageHero from "../components/PageHero.astro";
 import RealRecording from "../components/RealRecording.astro";
 import Testimonials from "../components/Testimonials.astro";
 import BookDemo from "../components/BookDemo.astro";
+import Faq from "../components/Faq.astro";
 import OliviaList from "../components/OliviaList.astro";
 import { RECORDINGS } from "../data/recordings";
 import { TESTIMONIALS } from "../data/testimonials";
@@ -75,6 +76,11 @@ const quotes = TESTIMONIALS.filter((t) => t.product === "olivia");
       <div class="proof-recordings">
         {calls.map((rec) => <RealRecording rec={rec} aiLabel="Olivia" />)}
       </div>
+      <div class="listen-live reveal">
+        <p><b>Rather try one yourself?</b> Have a short live property owner call in your browser. Microphone required · Up to 2 minutes · No account needed.</p>
+        <a class="btn btn-ink" href="/demo/" data-live-demo="sales">Try a live call <span aria-hidden="true">→</span></a>
+        <span class="listen-live-status" data-live-demo-status aria-live="polite"></span>
+      </div>
       <Testimonials items={quotes} />
     </div>
   </section>
@@ -113,6 +119,8 @@ const quotes = TESTIMONIALS.filter((t) => t.product === "olivia");
       </ul>
     </div>
   </section>
+
+  <Faq eyebrow="QUESTIONS AGENCIES ASK" only={["How does JobGen.AI handle", "How long does setup", "What does JobGen.AI cost"]} />
 
   <BookDemo
     eyebrow="30 MINUTES · YOUR AGENCY, YOUR LIST"
