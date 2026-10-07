@@ -5197,3 +5197,26 @@ h2 .muted {
     animation: none;
   }
 }
+
+/* ---------- logo: the mark beside the wordmark ---------- */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand .brand-mark {
+  flex: none;
+  transition: transform 0.3s var(--ease);
+}
+.brand:hover .brand-mark {
+  transform: rotate(-6deg) scale(1.05);
+}
+.brand-word {
+  font-weight: inherit;
+}
+/* the smallest phones keep the header to one line: wordmark, Book a demo, menu */
+@media (max-width: 360px) {
+  .header .brand-mark {
+    display: none;
+  }
+}
