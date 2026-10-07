@@ -678,7 +678,8 @@ section("UAT-13 · Tom, practice manager, steers a simulated call on Jenny’s p
   const sent = [];
   p.on("request", (r) => r.method() !== "GET" && sent.push(`${r.method()} ${r.url()}`));
   await p.locator(".hero-actions a", { hasText: "Try a demo call" }).click();
-  await wait(900);
+  // wait for the smooth scroll to finish (slower when the machine is busy)
+  await p.waitForFunction(() => Math.abs(document.querySelector("#try").getBoundingClientRect().top) < 200, null, { timeout: 4000 }).catch(() => {});
   const box = await inView(p, "#try");
   check("“Try a demo call” takes him to the demo", box && box.top < 200 && box.top > -300, JSON.stringify(box));
   check("The demo says it is simulated", /SIMULATED CALL/.test(await p.locator("#try").innerText()));
