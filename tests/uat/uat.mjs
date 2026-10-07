@@ -708,6 +708,51 @@ section("UAT-13 · Tom, practice manager, steers a simulated call on Jenny’s p
   await c.close();
 }
 
+/* ================= UAT-14: The "which one do I need?" guide ================= */
+section("UAT-14 · Grace, café owner, isn’t sure which professional she needs");
+{
+  const c = await ctx({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const p = await page(c, "/");
+  const sent = [];
+  p.on("request", (r) => r.method() !== "GET" && sent.push(`${r.method()} ${r.url()}`));
+  await wait(1800);
+  check("On the first screen the guide stays out of the way of Jenny, Olivia and Jess", (await p.locator(".guide").evaluate((g) => getComputedStyle(g).opacity)) === "0");
+  await p.evaluate(() => scrollTo(0, 1800));
+  await wait(900);
+  const launch = p.locator("[data-guide-open]");
+  check("Once she scrolls, “Which one do I need?” sits in the corner", await launch.isVisible() && /Which one do I need/.test(await launch.innerText()));
+  const lb = await launch.boundingBox();
+  const bar = await p.locator("#book-bar").boundingBox();
+  check("…above the booking bar, not on top of it", !bar || lb.y + lb.height <= bar.y, JSON.stringify({ launch: lb && Math.round(lb.y + lb.height), bar: bar && Math.round(bar.y) }));
+  await launch.tap();
+  const answer = async (a) => { const btn = p.locator(".guide-answer", { hasText: new RegExp("^" + a + "$") }); await btn.waitFor(); await btn.tap(); };
+  for (const a of ["Yes", "No", "No"]) await answer(a);
+  await p.locator(".guide-card").first().waitFor();
+  check("Three yes/no questions point her to Jenny", (await p.locator(".guide-card b").allTextContents()).join() === "Jenny" && (await p.locator(".guide-card").first().getAttribute("href")) === "/receptionist/");
+  check("…with Book a demo ready, and focus on it", await p.evaluate(() => document.activeElement.classList.contains("guide-book")));
+  await p.locator(".guide-again").tap();
+  for (const a of ["Yes", "Yes", "Yes"]) await answer(a);
+  await p.locator(".guide-card").nth(2).waitFor();
+  check("All yes suggests the whole team", (await p.locator(".guide-card b").allTextContents()).join() === "Jenny,Olivia,Jess");
+  await p.locator(".guide-again").tap();
+  for (const a of ["No", "No", "No"]) await answer(a);
+  await p.locator(".guide-book").waitFor();
+  check("All no doesn’t force a product: it offers a call instead", (await p.locator(".guide-card").count()) === 0 && /None of these quite fit/.test(await p.locator("[data-guide-log]").innerText()));
+  await p.keyboard.press("Escape");
+  check("Escape closes it and focus returns to the button", (await p.locator(".guide-panel").isHidden()) && (await p.evaluate(() => document.activeElement.hasAttribute("data-guide-open"))));
+  check("The guide sends nothing anywhere", sent.length === 0, sent.join(" | "));
+  await c.close();
+  // On a page without its own calendar, Book a demo goes straight to Calendly.
+  const c2 = await ctx({ viewport: { width: 1440, height: 900 } });
+  const q = await page(c2, "/industries/");
+  await q.locator("[data-guide-open]").click();
+  for (const a of ["No", "Yes", "No"]) { const btn = q.locator(".guide-answer", { hasText: new RegExp("^" + a + "$") }); await btn.waitFor(); await btn.click(); }
+  await q.locator(".guide-book").waitFor();
+  const href = await q.locator(".guide-book").getAttribute("href");
+  check("Booking from the guide works on every page", href === "#book" ? (await q.locator("#book").count()) === 1 : /calendly\.com/.test(href), href);
+  await c2.close();
+}
+
 await b.close();
 const failed = results.filter((r) => !r.ok);
 console.log(`\n${results.length - failed.length}/${results.length} checks passed`);

@@ -1,6 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import Guide from "../components/Guide.astro";
 interface Props {
   title: string;
   description: string;
@@ -97,6 +98,7 @@ const image = new URL(ogImage, Astro.site);
       <a class="btn btn-light btn-small" href={bookHref}>Book a demo</a>
     </div>
     <Footer />
+    <Guide bookHref={bookHref} />
     <slot name="scripts" />
     <script is:inline src="/js/app.js"></script>
     <script is:inline src="/js/live-demo.js" defer></script>

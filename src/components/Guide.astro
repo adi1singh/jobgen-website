@@ -1,0 +1,179 @@
+---
+// "Not sure which one you need?": a short guide in the corner. Three yes/no questions, then the
+// professional (or team) that fits. Scripted, not an AI chat, and nothing is sent anywhere.
+import { WORKFORCE, LINKS } from "../data/site";
+interface Props {
+  bookHref?: string;
+}
+const { bookHref = "#book" } = Astro.props;
+// One question per professional, in the order they're asked.
+const QUESTIONS: Record<string, string> = {
+  jenny: "Do calls ring out or go to voicemail when your team is busy or after hours?",
+  olivia: "Are you a real estate agency with property owners on your list to follow up?",
+  jess: "Are you hiring, or recruiting for clients, with more applicants than time to screen them?",
+};
+const steps = WORKFORCE.map((w) => ({ key: w.key, q: QUESTIONS[w.key] }));
+const people = Object.fromEntries(WORKFORCE.map((w) => [w.key, { name: w.name, role: w.role, href: w.href, tint: w.tint, summary: w.summary }]));
+---
+<div class="guide in-hero" data-guide>
+  <button type="button" class="guide-launch" aria-expanded="false" aria-controls="guide-panel" data-guide-open>
+    <span class="guide-orb" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="guide-launch-long">Not sure which one you need?</span>
+    <span class="guide-launch-short">Which one do I need?</span>
+  </button>
+
+  <section class="guide-panel" id="guide-panel" role="dialog" aria-labelledby="guide-title" tabindex="-1" hidden>
+    <header class="guide-head">
+      <span class="guide-orb" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div>
+        <h2 id="guide-title">Find your fit</h2>
+        <p>3 quick questions · nothing is sent</p>
+      </div>
+      <button type="button" class="guide-close" aria-label="Close the guide" data-guide-close>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </header>
+    <div class="guide-log" data-guide-log aria-live="polite"></div>
+    <div class="guide-answers" data-guide-answers role="group" aria-label="Your answer"></div>
+    <noscript><p class="guide-noscript">Meet <a href="/receptionist/">Jenny</a>, <a href="/olivia/">Olivia</a> or <a href="/recruiter-agent/">Jess</a>.</p></noscript>
+  </section>
+
+  <script type="application/json" data-guide-data set:html={JSON.stringify({ steps, people, book: bookHref, calendly: LINKS.calendly })} />
+</div>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector("[data-guide]");
+    if (!root) return;
+    const { steps, people, book, calendly } = JSON.parse(root.querySelector("[data-guide-data]").textContent);
+    const launch = root.querySelector("[data-guide-open]");
+    const panel = root.querySelector(".guide-panel");
+    const log = root.querySelector("[data-guide-log]");
+    const answers = root.querySelector("[data-guide-answers]");
+    const still = matchMedia("(prefers-reduced-motion: reduce)");
+    // "#book" only works where the page has a calendar; elsewhere go straight to Calendly.
+    const bookUrl = book.startsWith("#") && !document.querySelector(book) ? calendly : book;
+    let yes = [];
+    let run = 0;
+
+    const el = (tag, cls, html) => {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (html !== undefined) n.innerHTML = html;
+      return n;
+    };
+    const scroll = () => (log.scrollTop = log.scrollHeight);
+    // The guide "types" briefly before each message, unless motion is reduced.
+    const say = async (html, id) => {
+      if (!still.matches) {
+        const dots = el("p", "guide-msg guide-typing", "<i></i><i></i><i></i>");
+        dots.setAttribute("aria-hidden", "true");
+        log.append(dots);
+        scroll();
+        await new Promise((r) => setTimeout(r, 550));
+        dots.remove();
+      }
+      if (id !== run) return false;
+      log.append(el("p", "guide-msg", html));
+      scroll();
+      return true;
+    };
+    const offer = (choices) => {
+      answers.innerHTML = "";
+      choices.forEach(([label, fn], i) => {
+        const b = el("button", "guide-answer", label);
+        b.type = "button";
+        b.addEventListener("click", fn);
+        answers.append(b);
+        if (i === 0) b.focus({ preventScroll: true });
+      });
+    };
+    const reply = (label) => {
+      answers.innerHTML = "";
+      log.append(el("p", "guide-msg guide-me", label));
+      scroll();
+    };
+
+    const ask = async (i, id) => {
+      if (!(await say(steps[i].q, id))) return;
+      const next = (answer) => () => {
+        reply(answer ? "Yes" : "No");
+        if (answer) yes.push(steps[i].key);
+        if (i + 1 < steps.length) ask(i + 1, id);
+        else result(id);
+      };
+      offer([["Yes", next(true)], ["No", next(false)]]);
+    };
+
+    const card = (p) =>
+      `<a class="guide-card" href="${p.href}" style="--tint: ${p.tint}">` +
+      `<b>${p.name}</b><small>${p.role}</small><span>${p.summary}</span>` +
+      `<em>Meet ${p.name} <span aria-hidden="true">→</span></em></a>`;
+
+    const result = async (id) => {
+      const fit = yes.map((k) => people[k]);
+      const intro = !fit.length
+        ? "None of these quite fit? Tell us what’s slipping through on a 30-minute call and we’ll show you what would."
+        : fit.length === 1
+          ? `Sounds like <b>${fit[0].name}</b> is the one for you.`
+          : `Sounds like a small team: ${fit.map((p) => `<b>${p.name}</b>`).join(fit.length === 2 ? " and " : ", ")}.`;
+      if (!(await say(intro, id))) return;
+      if (fit.length) {
+        const cards = el("div", "guide-cards", fit.map(card).join(""));
+        log.append(cards);
+        scroll();
+      }
+      answers.innerHTML = "";
+      const bookLink = el("a", "btn btn-light btn-small guide-book", `Book a demo <span aria-hidden="true">→</span>`);
+      bookLink.href = bookUrl;
+      if (bookUrl.startsWith("http")) {
+        bookLink.target = "_blank";
+        bookLink.rel = "noopener";
+      }
+      bookLink.addEventListener("click", () => bookUrl.startsWith("#") && close(false));
+      const again = el("button", "guide-answer guide-again", "Start over");
+      again.type = "button";
+      again.addEventListener("click", start);
+      answers.append(bookLink, again);
+      (answers.querySelector(".guide-book") || again).focus({ preventScroll: true });
+      // Keyboard users can reach the cards from the answers too.
+      log.querySelectorAll(".guide-card").forEach((a) => a.addEventListener("click", () => close(false)));
+    };
+
+    function start() {
+      run++;
+      yes = [];
+      log.innerHTML = "";
+      answers.innerHTML = "";
+      const id = run;
+      say("Hi! Not sure which one you need? Answer three quick questions and I’ll point you to the right AI professional.", id).then(
+        (ok) => ok && ask(0, id),
+      );
+    }
+    function open() {
+      panel.hidden = false;
+      launch.setAttribute("aria-expanded", "true");
+      root.classList.add("is-open");
+      if (!log.children.length) {
+        panel.focus({ preventScroll: true });
+        start();
+      } else (answers.querySelector("button, a") || panel.querySelector("[data-guide-close]")).focus({ preventScroll: true });
+    }
+    function close(returnFocus = true) {
+      panel.hidden = true;
+      launch.setAttribute("aria-expanded", "false");
+      root.classList.remove("is-open");
+      if (returnFocus) launch.focus({ preventScroll: true });
+    }
+
+    launch.addEventListener("click", () => (panel.hidden ? open() : close()));
+    root.querySelector("[data-guide-close]").addEventListener("click", () => close());
+    panel.addEventListener("keydown", (e) => e.key === "Escape" && close());
+
+    // Out of the way while the booking calendar is on screen (unless it's open).
+    const hero = document.querySelector(".hero");
+    if (hero) new IntersectionObserver(([e]) => root.classList.toggle("in-hero", e.isIntersecting), { threshold: 0.35 }).observe(hero);
+    const cal = document.getElementById("book");
+    if (cal) new IntersectionObserver(([e]) => root.classList.toggle("near-book", e.isIntersecting), { threshold: 0.15 }).observe(cal);
+  })();
+</script>
