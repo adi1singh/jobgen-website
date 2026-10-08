@@ -37,6 +37,9 @@ const embed = `${LINKS.calendly}?embed_type=Inline&hide_gdpr_banner=1&hide_event
     </div>
     <div class="booking" id="book">
       <iframe title="Book a JOBGEN.AI demo" data-src={embed} loading="lazy"></iframe>
+      <p class="booking-loading" role="status" data-booking-status hidden>
+        <span class="booking-spinner" aria-hidden="true"></span><span data-booking-text>Loading the calendar…</span>
+      </p>
       <p class="booking-fallback">
         Calendar not loading? <a href={LINKS.calendly} target="_blank" rel="noopener">Open the booking page ↗</a>
       </p>

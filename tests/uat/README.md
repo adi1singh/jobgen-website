@@ -35,6 +35,8 @@ non-zero if anything fails. Calendly and the exchange-rate service are stubbed s
 | 11 | Someone with an old jobgen.ai or sales.jobgen.ai link | Land somewhere useful | The 404 page guesses the right page from the old address (industries, pricing, coach → candidates.jobgen.ai, solutions, receptionist); popular pages and booking offered; vercel.json sends /coach to candidates.jobgen.ai |
 | 12 | Noah, wants to hear it live or watch a customer | Try it without friction | Off jobgen.ai the live-demo buttons open jobgen.ai/demo/ in a new tab; on jobgen.ai they open JobGen’s own widget in place and submit nothing by themselves; the customer video loads (youtube-nocookie) only on play |
 | 13 | Tom, practice manager, desktop | “Can I try Jenny myself?” | “Try a demo call” lands on the demo, labelled simulated; picking a business updates the phone; Call → Hang up; steering the replies ends in the summary his team would get, delivered to the inbox preview with a next step that takes focus; Jenny never appears as Olivia; “Just listen” plays a full call; nothing is sent |
+| 14 | Grace, café owner, phone | “Which one do I need?” | The guide waits until the hero has scrolled away and lives in the booking bar on phones; it asks about her business first; a clinic missing calls → Jenny, an agency with a cold database → Olivia plus follow-up, a business short of online enquiries → website and lead offers; each suggestion gives its reason and says it’s a starting point, not a quote; Escape returns focus; nothing is sent |
+| 15 | Tom, café owner in Brisbane | “What do you do, is it real, what will it cost?” | Opening line and “Start with one solution” under the main actions; page order calls → customer story → solutions → how we work → FAQ → booking; featured story structured problem / what we did / what changed with no figures added; no sweeping absolutes; calendar loading state and fallback link; at 360, 390 and 820px only one floating control at a time, never over audio, forms or the calendar; pricing explains running costs vs quoted setup before the estimator, with technical settings in Advanced configuration |
 
 ## Design principles the tests hold the site to
 
@@ -55,6 +57,8 @@ non-zero if anything fails. Calendly and the exchange-rate service are stubbed s
 - Recording player, name check, page transitions and Jenny’s demo (visitor 13): found “OLIVIA WILL” and
   “OLIVIA ON SHIFT” left on Jenny’s page (fixed), and that seeking needs a server with byte ranges (hence
   `serve.mjs`). 236/236.
+- Messaging and layout brief (Oct 2026): calculator now keeps full precision until the final dollar figure
+  (defaults A$6,534, not A$6,600); calculator checks moved to Jenny’s page; visitor 15 added. 269/269.
 
 ### First run (Oct 2026): 82/98 → 98/98 after fixes
 

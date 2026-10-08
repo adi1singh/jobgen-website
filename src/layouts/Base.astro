@@ -94,6 +94,9 @@ const image = new URL(ogImage, Astro.site);
     </main>
     <!-- Phones: booking is one tap away once the hero is out of view -->
     <div class="book-bar" id="book-bar" hidden>
+      <button type="button" class="book-bar-guide" aria-label="Not sure which one you need? Open the guide" aria-controls="guide-panel" aria-expanded="false" data-guide-open-alt>
+        <span class="guide-orb" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
       <span>{bookBarText}</span>
       <a class="btn btn-light btn-small" href={bookHref}>Book a demo</a>
     </div>

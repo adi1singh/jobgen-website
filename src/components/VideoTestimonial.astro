@@ -7,11 +7,18 @@ interface Props {
   videoId?: string;
   name?: string;
   title?: string;
+  /** Featured-story mode: a heading and problem / what we did / what changed, all from the customer's own words. */
+  heading?: string;
+  story?: [string, string][];
+  storyNote?: string;
 }
 const {
   videoId = "CA_NEg3xJz0",
   name = "Mandar Gokhale",
   title = "Mandar Gokhale’s Jenny AI receptionist testimonial",
+  heading,
+  story,
+  storyNote,
 } = Astro.props;
 const quote = TESTIMONIALS.find((t) => t.name === name);
 // Same name highlight as the other testimonials.
@@ -29,6 +36,18 @@ const parts = (text: string) => text.split(/\b(Jenny|Olivia|Jess)\b/);
     </button>
   </div>
   <div class="video-quote-body">
+    {heading && <h3 class="story-heading">{heading}</h3>}
+    {story && (
+      <dl class="story">
+        {story.map(([k, v]) => (
+          <div>
+            <dt class="mono">{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+    {storyNote && <p class="story-note">{storyNote}</p>}
     <p class="mono">IN THEIR OWN WORDS</p>
     {quote && <blockquote>“{parts(quote.quote).map((p) => (TINTS[p] ? <span class="quote-name" style={`--tint: ${TINTS[p]}`}>{p}</span> : p))}”</blockquote>}
     <figcaption><b>{name}</b>{quote && <span> · {quote.detail}</span>}</figcaption>

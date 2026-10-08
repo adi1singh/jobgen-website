@@ -5628,3 +5628,512 @@ h2 .muted {
   font-size: 12.5px;
   color: #a9a5ad;
 }
+
+/* ---------- hero: start-with-one reassurance, right under the actions ---------- */
+.hero-reassure {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 0;
+  font-size: 15px;
+  color: #d9d6cf;
+}
+.hero-reassure-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--care);
+  box-shadow: 0 0 0 4px rgba(79, 211, 156, 0.2);
+}
+@media (max-width: 620px) {
+  .hero-reassure {
+    align-items: flex-start;
+    max-width: 30ch;
+    font-size: 14px;
+    text-align: left;
+  }
+  .hero-reassure-dot {
+    margin-top: 6px;
+  }
+}
+.calc-preset {
+  margin: 0 0 4px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: #a9a5ad;
+}
+
+/* ---------- tighter section rhythm: visitors reach the content sooner ---------- */
+.chapter {
+  padding: 112px 0;
+}
+.section-sub {
+  margin-top: 18px;
+}
+@media (max-width: 620px) {
+  .chapter {
+    padding: 72px 0;
+  }
+}
+
+/* ---------- featured customer story ---------- */
+.story-section .video-quote {
+  margin-top: 40px;
+  align-items: start;
+}
+.story-heading {
+  margin: 6px 0 18px;
+  font-size: clamp(24px, 2.6vw, 34px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.story {
+  display: grid;
+  gap: 0;
+  margin: 0 0 14px;
+  border-top: 1px solid var(--line);
+}
+.story > div {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.story dt {
+  padding-top: 3px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.story dd {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+}
+.story-note {
+  margin: 0 0 22px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.story-section .video-quote blockquote {
+  font-size: clamp(19px, 1.9vw, 24px);
+}
+.more-quotes {
+  margin: 40px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+.more-quotes + .testimonials {
+  margin-top: 14px;
+}
+@media (max-width: 900px) {
+  .story-section .video-quote {
+    grid-template-columns: 1fr;
+  }
+  .story-section .video-frame {
+    max-width: 360px;
+  }
+}
+@media (max-width: 520px) {
+  .story > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+
+/* ---------- solutions by business problem ---------- */
+.fix-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fix {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 22px 22px;
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 60% at 0% 0%, color-mix(in srgb, var(--tint) 22%, transparent), transparent 65%),
+    var(--surface);
+  box-shadow: 0 30px 60px -40px rgba(30, 20, 10, 0.25), inset 0 0 0 1px var(--line);
+}
+.fix-problem {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--tint) 50%, #000);
+}
+.fix h3 {
+  margin: 4px 0 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.fix-who {
+  margin-left: 6px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.fix-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.fix-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: auto 0 0;
+  padding-top: 10px;
+  font-size: 14.5px;
+  font-weight: 500;
+}
+.fix-links a {
+  color: var(--text);
+}
+.fix-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 28px;
+  margin-top: 18px;
+  padding: 20px 24px;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.fix-more p {
+  flex: 1 1 420px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.fix-more b {
+  color: var(--text);
+}
+@media (max-width: 1000px) {
+  .fix-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 620px) {
+  .fix-grid {
+    grid-template-columns: 1fr;
+  }
+  .fix h3 {
+    font-size: 20px;
+  }
+}
+
+/* ---------- implementation and human handover ---------- */
+.how-we-work {
+  background: #0d0b1a;
+}
+.how-we-work > .wrap {
+  position: relative;
+}
+.how-we-work .chapter-no {
+  color: #bdbab3;
+}
+.process-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 28px;
+  margin-top: 40px;
+  align-items: start;
+}
+.process-steps {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.process-steps li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 14px;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.process-no {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--spectrum);
+  color: #0b0b0d;
+  font-size: 12px;
+  font-weight: 600;
+}
+.process-steps h3 {
+  margin: 4px 0 6px;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.process-steps p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #b9b5bd;
+}
+.process-side {
+  display: grid;
+  gap: 14px;
+}
+.handover {
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  background: rgba(20, 19, 28, 0.85);
+}
+.handover .mono {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #a9b9ff;
+}
+.handover h3 {
+  margin: 8px 0 10px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.handover p:not(.mono) {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #c9c5cc;
+}
+.founder-mini {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  background: rgba(20, 19, 28, 0.85);
+}
+.founder-mini img {
+  width: 96px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+.founder-mini .mono {
+  margin: 0 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #bdbab3;
+}
+.founder-mini-text {
+  margin: 0 0 8px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #c9c5cc;
+}
+.founder-mini-text b {
+  color: #fff;
+}
+.founder-mini .founder-more {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+}
+@media (max-width: 900px) {
+  .process-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- one floating action at a time ---------- */
+/* Phones and tablets: the guide lives inside the booking bar, so only one thing floats. */
+.book-bar-guide {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-left: -8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.book-bar-guide .guide-orb {
+  width: 34px;
+  height: 34px;
+}
+.book-bar span {
+  flex: 1;
+  min-width: 0;
+}
+.book-bar {
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+:root:has(.book-bar-on) {
+  /* keyboard focus and in-page jumps never land under the bar */
+  scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+@media (max-width: 900px) {
+  .guide-launch {
+    display: none;
+  }
+  .guide {
+    right: 12px;
+    left: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+  .book-bar-on .guide {
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  }
+  .guide-panel {
+    width: 100%;
+  }
+}
+/* While someone is using audio, a transcript, a form or the calendar, floating controls step aside. */
+.quiet-zone .guide:not(.is-open) {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.quiet-zone .guide:not(.is-open) > * {
+  pointer-events: none;
+}
+.story-section .testimonials {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 900px) {
+  .story-section .testimonials {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- pricing: what you pay for, before the estimator ---------- */
+.pay-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 36px;
+}
+.pay-card {
+  padding: 26px;
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: 0 30px 60px -40px rgba(30, 20, 10, 0.25), inset 0 0 0 1px var(--line);
+}
+.pay-card .mono {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #3f5bc4;
+}
+.pay-card-quote .mono {
+  color: #8a5a12;
+}
+.pay-card h3 {
+  margin: 8px 0 14px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.pay-card ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 0 18px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.pay-foot {
+  margin: 16px 0 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+@media (max-width: 760px) {
+  .pay-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.est-current {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.est-scope {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: #c9c5cc;
+}
+.est-start {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: #a9a5ad;
+}
+
+/* booking calendar: loading state over the frame until Calendly arrives */
+.booking-loading {
+  position: absolute;
+  inset: 0 0 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  padding: 24px;
+  background: var(--surface, #fff);
+  color: #4a4740;
+  font-size: 15px;
+  text-align: center;
+}
+.booking-loading[hidden] {
+  display: none;
+}
+.booking-loading a {
+  color: #17161a;
+  font-weight: 600;
+}
+.booking-spinner {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(23, 22, 26, 0.15);
+  border-top-color: #5b4bd6;
+  border-radius: 50%;
+  animation: booking-spin 0.9s linear infinite;
+}
+.booking-loading.is-slow .booking-spinner {
+  display: none;
+}
+@keyframes booking-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .booking-spinner {
+    animation: none;
+  }
+}
+/* the picked business in Jenny's demo: its detail line stays readable on the tinted fill */
+.try-pick button[aria-checked="true"] small {
+  color: #e2e4f2;
+}

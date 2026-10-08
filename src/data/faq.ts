@@ -1,13 +1,13 @@
 // Plain answers, word for word from https://jobgen.ai/about/ (the cost answer adds a pointer to the
-// pricing page, which now exists). The "more than AI agents" answer is JobGen's own positioning (Oct 2026).
+// pricing page, which now exists). The "do I have to buy everything" answer is JobGen's own positioning (Oct 2026), to be confirmed by the owner.
 export const FAQ = [
+  {
+    q: "Do I have to buy a website, CRM and every assistant?",
+    a: "No. Most businesses start with one solution, such as an AI receptionist, appointment booking or a follow-up workflow. We build it and connect it to the tools you already use. A website, CRM with SMS and email campaigns, more assistants or custom integrations can be added later if they’d help.",
+  },
   {
     q: "What does Jenny from JobGen.AI do?",
     a: "Jenny is an AI receptionist. She answers calls 24/7, responds to approved questions, takes messages, transfers callers, creates callback handoffs and books, reschedules, cancels or confirms appointments in connected calendars.",
-  },
-  {
-    q: "Do you only sell AI agents?",
-    a: "No. JobGen.AI deploys a complete digital workforce: an AI-ready website, AI chat and voice agents that answer inbound calls, make outbound calls and book straight into the diary, lead magnets and offers, a built-in CRM with SMS and email campaigns, and custom integrations such as council planning data, real estate portals and booking systems.",
   },
   {
     q: "How does JobGen.AI handle calls its AI cannot answer?",

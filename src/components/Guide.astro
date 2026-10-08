@@ -38,7 +38,7 @@ const steps = [
 const people = {
   ...Object.fromEntries(WORKFORCE.map((w) => [w.key, { name: w.name, role: w.role, href: w.href, tint: w.tint, cta: `Meet ${w.name}` }])),
   website: { name: "AI-ready website", role: "The front door, built to convert", href: LINKS.webDevelopment, tint: "var(--rest)", cta: "See web development" },
-  crm: { name: "CRM with SMS and email", role: "Every lead followed up", href: "/#solution", tint: "#b48cff", cta: "See how it fits" },
+  crm: { name: "CRM with SMS and email", role: "Automated follow-up", href: "/#solution", tint: "#b48cff", cta: "See how it fits" },
   magnets: { name: "Lead magnets and offers", role: "Visitors into captured leads", href: "/#solution", tint: "var(--trade)", cta: "See how it fits" },
 };
 ---
@@ -144,15 +144,15 @@ const people = {
       const out = [];
       const add = (key, why) => out.some(([k]) => k === key) || out.push([key, why]);
       const phone = a.channel !== "online";
-      if (a.type === "recruit") add("jess", a.list === "yes" ? "You get more applicants than your team can screen. Jess calls every one." : "Jess screens applicants by phone and writes the results to your ATS.");
+      if (a.type === "recruit") add("jess", a.list === "yes" ? "You get more applicants than your team can screen. Jess can call and screen the ones your team doesn’t reach." : "Jess screens applicants by phone and writes the results to your ATS.");
       if (a.type === "realestate" && (a.list === "yes" || a.leak === "followup")) add("olivia", a.list === "yes" ? "Owners in your database haven’t heard from you in a while. Olivia calls them." : "Leads aren’t being followed up. Olivia calls owners and books appraisals.");
-      if (a.leak === "calls") add("jenny", "Calls are being missed or answered late. Jenny answers every one, day or night.");
+      if (a.leak === "calls") add("jenny", "Calls are being missed or answered late. Jenny handles calls around the clock and passes on what needs a person.");
       if (a.leak === "admin") add("jenny", "Jenny takes bookings, reception and messages off your team.");
       if (a.leak === "enquiries") add("website", "You need more enquiries. A website built to convert brings them in.");
-      if (a.leak === "followup") add("crm", "Every lead gets followed up by SMS and email, automatically.");
+      if (a.leak === "followup") add("crm", "Automated SMS and email follow-up for the enquiries you choose.");
       if (a.type !== "realestate" && a.type !== "recruit" && a.list === "yes") add("crm", "Old enquiries get a follow-up campaign instead of sitting in a list.");
       if (a.leak === "enquiries") add("magnets", a.type === "realestate" ? "Offers like property evaluation reports turn visitors into leads." : "Offers like guides and referral campaigns turn visitors into leads.");
-      if (phone) add("jenny", "Customers ring you, so every call gets answered and booked.");
+      if (phone) add("jenny", "Customers ring you, so Jenny can handle calls around the clock, with handover when needed.");
       if (a.channel === "online") add("website", "Customers find you online, so your website does the first job.");
       if (a.type === "realestate") add("olivia", "She calls owners already in your database and books appraisals.");
       return out.slice(0, 3);
@@ -205,9 +205,11 @@ const people = {
         (ok) => ok && ask(0, id),
       );
     }
+    let opener = null;
     function open() {
       panel.hidden = false;
       launch.setAttribute("aria-expanded", "true");
+      alts.forEach((b) => b.hasAttribute("aria-controls") && b.setAttribute("aria-expanded", "true"));
       root.classList.add("is-open");
       if (!log.children.length) {
         panel.focus({ preventScroll: true });
@@ -217,11 +219,27 @@ const people = {
     function close(returnFocus = true) {
       panel.hidden = true;
       launch.setAttribute("aria-expanded", "false");
+      alts.forEach((b) => b.hasAttribute("aria-controls") && b.setAttribute("aria-expanded", "false"));
       root.classList.remove("is-open");
-      if (returnFocus) launch.focus({ preventScroll: true });
+      // Focus goes back to whatever opened it (the corner button may be hidden on phones).
+      const back = opener && opener.offsetParent !== null ? opener : launch.offsetParent !== null ? launch : null;
+      if (returnFocus && back) back.focus({ preventScroll: true });
+      opener = null;
     }
 
-    launch.addEventListener("click", () => (panel.hidden ? open() : close()));
+    launch.addEventListener("click", () => {
+      opener = launch;
+      panel.hidden ? open() : close();
+    });
+    // Other ways in: the phone booking bar's guide button, and "Not sure where to start?" on the home page.
+    const alts = [...document.querySelectorAll("[data-guide-open-alt]")];
+    alts.forEach((b) =>
+      b.addEventListener("click", () => {
+        opener = b;
+        if (panel.hidden) open();
+        else close();
+      }),
+    );
     root.querySelector("[data-guide-close]").addEventListener("click", () => close());
     panel.addEventListener("keydown", (e) => e.key === "Escape" && close());
 
