@@ -481,6 +481,25 @@ section("UAT-7 · Content integrity: links, headings, previews, alt text, every 
     await c3.close();
   }
   check("No sideways scrolling on any page at 9 widths (phones, tablets, desktops)", overflow.length === 0, overflow.join(" | "));
+  // Layout sanity on desktop: long paragraphs and headings never squeezed into a narrow column (catches
+  // a style meant for one page leaking onto another, as happened to About's story and the flow sections).
+  const squeezed = [];
+  const cw = await b.newContext({ viewport: { width: 1440, height: 900 } });
+  for (const path of PAGES) {
+    const q = await cw.newPage();
+    await q.goto(BASE + path, { waitUntil: "domcontentloaded" });
+    await q.evaluate(() => document.querySelectorAll(".reveal").forEach((e) => e.classList.add("in")));
+    const hits = await q.evaluate(() =>
+      [...document.querySelectorAll("main p, main h2, main blockquote")]
+        .filter((el) => el.offsetParent !== null && !el.closest("[hidden], details:not([open]), .guide, .recording-transcript"))
+        .filter((el) => el.textContent.trim().length > (el.tagName === "P" ? 160 : 30) && el.getBoundingClientRect().width < 240)
+        .map((el) => `${el.tagName.toLowerCase()} “${el.textContent.trim().slice(0, 40)}…” ${Math.round(el.getBoundingClientRect().width)}px`),
+    );
+    hits.forEach((h) => squeezed.push(`${path}: ${h}`));
+    await q.close();
+  }
+  await cw.close();
+  check("No long text squeezed into a narrow column on any page (desktop)", squeezed.length === 0, squeezed.slice(0, 5).join(" | "));
   check("No unexpected third-party requests", external.length === 0, [...new Set(external)].slice(0, 5).join(", "));
   await c.close();
 }
@@ -787,7 +806,7 @@ section("UAT-15 · Tom, café owner in Brisbane: “What do you do, is it real, 
   const order = await p.evaluate(() => [...document.querySelectorAll("main > section[id], main > div[id], main #book")].map((e) => e.id).filter((id) => ["listen", "proof", "solutions", "process", "faq", "book"].includes(id)));
   check("Page order: calls → customer story → solutions → how we work → FAQ → booking", order.join(",") === "listen,proof,solutions,process,faq,book", order.join(","));
   check("Customer logos sit near the top, before the calls", await p.evaluate(() => { const l = document.querySelector(".logo-strip, [class*=logo]"); const c = document.querySelector("#listen"); return !!l && l.getBoundingClientRect().top < c.getBoundingClientRect().top; }));
-  check("Featured story is structured problem → what we did → what changed", (await p.locator(".story dt").allTextContents()).join("|") === "THE PROBLEM|WHAT WE IMPLEMENTED|WHAT CHANGED");
+  check("Featured story is structured problem → what we did → what changed", (await p.locator(".story-steps dt").allTextContents()).join("|") === "THE PROBLEM|WHAT WE IMPLEMENTED|WHAT CHANGED");
   check("Solutions are organised by business problem, each one linking somewhere useful", (await p.locator(".fix").count()) >= 5 && (await p.locator(".fix-problem").count()) === (await p.locator(".fix").count()));
   check("Human handover sits with the process", (await p.locator("#process .handover h3", { hasText: "Human handover" }).count()) === 1);
   check("Kush is introduced beside the customer proof, well above the FAQ", (await p.locator("#proof .founder-card img").count()) === 1 && /Kush/.test(await p.locator("#proof .founder-card").innerText()));

@@ -62,6 +62,9 @@ non-zero if anything fails. Calendly and the exchange-rate service are stubbed s
   (defaults A$6,534, not A$6,600); calculator checks moved to Jenny’s page; visitor 15 added. 269/269.
 - Pricing model, data in Australia, cost-of-waiting calculator, industry help and two new industries
   (visitor 16). 299/299.
+- About’s story section and the Olivia/Jess flow sections were squeezed by homepage styles sharing their
+  class names (`.story`, `.flow`); renamed and removed the dead styles, and added a desktop check for long
+  text squeezed into narrow columns on every page. 300/300.
 
 ### First run (Oct 2026): 82/98 → 98/98 after fixes
 
