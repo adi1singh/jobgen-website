@@ -1,6 +1,6 @@
 ---
-// "Not sure which one you need?": a short guide in the corner. Three yes/no questions, then the
-// professional (or team) that fits. Scripted, not an AI chat, and nothing is sent anywhere.
+// "Not sure which one you need?": a short guide in the corner. Four yes/no questions, then the
+// professional, website or team that fits. Scripted, not an AI chat, and nothing is sent anywhere.
 import { WORKFORCE, LINKS } from "../data/site";
 interface Props {
   bookHref?: string;
@@ -11,9 +11,13 @@ const QUESTIONS: Record<string, string> = {
   jenny: "Do calls ring out or go to voicemail when your team is busy or after hours?",
   olivia: "Are you a real estate agency with property owners on your list to follow up?",
   jess: "Are you hiring, or recruiting for clients, with more applicants than time to screen them?",
+  website: "Does your website bring in fewer enquiries than it should, or do you need a new one?",
 };
-const steps = WORKFORCE.map((w) => ({ key: w.key, q: QUESTIONS[w.key] }));
-const people = Object.fromEntries(WORKFORCE.map((w) => [w.key, { name: w.name, role: w.role, href: w.href, tint: w.tint, summary: w.summary }]));
+const steps = [...WORKFORCE.map((w) => ({ key: w.key, q: QUESTIONS[w.key] })), { key: "website", q: QUESTIONS.website }];
+const people = {
+  ...Object.fromEntries(WORKFORCE.map((w) => [w.key, { name: w.name, say: w.name, role: w.role, href: w.href, tint: w.tint, summary: w.summary, cta: `Meet ${w.name}` }])),
+  website: { name: "AI-ready website", say: "an AI-ready website", role: "Web development", href: LINKS.webDevelopment, tint: "var(--rest)", summary: "The front door of your AI workforce, built to convert, with chat, voice agents and lead capture ready to plug in.", cta: "See web development" },
+};
 ---
 <div class="guide in-hero" data-guide>
   <button type="button" class="guide-launch" aria-expanded="false" aria-controls="guide-panel" data-guide-open>
@@ -27,7 +31,7 @@ const people = Object.fromEntries(WORKFORCE.map((w) => [w.key, { name: w.name, r
       <span class="guide-orb" aria-hidden="true"><i></i><i></i><i></i></span>
       <div>
         <h2 id="guide-title">Find your fit</h2>
-        <p>3 quick questions · nothing is sent</p>
+        <p>4 quick questions · nothing is sent</p>
       </div>
       <button type="button" class="guide-close" aria-label="Close the guide" data-guide-close>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
@@ -108,15 +112,15 @@ const people = Object.fromEntries(WORKFORCE.map((w) => [w.key, { name: w.name, r
     const card = (p) =>
       `<a class="guide-card" href="${p.href}" style="--tint: ${p.tint}">` +
       `<b>${p.name}</b><small>${p.role}</small><span>${p.summary}</span>` +
-      `<em>Meet ${p.name} <span aria-hidden="true">→</span></em></a>`;
+      `<em>${p.cta} <span aria-hidden="true">→</span></em></a>`;
 
     const result = async (id) => {
       const fit = yes.map((k) => people[k]);
       const intro = !fit.length
         ? "None of these quite fit? Tell us what’s slipping through on a 30-minute call and we’ll show you what would."
         : fit.length === 1
-          ? `Sounds like <b>${fit[0].name}</b> is the one for you.`
-          : `Sounds like a small team: ${fit.map((p) => `<b>${p.name}</b>`).join(fit.length === 2 ? " and " : ", ")}.`;
+          ? `Sounds like <b>${fit[0].say}</b> is the one for you.`
+          : `Sounds like a few pieces working together: ${fit.map((p) => `<b>${p.say}</b>`).join(fit.length === 2 ? " and " : ", ")}.`;
       if (!(await say(intro, id))) return;
       if (fit.length) {
         const cards = el("div", "guide-cards", fit.map(card).join(""));
@@ -146,7 +150,7 @@ const people = Object.fromEntries(WORKFORCE.map((w) => [w.key, { name: w.name, r
       log.innerHTML = "";
       answers.innerHTML = "";
       const id = run;
-      say("Hi! Not sure which one you need? Answer three quick questions and I’ll point you to the right AI professional.", id).then(
+      say("Hi! Not sure which one you need? Answer four quick questions and I’ll point you to what fits your business.", id).then(
         (ok) => ok && ask(0, id),
       );
     }

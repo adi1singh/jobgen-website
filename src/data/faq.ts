@@ -1,9 +1,13 @@
 // Plain answers, word for word from https://jobgen.ai/about/ (the cost answer adds a pointer to the
-// pricing page, which now exists).
+// pricing page, which now exists). The "more than AI agents" answer is JobGen's own positioning (Oct 2026).
 export const FAQ = [
   {
     q: "What does Jenny from JobGen.AI do?",
     a: "Jenny is an AI receptionist. She answers calls 24/7, responds to approved questions, takes messages, transfers callers, creates callback handoffs and books, reschedules, cancels or confirms appointments in connected calendars.",
+  },
+  {
+    q: "Do you only sell AI agents?",
+    a: "No. JobGen.AI deploys a complete digital workforce: an AI-ready website, AI chat and voice agents that answer inbound calls, make outbound calls and book straight into the diary, lead magnets and offers, a built-in CRM with SMS and email campaigns, and custom integrations such as council planning data, real estate portals and booking systems.",
   },
   {
     q: "How does JobGen.AI handle calls its AI cannot answer?",

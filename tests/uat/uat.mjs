@@ -727,16 +727,16 @@ section("UAT-14 · Grace, café owner, isn’t sure which professional she needs
   check("…above the booking bar, not on top of it", !bar || lb.y + lb.height <= bar.y, JSON.stringify({ launch: lb && Math.round(lb.y + lb.height), bar: bar && Math.round(bar.y) }));
   await launch.tap();
   const answer = async (a) => { const btn = p.locator(".guide-answer", { hasText: new RegExp("^" + a + "$") }); await btn.waitFor(); await btn.tap(); };
-  for (const a of ["Yes", "No", "No"]) await answer(a);
+  for (const a of ["Yes", "No", "No", "No"]) await answer(a);
   await p.locator(".guide-card").first().waitFor();
-  check("Three yes/no questions point her to Jenny", (await p.locator(".guide-card b").allTextContents()).join() === "Jenny" && (await p.locator(".guide-card").first().getAttribute("href")) === "/receptionist/");
+  check("Four yes/no questions point her to Jenny", (await p.locator(".guide-card b").allTextContents()).join() === "Jenny" && (await p.locator(".guide-card").first().getAttribute("href")) === "/receptionist/");
   check("…with Book a demo ready, and focus on it", await p.evaluate(() => document.activeElement.classList.contains("guide-book")));
   await p.locator(".guide-again").tap();
-  for (const a of ["Yes", "Yes", "Yes"]) await answer(a);
-  await p.locator(".guide-card").nth(2).waitFor();
-  check("All yes suggests the whole team", (await p.locator(".guide-card b").allTextContents()).join() === "Jenny,Olivia,Jess");
+  for (const a of ["Yes", "Yes", "Yes", "Yes"]) await answer(a);
+  await p.locator(".guide-card").nth(3).waitFor();
+  check("All yes suggests the whole workforce, website included", (await p.locator(".guide-card b").allTextContents()).join() === "Jenny,Olivia,Jess,AI-ready website");
   await p.locator(".guide-again").tap();
-  for (const a of ["No", "No", "No"]) await answer(a);
+  for (const a of ["No", "No", "No", "No"]) await answer(a);
   await p.locator(".guide-book").waitFor();
   check("All no doesn’t force a product: it offers a call instead", (await p.locator(".guide-card").count()) === 0 && /None of these quite fit/.test(await p.locator("[data-guide-log]").innerText()));
   await p.keyboard.press("Escape");
@@ -747,7 +747,7 @@ section("UAT-14 · Grace, café owner, isn’t sure which professional she needs
   const c2 = await ctx({ viewport: { width: 1440, height: 900 } });
   const q = await page(c2, "/industries/");
   await q.locator("[data-guide-open]").click();
-  for (const a of ["No", "Yes", "No"]) { const btn = q.locator(".guide-answer", { hasText: new RegExp("^" + a + "$") }); await btn.waitFor(); await btn.click(); }
+  for (const a of ["No", "Yes", "No", "No"]) { const btn = q.locator(".guide-answer", { hasText: new RegExp("^" + a + "$") }); await btn.waitFor(); await btn.click(); }
   await q.locator(".guide-book").waitFor();
   const href = await q.locator(".guide-book").getAttribute("href");
   check("Booking from the guide works on every page", href === "#book" ? (await q.locator("#book").count()) === 1 : /calendly\.com/.test(href), href);

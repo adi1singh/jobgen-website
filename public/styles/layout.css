@@ -3320,6 +3320,8 @@ h2 .muted {
   color: var(--muted);
 }
 .team .chapter-no,
+.stack-section .chapter-no,
+.stack-section .section-sub,
 .team .section-sub,
 .try-copy > .mono,
 .try-copy > .section-sub {
