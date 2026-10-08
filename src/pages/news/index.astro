@@ -1,0 +1,45 @@
+---
+import Base from "../../layouts/Base.astro";
+import BookDemo from "../../components/BookDemo.astro";
+import PageHero from "../../components/PageHero.astro";
+import { NEWS } from "../../data/news";
+---
+<Base
+  title="Press & Insights | JOBGEN.AI"
+  description="Announcements, media coverage, and research from JobGen.AI."
+  ogTitle="Press & Insights from JOBGEN.AI"
+  ogDescription="Announcements, media coverage, and research from JobGen.AI."
+  ogImage="/og/home.png"
+  ogImageAlt="JOBGEN.AI: Grow your business with an AI workforce."
+>
+  <PageHero eyebrow="NEWSROOM" sub="Announcements, media coverage, and research from JobGen.AI." secondary={{ label: "Latest ↓", href: "#news" }}>
+    <span class="h1-line">Press &amp;</span>
+    <span class="h1-line h1-muted">Insights.</span>
+  </PageHero>
+  <section class="chapter light" id="news" aria-label="Articles">
+    <div class="wrap">
+      <ul class="news-list">
+        {NEWS.map((n) => (
+          <li class="reveal">
+            <a href={`/news/${n.slug}/`}>
+              <img src={n.image} alt="" width="1200" height="675" loading="lazy" />
+              <span class="news-body">
+                <span class="mono">{n.kind} · {n.date}</span>
+                <strong>{n.title}</strong>
+                <span>{n.summary}</span>
+                <span class="news-more">Read the release <span aria-hidden="true">→</span></span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+  <BookDemo
+    eyebrow="30 MINUTES · SYDNEY AND SAN FRANCISCO"
+    line1="Put an AI professional"
+    line2="on your team."
+    sub="Pick a time and we’ll show you the right professional on a live call."
+    agenda={[{ title: "Hear them live" }, { title: "Map the work slipping through" }, { title: "Setup and pricing" }]}
+  />
+</Base>

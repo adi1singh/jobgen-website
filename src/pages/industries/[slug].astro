@@ -1,0 +1,179 @@
+---
+// One page per industry, from src/data/industries.ts (moved from sales.jobgen.ai/industries/*).
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import BookDemo from "../../components/BookDemo.astro";
+import { INDUSTRIES, type Industry } from "../../data/industries";
+import { SOLUTIONS } from "../../data/solutions";
+import { WORKFORCE } from "../../data/site";
+
+export function getStaticPaths() {
+  return INDUSTRIES.map((industry) => ({ params: { slug: industry.slug }, props: { industry } }));
+}
+const { industry: ind } = Astro.props as { industry: Industry };
+const agent = WORKFORCE.find((w) => w.key === ind.agent)!;
+const related = ind.related.map((slug) => SOLUTIONS.find((s) => s.slug === slug)).filter((s) => s !== undefined);
+const others = INDUSTRIES.filter((i) => i.slug !== ind.slug);
+const quoteFrom = ind.slug === "property" ? "Buta Deogun" : ind.slug === "accounting" ? "Mandar Gokhale" : "George Limberis";
+---
+<Base
+  title={ind.agent === "olivia" ? `AI sales agent for ${ind.label.toLowerCase()} | JOBGEN.AI` : `AI receptionist for ${ind.label.toLowerCase()} | JOBGEN.AI`}
+  description={ind.intro}
+  ogTitle={`${ind.headline} ${agent.name} for ${ind.label.toLowerCase()}, by JOBGEN.AI.`}
+  ogDescription={ind.intro}
+  ogImage={ind.agent === "olivia" ? "/og/olivia.png" : "/og/jenny.png"}
+  ogImageAlt={`${agent.name} by JOBGEN.AI, ${agent.role}`}
+  persona={ind.agent === "olivia" ? "olivia" : undefined}
+  bookBarText={`Bring us a real ${ind.shortLabel.toLowerCase()} enquiry`}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [["Home", "/"], ["Industries", "/industries/"], [ind.label, `/industries/${ind.slug}/`]].map(([name, path], i) => ({ "@type": "ListItem", position: i + 1, name, item: `https://jobgen.ai${path}` })),
+  })} />
+  <PageHero
+    name={agent.name}
+    role={agent.role}
+    position={ind.label}
+    sub={ind.intro}
+    secondary={{ label: "See an example ↓", href: "#example" }}
+  >
+    <span class="h1-line ind-h1">{ind.headline}</span>
+  </PageHero>
+
+  <!-- 01 · THE PROBLEM -->
+  <section class="chapter ind-problem light" aria-labelledby="problem-title">
+    <div class={`wrap ${ind.image ? "ind-problem-grid" : ""}`}>
+      <div>
+        <p class="mono chapter-no reveal">01 · THE PROBLEM</p>
+        <h2 id="problem-title" class="reveal ind-h2">{ind.painTitle}</h2>
+        <ol class="ind-problems">
+          {ind.problems.map(([title, text], i) => (
+            <li class="reveal">
+              <span class="mono">{String(i + 1).padStart(2, "0")}</span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+      {ind.image && (
+        <figure class="ind-photo reveal">
+          <img src={ind.image} alt={`${ind.label} workplace`} width="1400" height="932" loading="lazy" />
+          <figcaption><span>{ind.label}</span><span>{agent.name} · {agent.role}</span></figcaption>
+        </figure>
+      )}
+    </div>
+  </section>
+
+  <!-- 02 · INSIDE THE CONVERSATION -->
+  <section class="chapter ind-example" id="example" aria-labelledby="example-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">02 · INSIDE THE CONVERSATION</p>
+        <h2 id="example-title" class="reveal ind-h2">{ind.caseTitle}</h2>
+        <p class="section-sub reveal">Choose an example to see what is captured and what still needs a person.</p>
+      </div>
+      <div class="cases reveal" data-cases>
+        <div class="case-tabs" role="tablist" aria-label="Examples">
+          {ind.cases.map((c, i) => (
+            <button type="button" role="tab" id={`case-tab-${i}`} aria-controls={`case-${i}`} aria-selected={String(i === 0)} tabindex={i === 0 ? 0 : -1}>
+              <span class="mono">{String(i + 1).padStart(2, "0")}</span>{c.label}
+            </button>
+          ))}
+        </div>
+        {ind.cases.map((c, i) => (
+          <div class="case" role="tabpanel" id={`case-${i}`} aria-labelledby={`case-tab-${i}`} hidden={i !== 0} tabindex="0">
+            <p class="case-note mono">Illustrative workflow · sample data</p>
+            <blockquote>{c.request}</blockquote>
+            <dl>
+              {c.fields.map(([k, v]) => <div><dt class="mono">{k}</dt><dd>{v}</dd></div>)}
+            </dl>
+            <p class="case-outcome"><span class="mono">RECORDED NEXT STEP</span>{c.outcome}</p>
+            <p class="case-next">{c.next}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · WHAT GETS CAPTURED -->
+  <section class="chapter ind-captured light" aria-labelledby="captured-title">
+    <div class="wrap people-grid">
+      <div>
+        <p class="mono chapter-no reveal">03 · WHAT {agent.name.toUpperCase()} ASKS</p>
+        <h2 id="captured-title" class="reveal">The right questions,<br /><span class="muted">every call.</span></h2>
+        <ul class="capabilities reveal" aria-label="Outcomes">
+          {ind.outcomes.map((o) => <li>{o}</li>)}
+        </ul>
+      </div>
+      <ol class="ind-questions">
+        {ind.questions.map((q) => <li class="reveal">{q}</li>)}
+      </ol>
+    </div>
+  </section>
+
+  <!-- 04 · BEFORE YOU GO LIVE -->
+  <section class="chapter ind-prep" aria-labelledby="prep-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">04 · BEFORE YOU GO LIVE</p>
+        <h2 id="prep-title" class="reveal ind-h2">{ind.prepTitle}</h2>
+      </div>
+      <ol class="service-grid prep-grid">
+        {ind.preparation.map(([title, text], i) => (
+          <li class="service reveal"><span class="mono">{String(i + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{text}</p></li>
+        ))}
+      </ol>
+      <aside class="boundary reveal">
+        <p class="mono">WHERE {agent.name.toUpperCase()} STOPS</p>
+        <p>{ind.boundary}</p>
+      </aside>
+      <nav class="explore reveal" aria-label="Keep exploring">
+        <p class="mono">CONTINUE EXPLORING</p>
+        <div class="explore-links">
+          {related.map((s) => <a class="explore-solution" href={`/solutions/${s!.slug}/`}>{s!.label} <span aria-hidden="true">→</span></a>)}
+        </div>
+        <ul class="industry-chips">
+          {others.map((o) => <li><a href={`/industries/${o.slug}/`}>{o.label}</a></li>)}
+        </ul>
+      </nav>
+    </div>
+  </section>
+
+  <BookDemo
+    eyebrow={`30 MINUTES · ${ind.label.toUpperCase()}`}
+    line1="Bring us a real"
+    line2={`${ind.shortLabel.toLowerCase()} enquiry.`}
+    sub={`Pick a time and we’ll run it with ${agent.name}, live.`}
+    agenda={[{ title: `Hear ${agent.name} live` }, { title: "Map your calls and handovers" }, { title: "Setup and pricing" }]}
+    quoteFrom={quoteFrom}
+  />
+
+  <Fragment slot="scripts">
+    <script is:inline>
+      // Example tabs: click or arrow keys switch the example.
+      document.querySelectorAll("[data-cases]").forEach((root) => {
+        const tabs = [...root.querySelectorAll('[role="tab"]')];
+        const show = (tab, focus) => {
+          tabs.forEach((t) => {
+            const on = t === tab;
+            t.setAttribute("aria-selected", String(on));
+            t.tabIndex = on ? 0 : -1;
+            document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+          });
+          if (focus) tab.focus();
+        };
+        tabs.forEach((t, i) => {
+          t.addEventListener("click", () => show(t));
+          t.addEventListener("keydown", (e) => {
+            const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+            if (!d) return;
+            e.preventDefault();
+            show(tabs[(i + d + tabs.length) % tabs.length], true);
+          });
+        });
+      });
+    </script>
+  </Fragment>
+</Base>

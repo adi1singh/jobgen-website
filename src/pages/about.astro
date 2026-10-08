@@ -1,0 +1,133 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import FounderNote from "../components/FounderNote.astro";
+import BookDemo from "../components/BookDemo.astro";
+import { WORKFORCE, LINKS } from "../data/site";
+
+// Facts and product descriptions are from https://jobgen.ai/about/ (lightly tidied).
+const facts = [
+  { label: "FOUNDED", value: "2024" },
+  { label: "BASED IN", value: "Sydney, NSW, Australia" },
+  { label: "OPERATED BY", value: "JobGen AI Pty Ltd" },
+  { label: "COMPANY IDENTIFIERS", value: "ABN 71 696 826 561 · ACN 696 826 561" },
+];
+const audiences: Record<string, string> = {
+  jenny: "BUSINESSES THAT RECEIVE CUSTOMER CALLS",
+  olivia: "REAL ESTATE AGENCIES",
+  jess: "RECRUITERS AND STAFFING TEAMS",
+};
+---
+<Base
+  title="About JobGen.AI | An Australian AI workforce platform"
+  description="JobGen.AI is an Australian AI software platform for job searching, recruitment and AI-powered business assistants. Founded in 2024 and based in Sydney."
+  ogTitle="About JOBGEN.AI: an Australian AI workforce platform."
+  ogDescription="Founded in Sydney in 2024. Started as an AI job-search assistant, now an AI workforce for businesses."
+  ogImage="/og/home.png"
+  ogImageAlt="JOBGEN.AI: Grow your business with an AI workforce."
+>
+  <PageHero
+    eyebrow="ABOUT JOBGEN.AI"
+    sub="JobGen.AI is an Australian AI software platform for job searching, recruitment and AI-powered business assistants."
+    secondary={{ label: "Our story ↓", href: "#story" }}
+  >
+    <span class="h1-line">An Australian</span>
+    <span class="h1-line h1-muted">AI workforce platform.</span>
+  </PageHero>
+
+  <!-- 01 · THE COMPANY -->
+  <section class="chapter about-facts light" aria-labelledby="company-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">01 · THE COMPANY</p>
+        <h2 id="company-title" class="reveal">Built in Sydney.<br /><span class="muted">With an office in San Francisco.</span></h2>
+        <p class="section-sub reveal">
+          Founded in 2024 and based in Sydney, JobGen.AI began as an AI job-search assistant and has grown into a
+          broader AI workforce platform for candidates and businesses.
+        </p>
+      </div>
+      <dl class="facts reveal">
+        {facts.map((f) => (
+          <div><dt class="mono">{f.label}</dt><dd>{f.value}</dd></div>
+        ))}
+        <div class="facts-wide">
+          <dt class="mono">RECOGNITION</dt>
+          <dd>
+            Global Excellence Award, AIMBIG Oceania 2026. A member of the Antler AU15 cohort, UNSW Founders, NVIDIA
+            Inception and Google for Startups. <a class="facts-source" href="/news/australia-job-market-2026/">Source: our July 2026 press release</a>
+          </dd>
+        </div>
+        <div class="facts-wide">
+          <dt class="mono">OFFICES</dt>
+          <dd>Sydney · 60 Martin Place, NSW 2000<br />San Francisco · 580 California St, CA 94104</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 02 · OUR STORY + FOUNDER -->
+  <section class="chapter story" id="story" aria-labelledby="story-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">02 · OUR STORY</p>
+        <h2 id="story-title" class="reveal">Started with job seekers.<br /><span class="grad">Grew into an AI workforce.</span></h2>
+      </div>
+      <ol class="timeline">
+        <li class="reveal">
+          <span class="mono">2024 · SYDNEY</span>
+          <h3>JobGen.AI begins</h3>
+          <p>Founded in Sydney as an AI job-search assistant, helping candidates find and land roles.</p>
+        </li>
+        <li class="reveal">
+          <span class="mono">TODAY · FOR JOB SEEKERS</span>
+          <h3>Still helping people find work</h3>
+          <p>Emma, our AI job-search assistant, has her own home at <a href={LINKS.jobSeekers}>candidates.jobgen.ai</a>.</p>
+        </li>
+        <li class="reveal">
+          <span class="mono">TODAY · FOR BUSINESSES</span>
+          <h3>An AI workforce</h3>
+          <p>Jenny answers calls, Olivia follows up property owners and Jess screens candidates, with a web team building sites alongside. Offices in Sydney and San Francisco.</p>
+        </li>
+      </ol>
+      <FounderNote />
+    </div>
+  </section>
+
+  <!-- 03 · FOUR SPECIALISTS -->
+  <section class="chapter about-products light" aria-labelledby="products-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">03 · OUR PRODUCTS</p>
+        <h2 id="products-title" class="reveal">Four specialists,<br /><span class="muted">two audiences.</span></h2>
+        <p class="section-sub reveal">
+          Role-specific assistants rather than one general-purpose chatbot. Each one transfers, takes a message or
+          arranges a callback when a person is needed.
+        </p>
+      </div>
+      <div class="about-grid">
+        {WORKFORCE.map((w) => (
+          <a class="about-card reveal" href={w.href} style={`--tint: ${w.tint}`}>
+            <span class="mono">{audiences[w.key]}</span>
+            <h3>{w.name} · {w.role}</h3>
+            <p>{w.summary}</p>
+            <span class="about-more">Learn about {w.name} <span aria-hidden="true">→</span></span>
+          </a>
+        ))}
+        <a class="about-card reveal" href={LINKS.jobSeekers} style="--tint: var(--rest)">
+          <span class="mono">JOB SEEKERS</span>
+          <h3>Emma · AI job search assistant</h3>
+          <p>Helps job seekers find and evaluate roles, tailor resumes, track applications, prepare for interviews and analyse ATS and keyword alignment.</p>
+          <span class="about-more">Visit candidates.jobgen.ai <span aria-hidden="true">↗</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <BookDemo
+    eyebrow="30 MINUTES · SYDNEY AND SAN FRANCISCO"
+    line1="Put an AI professional"
+    line2="on your team."
+    sub="Pick a time and we’ll show you the right professional on a live call."
+    agenda={[{ title: "Hear them live" }, { title: "Map the work slipping through" }, { title: "Setup and pricing" }]}
+  />
+</Base>

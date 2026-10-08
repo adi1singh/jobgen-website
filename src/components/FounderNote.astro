@@ -1,0 +1,42 @@
+---
+// The full founder note (photo, note, mission, vision). Shown on the About page.
+// It only goes live once Kush has approved the words and a photo is added (src/data/founder.ts);
+// before that, ?founder=preview shows it with a DRAFT label.
+import { FOUNDER } from "../data/founder";
+const founderLive = FOUNDER.approved && FOUNDER.photo !== "";
+---
+  <figure class="founder reveal" id="founder" data-founder data-approved={String(founderLive)} hidden={!founderLive}>
+      <div class="founder-photo">
+        {FOUNDER.photo ? (
+          <img src={FOUNDER.photo} alt={FOUNDER.photoAlt} width="720" height="900" loading="lazy" />
+        ) : (
+          <span class="founder-initials" aria-hidden="true">KB</span>
+        )}
+      </div>
+      <div class="founder-body">
+        <p class="founder-draft mono" hidden>DRAFT · NOT ON THE LIVE SITE UNTIL KUSH APPROVES IT AND A PHOTO IS ADDED</p>
+        <p class="mono">A NOTE FROM OUR FOUNDER</p>
+        <blockquote>
+          {FOUNDER.note.map((para) => <p>{para}</p>)}
+        </blockquote>
+        <dl class="founder-mv">
+          <div><dt class="mono">OUR MISSION</dt><dd>{FOUNDER.mission}</dd></div>
+          <div><dt class="mono">OUR VISION</dt><dd>{FOUNDER.vision}</dd></div>
+        </dl>
+        <figcaption>
+          <span class="founder-sign">— {FOUNDER.signoff}</span>
+          <b>{FOUNDER.name}</b>
+          <span>{FOUNDER.title}</span>
+        </figcaption>
+      </div>
+  </figure>
+
+<script is:inline>
+  (() => {
+    const el = document.querySelector("[data-founder]");
+    if (!el || el.dataset.approved === "true") return;
+    if (new URLSearchParams(location.search).get("founder") !== "preview") return;
+    el.hidden = false;
+    el.querySelector(".founder-draft").hidden = false;
+  })();
+</script>

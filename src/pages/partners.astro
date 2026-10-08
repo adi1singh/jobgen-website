@@ -1,0 +1,117 @@
+---
+// Partners, moved from https://jobgen.ai/partners/ (copy word for word; photos and logos are the ones
+// published there). Links only to partners' own public sites.
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import BookDemo from "../components/BookDemo.astro";
+import { LINKS } from "../data/site";
+
+const featured = [
+  { area: "RECRUITMENT", name: "Krystle Egginton", role: "Founder · Jolie Recruitment", text: "A Melbourne-based Rec2Rec specialist connecting recruitment professionals with agencies across Australia.", photo: "/partners/krystle-egginton.webp", logo: "/partners/jolie-recruitment-white.png", org: "Jolie Recruitment", url: "https://jolierecruitment.com.au/" },
+  { area: "PROPERTY", name: "Buta Deogun", role: "Principal / Elite Agent · Buta Deogun Property", text: "A Northwest Sydney property agency supporting owners and buyers with local sales guidance and market knowledge.", photo: "/partners/buta-deogun.webp", logo: "/partners/buta-deogun-property.png", org: "Buta Deogun Property", url: "https://www.butadeogunproperty.com.au/" },
+  { area: "RECRUITMENT & WORKFORCE ADVISORY", name: "Pri Gillett", role: "Founder & Director · Prima Recruitment & Consultancy", text: "A Sydney-based recruitment and workforce advisory supporting government, enterprise and high-accountability organisations across Australia.", photo: "/partners/pri-gillett.webp", logo: "/partners/prima-white.webp", org: "Prima Recruitment & Consultancy", url: "https://www.primarecruitmentandconsultancy.com.au/" },
+  { area: "PROPERTY", name: "Megha Raj Poudel", role: "CEO · Multi Dynamic", text: "A people-focused real estate network supporting agents, property owners and buyers through collaborative local teams.", photo: "/partners/megha-raj-poudel.webp", logo: "/partners/multi-dynamic-white.webp", org: "Multi Dynamic", url: "" },
+];
+const meetings = [
+  { area: "PROPERTY", name: "Buta Deogun", role: "Principal / Elite Agent · Buta Deogun Property", photo: "/partners/jobgen-buta-deogun.webp", w: 900, h: 900, alt: "JobGen.AI meeting Buta Deogun of Buta Deogun Property", url: "https://www.butadeogunproperty.com.au/" },
+  { area: "ACCOUNTING", name: "Mandar Gokhale", role: "Accountant & Owner · M&S Business Solutions", photo: "/partners/jobgen-ms-business.webp", w: 520, h: 924, alt: "JobGen.AI meeting Mandar Gokhale of M&S Business Solutions", url: "https://www.msbusinesssolutions.com.au/" },
+];
+const network = [
+  { area: "TELECOMMUNICATIONS", org: "ONETEC Communications", logo: "/partners/onetec.webp", url: "https://onetec.com.au/" },
+  { area: "ACCOUNTING", org: "M&S Business Solutions", logo: "/partners/ms-business.webp", url: "https://www.msbusinesssolutions.com.au/" },
+  { area: "EDUCATION & MIGRATION", org: "Study and Work", logo: "/partners/studyandwork-trimmed.png", url: "https://studyandwork.com.au/" },
+  { area: "EDUCATION & TRAINING", org: "McGill Institute", logo: "/partners/mcgill-institute-transparent.png", url: "" },
+];
+---
+<Base
+  title="Partners | JOBGEN.AI"
+  description="We work alongside leaders across recruitment, property, telecommunications, education and business services."
+  ogTitle="Built with people who know their industries. JOBGEN.AI partners."
+  ogDescription="Leaders across recruitment, property, telecommunications, education and business services."
+  ogImage="/og/home.png"
+  ogImageAlt="JOBGEN.AI: Grow your business with an AI workforce."
+>
+  <PageHero
+    eyebrow="OUR PARTNERS"
+    sub="We work alongside leaders across recruitment, property, telecommunications, education and business services, people who bring deep context to the work we do together."
+    secondary={{ label: "Meet our partners ↓", href: "#partners" }}
+  >
+    <span class="h1-line">Built with people who</span>
+    <span class="h1-line h1-muted">know their industries.</span>
+  </PageHero>
+
+  <section class="chapter light" id="partners" aria-labelledby="partners-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">01 · OUR PARTNERS</p>
+        <h2 id="partners-title" class="reveal">The people<br /><span class="muted">we build with.</span></h2>
+      </div>
+      <ul class="partner-grid">
+        {featured.map((p) => (
+          <li class="partner reveal">
+            <img class="partner-photo" src={p.photo} alt={`${p.name}, ${p.role.replace(" · ", " of ")}`} width="600" height="600" loading="lazy" />
+            <div class="partner-body">
+              <span class="mono">{p.area}</span>
+              <h3>{p.name}</h3>
+              <p class="partner-role">{p.role}</p>
+              <p>{p.text}</p>
+              {p.url && <a class="partner-link" href={p.url} target="_blank" rel="noopener">Visit website<span class="sr-only">: {p.org} (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="chapter partner-meet" aria-labelledby="meet-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">02 · FACE TO FACE</p>
+        <h2 id="meet-title" class="reveal">Partnerships,<br /><span class="grad">face to face.</span></h2>
+      </div>
+      <ul class="meet-grid">
+        {meetings.map((m) => (
+          <li class="meet reveal">
+            <img src={m.photo} alt={m.alt} width={m.w} height={m.h} loading="lazy" />
+            <div>
+              <span class="mono">{m.area}</span>
+              <h3>{m.name}</h3>
+              <p>{m.role}</p>
+              <a class="partner-link" href={m.url} target="_blank" rel="noopener">Visit website<span class="sr-only">: {m.role.split(" · ")[1]} (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="chapter light" aria-labelledby="network-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">03 · ACROSS INDUSTRIES</p>
+        <h2 id="network-title" class="reveal">More teams<br /><span class="muted">in our partner network.</span></h2>
+        <p class="section-sub reveal">Organisations spanning communications, business support, education and training.</p>
+      </div>
+      <ul class="network-grid">
+        {network.map((n) => (
+          <li class="reveal">
+            {n.url ? (
+              <a href={n.url} target="_blank" rel="noopener"><img src={n.logo} alt={n.org} loading="lazy" /><span class="mono">{n.area}</span></a>
+            ) : (
+              <div><img src={n.logo} alt={n.org} loading="lazy" /><span class="mono">{n.area}</span></div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <BookDemo
+    eyebrow="START A CONVERSATION"
+    line1="What could we"
+    line2="build together?"
+    sub={`Tell us about your business, your customers and the opportunity you see. Or email ${LINKS.contact.replace("mailto:", "")}.`}
+    agenda={[{ title: "Your business" }, { title: "Your customers" }, { title: "The opportunity you see" }]}
+    quoteFrom="Pri Gillett"
+  />
+</Base>

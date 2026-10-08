@@ -1,16 +1,19 @@
 ---
+import BrandMark from "./BrandMark.astro";
 import { LINKS, WORKFORCE } from "../data/site";
 ---
 <footer class="footer site-footer">
   <div class="wrap footer-grid">
     <div class="footer-brand">
-      <a class="brand" href="/">JOBGEN<span>.AI</span></a>
-      <p>The AI workforce, starting at your front desk.</p>
+      <a class="brand" href="/"><BrandMark size={32} /><b class="brand-word">JOBGEN<span>.AI</span></b></a>
+      <p>A complete digital workforce: website, AI agents, CRM and follow-up.</p>
       <p class="footer-offices">Sydney · 60 Martin Place, NSW 2000<br />San Francisco · 580 California St, CA 94104</p>
     </div>
     <div>
       <p class="mono footer-head">AI WORKFORCE</p>
       {WORKFORCE.map((w) => <a href={w.href}>{w.name} · {w.role}</a>)}
+      <a href={LINKS.solutions}>Solutions</a>
+      <a href={LINKS.industries}>Industries</a>
       <a href={LINKS.pricing}>Pricing</a>
     </div>
     <div>
@@ -20,6 +23,7 @@ import { LINKS, WORKFORCE } from "../data/site";
       <a href={LINKS.about}>About</a>
       <a href={LINKS.news}>News</a>
       <a href={LINKS.careers}>Careers</a>
+      <a href={LINKS.linkedin} target="_blank" rel="noopener">LinkedIn<span class="sr-only"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
     </div>
     <div>
       <p class="mono footer-head">MORE</p>

@@ -258,12 +258,8 @@ const setupLine = [
     eyebrow="30 MINUTES · YOUR CALLS, YOUR NUMBERS"
     line1="Make every call"
     line2="count."
-    sub="Bring your call volumes and we’ll work through the estimate with you. Here’s what we’ll cover together."
-    agenda={[
-      { title: "Hear them live.", text: "Hear Jenny, Olivia or Jess handle a real conversation." },
-      { title: "Check your numbers.", text: "Go through your call volume, call length and the setup that fits." },
-      { title: "Plan the start.", text: "Review what getting started involves and the options that suit your business." },
-    ]}
+    sub="Pick a time and we’ll work through the numbers with you."
+    agenda={[{ title: "Hear them live" }, { title: "Check your numbers" }, { title: "Plan the start" }]}
   />
 
   <Fragment slot="scripts">
@@ -389,6 +385,8 @@ const setupLine = [
             else (s as Record<string, unknown>)[key] = +el.value;
             render();
           });
+          // when they leave the box, show the number actually used (0–99 whole numbers)
+          if (el.dataset.key === "numbers") el.addEventListener("change", () => (el.value = String(s.numbers)));
         });
 
         // Currency toggle

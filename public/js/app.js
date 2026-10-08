@@ -41,7 +41,11 @@
   if (ribbon) {
     const ctx = ribbon.getContext("2d");
     const root = getComputedStyle(document.documentElement);
-    const colours = ["--edu", "--prop", "--rest", "--care"].map((v) => root.getPropertyValue(v).trim()).concat("#b48cff");
+    // On a professional's page the wave takes their colours; elsewhere the full JOBGEN.AI spectrum.
+    const persona = document.body.dataset.persona ? getComputedStyle(document.body) : null;
+    const colours = persona
+      ? ["--p1", "--p2", "--p3", "--p1", "--p2"].map((v) => persona.getPropertyValue(v).trim())
+      : ["--edu", "--prop", "--rest", "--care"].map((v) => root.getPropertyValue(v).trim()).concat("#b48cff");
     const lines = colours.map((colour, i) => ({ colour, phase: i * 1.9, speed: 0.55 + i * 0.13, freq: 1.1 + i * 0.32, boost: 0 }));
     // which line flares for each rotating word: buyer, booking, after-hours, missed
     const lineForWord = [1, 0, 4, 2];
@@ -132,50 +136,177 @@
     });
   else requestAnimationFrame(tickMinis);
 
-  /* ---------- Missed-call calculator ---------- */
-  // Keep the calculator consistent with JobGen's Australian sales context.
+  /* ---------- Missed-call calculator: sliders → Calculate → the working → get in touch ---------- */
+  // The total stays hidden until the visitor presses Calculate. Then the working is revealed line by
+  // line, the estimate counts up, and a short form asks for their email and phone (LINKS.leadEndpoint).
   const inCalls = $("#in-calls");
   if (inCalls) {
-    const inMissed = $("#in-missed"), inValue = $("#in-value");
-    const money = {
-      factor: 1,
-      fmt: { format: (value) => "A$" + Math.round(value).toLocaleString("en-AU") },
-    };
-    const step = Math.max(5, Math.round((10 * money.factor) / 5) * 5);
-    inValue.step = step;
-    inValue.min = step;
-    inValue.max = Math.round((2000 * money.factor) / step) * step;
-    inValue.value = Math.round((150 * money.factor) / step) * step;
-    let shown = 0, raf = 0;
-    const update = () => {
+    const box = inCalls.closest("[data-missed-calls]");
+    const inMissed = $("#in-missed"), inConv = $("#in-conv"), inValue = $("#in-value");
+    const inputs = [inCalls, inMissed, inConv, inValue].filter(Boolean);
+    const aud = (v) => "A$" + Math.round(v).toLocaleString("en-AU");
+    const num = (v) => Math.round(v).toLocaleString("en-AU");
+    const put = (sel, v) => { const el = $(sel, box); if (el) el.textContent = v; };
+    const goBtn = $("[data-calc-go]", box), goLabel = $("[data-calc-go-label]", box);
+    const staleHint = $("[data-calc-stale]", box), reveal = $("[data-calc-reveal]", box);
+    const steps = $$(".calc-assumptions li", box);
+    let calculated = false, last = null, timers = [];
+
+    const read = () => {
       const calls = +inCalls.value, missedPct = +inMissed.value, value = +inValue.value;
-      [inCalls, inMissed, inValue].forEach((el) =>
-        el.style.setProperty("--fill", ((el.value - el.min) / (el.max - el.min)) * 100 + "%"),
-      );
-      $("#out-calls").textContent = calls;
-      $("#out-missed").textContent = missedPct + "%";
-      $("#out-value").textContent = money.fmt.format(value);
+      const conv = inConv ? +inConv.value : 33;
       const missedMonth = Math.round(((calls * missedPct) / 100) * 22);
-      const total = Math.round(missedMonth / 3) * value;
-      $("#calc-missed").textContent = missedMonth.toLocaleString();
-      const box = inCalls.closest("[data-missed-calls]");
-      if (box) {
-        box.dataset.missed = missedMonth;
-        box.dataset.lost = total;
-        document.dispatchEvent(new CustomEvent("missedcalls", { detail: { missed: missedMonth, lost: total } }));
-      }
-      cancelAnimationFrame(raf);
-      const from = shown, start = performance.now();
-      const tick = (now) => {
-        const k = still.matches ? 1 : Math.min(1, (now - start) / 450);
-        shown = Math.round(from + (total - from) * (1 - Math.pow(1 - k, 3)));
-        $("#calc-number").textContent = money.fmt.format(shown);
-        if (k < 1) raf = requestAnimationFrame(tick);
-      };
-      raf = requestAnimationFrame(tick);
+      const customers = Math.round((missedMonth * conv) / 100);
+      return { calls, missedPct, conv, value, missedMonth, customers, total: customers * value };
     };
-    [inCalls, inMissed, inValue].forEach((el) => el.addEventListener("input", update));
-    update();
+    // Sliders only update their own labels; the estimate waits for Calculate.
+    const showInputs = () => {
+      const r = read();
+      inputs.forEach((el) => el.style.setProperty("--fill", ((el.value - el.min) / (el.max - el.min)) * 100 + "%"));
+      put("#out-calls", r.calls);
+      put("#out-missed", r.missedPct + "%");
+      put("#out-conv", r.conv + "%");
+      put("#out-value", aud(r.value));
+      // keeps the pricing page's "answering them" comparison in step
+      box.dataset.missed = r.missedMonth;
+      box.dataset.lost = r.total;
+      document.dispatchEvent(new CustomEvent("missedcalls", { detail: { missed: r.missedMonth, lost: r.total } }));
+    };
+    const countUp = (el, to, fmt, ms) => {
+      if (!el) return;
+      const start = performance.now();
+      const tick = (now) => {
+        const k = still.matches ? 1 : Math.min(1, (now - start) / ms);
+        el.textContent = fmt(to * (1 - Math.pow(1 - k, 3)));
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    const calculate = () => {
+      const r = (last = read());
+      timers.forEach(clearTimeout);
+      timers = [];
+      calculated = true;
+      staleHint.hidden = true;
+      goLabel.textContent = "Recalculate";
+      put("#as-calls", num(r.calls));
+      put("#as-missed", r.missedPct + "%");
+      put("#as-conv", r.conv + "%");
+      put("#as-value", aud(r.value));
+      put("#as-month2", num(r.missedMonth));
+      put("#as-cust2", num(r.customers));
+      put("#calc-missed", num(r.missedMonth));
+      put("#calc-number", aud(0));
+      $("[data-calc-zero]", box).hidden = r.customers > 0;
+      steps.forEach((li) => li.classList.remove("is-shown"));
+      box.classList.remove("is-result");
+      reveal.hidden = false;
+      const gap = still.matches ? 0 : 700;
+      const results = [["#as-month", r.missedMonth, num], ["#as-cust", r.customers, num], ["#as-total", r.total, aud]];
+      steps.forEach((li, i) =>
+        timers.push(setTimeout(() => {
+          li.classList.add("is-shown");
+          countUp($(results[i][0], box), results[i][1], results[i][2], 550);
+        }, i * gap)),
+      );
+      timers.push(setTimeout(() => {
+        box.classList.add("is-result");
+        countUp($("#calc-number", box), r.total, aud, 800);
+      }, steps.length * gap));
+      if (!still.matches) reveal.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    };
+    inputs.forEach((el) =>
+      el.addEventListener("input", () => {
+        showInputs();
+        if (!calculated) return;
+        // the shown estimate no longer matches: fold it away until they recalculate
+        timers.forEach(clearTimeout);
+        reveal.hidden = true;
+        staleHint.hidden = false;
+      }),
+    );
+    goBtn.addEventListener("click", calculate);
+    showInputs();
+
+    // "Get in touch": email + phone + their numbers, sent to the sales team once an endpoint is set.
+    const form = $("[data-lead-form]", box);
+    if (form) {
+      const status = $("[data-lead-status]", form), submit = $("[data-lead-submit]", form);
+      const say = (html, tone = "") => {
+        status.innerHTML = html;
+        status.dataset.tone = tone;
+      };
+      // Each field explains its own problem right beneath it, and the message clears as soon as it's fixed.
+      const rules = {
+        email: (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? "" : v ? "That email looks incomplete. Check the part after the @." : "Please enter your email."),
+        phone: (v) => {
+          const digits = v.replace(/\D/g, "").length;
+          if (!v) return "Please enter a phone number we can call.";
+          if (/[^\d\s()+-]/.test(v)) return "Use numbers only, with spaces or + if you like.";
+          return digits >= 8 && digits <= 15 ? "" : "That number looks too short. Include the area code.";
+        },
+      };
+      const validate = (name) => {
+        const input = form.elements[name];
+        const msg = rules[name](input.value.trim());
+        input.setAttribute("aria-invalid", String(!!msg));
+        $(`[data-error-for="${name}"]`, form).textContent = msg;
+        return !msg;
+      };
+      Object.keys(rules).forEach((name) => {
+        const input = form.elements[name];
+        input.addEventListener("blur", () => input.value.trim() && validate(name));
+        input.addEventListener("input", () => input.getAttribute("aria-invalid") === "true" && validate(name));
+      });
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = form.elements.email.value.trim(), phone = form.elements.phone.value.trim();
+        const okEmail = validate("email"), okPhone = validate("phone");
+        if (!okEmail || !okPhone) {
+          say("");
+          (!okEmail ? form.elements.email : form.elements.phone).focus();
+          return;
+        }
+        const endpoint = form.dataset.endpoint;
+        const done = () => {
+          say("");
+          $("[data-lead-body]", form).hidden = true;
+          $("[data-lead-done]", form).hidden = false;
+        };
+        if (!endpoint) {
+          // Not connected yet: show the thank-you design, clearly marked, and send nothing.
+          done();
+          $("[data-lead-preview]", form).hidden = false;
+          return;
+        }
+        submit.disabled = true;
+        say("Sending…");
+        try {
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, phone, website: form.elements.website.value, calc: last || read(), page: location.pathname }),
+          });
+          if (!res.ok) throw new Error(String(res.status));
+          done();
+          // carry their email into the booking calendar, so picking a time is one step less
+          const cal = $(".booking iframe");
+          if (cal) {
+            const url = new URL(cal.dataset.src);
+            url.searchParams.set("email", email);
+            cal.dataset.src = url.toString();
+            if (cal.src) {
+              url.searchParams.set("embed_domain", location.hostname || "localhost");
+              cal.src = url.toString();
+            }
+          }
+        } catch {
+          say('We couldn’t send that just now. Email us at <a href="mailto:hello@jobgen.ai">hello@jobgen.ai</a> or pick a time below.', "error");
+        } finally {
+          submit.disabled = false;
+        }
+      });
+    }
   }
 
   /* ---------- Phones: a slim booking bar once the hero is out of view ---------- */
@@ -212,6 +343,18 @@
   );
   $$(".reveal").forEach((el) => reveal.observe(el));
 
+  /* ---------- Before → after scenes play once they're properly in view ---------- */
+  const scenes = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("play");
+        scenes.unobserve(e.target);
+      }),
+    { threshold: 0.9 },
+  );
+  $$("[data-scene]").forEach((el) => scenes.observe(el));
+
   /* ---------- Booking calendar loads when it's close to view ---------- */
   const calendar = $(".booking iframe");
   if (calendar) {
@@ -229,6 +372,12 @@
       { rootMargin: "600px 0px" },
     );
     near.observe(calendar);
+    // Any "Book a demo" link starts the calendar loading straight away, before the scroll lands.
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest?.('a[href="#book"]') || calendar.src) return;
+      near.disconnect();
+      load();
+    });
   }
 
   /* ---------- Rules console ---------- */

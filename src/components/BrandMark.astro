@@ -1,0 +1,13 @@
+---
+// The JOBGEN.AI mark: three voice bars in Jenny's, Olivia's and Jess's colours (logo direction A).
+interface Props {
+  size?: number;
+}
+const { size = 28 } = Astro.props;
+---
+<svg class="brand-mark" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+  <rect width="64" height="64" rx="16" fill="#26252e"></rect>
+  <rect x="16" y="22" width="7" height="20" rx="3.5" fill="#7c9cff"></rect>
+  <rect x="28.5" y="14" width="7" height="36" rx="3.5" fill="#f2b552"></rect>
+  <rect x="41" y="19" width="7" height="26" rx="3.5" fill="#4fd39c"></rect>
+</svg>

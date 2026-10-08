@@ -1,0 +1,48 @@
+---
+import Base from "../../layouts/Base.astro";
+import BookDemo from "../../components/BookDemo.astro";
+import { NEWS } from "../../data/news";
+export function getStaticPaths() {
+  return NEWS.map((article) => ({ params: { slug: article.slug }, props: { article } }));
+}
+const { article: a } = Astro.props as { article: (typeof NEWS)[number] };
+---
+<Base
+  title={`${a.seoTitle ?? a.title} | JOBGEN.AI`}
+  description={a.summary}
+  ogTitle={a.title}
+  ogDescription={a.summary}
+  ogImage={a.image}
+  ogImageAlt={a.title}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [["Home", "/"], ["News", "/news/"], [a.title, `/news/${a.slug}/`]].map(([name, path], i) => ({ "@type": "ListItem", position: i + 1, name, item: `https://jobgen.ai${path}` })),
+  })} />
+  <article class="news-article">
+    <div class="wrap news-wrap">
+      <a class="news-back" href="/news/">← Back to News</a>
+      <p class="mono">{a.kind} · {a.place} · {a.date} · {a.readTime}</p>
+      <h1>{a.title}</h1>
+      <img src={a.image} alt={a.title} width="1200" height="675" />
+      <div class="news-text">
+        {a.body.map((b) =>
+          b.type === "p" ? <p>{b.text}</p> :
+          b.type === "h2" ? <h2>{b.text}</h2> :
+          b.type === "contact" ? <p class="news-contact">{b.text}</p> :
+          b.type === "quote" ? <figure><blockquote>{b.text}</blockquote><figcaption>— {b.who}</figcaption></figure> :
+          <ol>{b.items!.map((i) => <li>{i}</li>)}</ol>
+        )}
+      </div>
+      <a class="btn btn-ghost" href={a.pdf} download>Download press release (PDF)</a>
+    </div>
+  </article>
+  <BookDemo
+    eyebrow="30 MINUTES · SYDNEY AND SAN FRANCISCO"
+    line1="Put an AI professional"
+    line2="on your team."
+    sub="Pick a time and we’ll show you the right professional on a live call."
+    agenda={[{ title: "Hear them live" }, { title: "Map the work slipping through" }, { title: "Setup and pricing" }]}
+  />
+</Base>

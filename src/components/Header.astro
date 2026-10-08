@@ -1,4 +1,5 @@
 ---
+import BrandMark from "./BrandMark.astro";
 import { LINKS, WORKFORCE } from "../data/site";
 interface Props {
   /** Where "Book a demo" goes: the page's own booking section, or Calendly. */
@@ -9,7 +10,7 @@ const external = bookHref.startsWith("http");
 ---
 <header class="header">
   <div class="wrap header-inner">
-    <a class="brand" href="/" aria-label="JOBGEN.AI, AI workforce, home">JOBGEN<span>.AI</span><em class="brand-tag mono">AI WORKFORCE</em></a>
+    <a class="brand" href="/"><BrandMark /><b class="brand-word">JOBGEN<span>.AI</span></b><span class="sr-only"> </span><em class="brand-tag mono">AI WORKFORCE</em><span class="sr-only">, home</span></a>
     <nav class="nav site-nav" aria-label="Main">
       <div class="nav-group">
         <button type="button" class="nav-trigger" aria-expanded="false" aria-controls="workforce-menu">
@@ -23,11 +24,15 @@ const external = bookHref.startsWith("http");
               <small>{w.role}</small>
             </a>
           ))}
+          <a class="nav-menu-more" href={LINKS.webDevelopment}>
+            <b>Web development</b>
+            <small>Websites and web apps, built by our team</small>
+          </a>
         </div>
       </div>
-      <a href={LINKS.webDevelopment}>Web development</a>
+      <a href={LINKS.industries}>Industries</a>
       <a href={LINKS.pricing}>Pricing</a>
-      <a href={LINKS.jobSeekers}>For job seekers</a>
+      <a href={LINKS.about}>About</a>
     </nav>
     <div class="header-actions">
       <a class="nav-start" href={LINKS.startFree}>Start free</a>
@@ -47,9 +52,11 @@ const external = bookHref.startsWith("http");
         </a>
       ))}
       <div class="mobile-links">
-        <a href={LINKS.webDevelopment}>Web development</a>
+        <a href={LINKS.industries}>Industries</a>
+        <a href={LINKS.solutions}>Solutions</a>
         <a href={LINKS.pricing}>Pricing</a>
-        <a href={LINKS.jobSeekers}>For job seekers</a>
+        <a href={LINKS.about}>About</a>
+        <a href={LINKS.webDevelopment}>Web development</a>
         <a href={LINKS.startFree}>Start free</a>
         <a href={LINKS.login}>Log in</a>
       </div>

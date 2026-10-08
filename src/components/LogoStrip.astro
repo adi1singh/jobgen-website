@@ -1,0 +1,24 @@
+---
+// "Working with teams at": the customers and partners named on jobgen.ai, shown as one-colour logos
+// that drift slowly (static with reduced motion). The list is repeated once for a seamless loop.
+import { CLIENTS } from "../data/site";
+interface Props {
+  label?: string;
+}
+const { label = "Working with teams at" } = Astro.props;
+---
+<section class="logo-strip" aria-label={label}>
+  <p class="mono logo-strip-label">{label}</p>
+  <div class="logo-track">
+    <ul class="logo-row">
+      {CLIENTS.map((c) => (
+        <li><img src={c.logo} alt={c.name} width={c.w} height={c.h} loading="lazy" /></li>
+      ))}
+    </ul>
+    <ul class="logo-row" aria-hidden="true">
+      {CLIENTS.map((c) => (
+        <li><img src={c.logo} alt="" width={c.w} height={c.h} loading="lazy" /></li>
+      ))}
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,40 @@
+---
+// Questions people ask before booking, answered in JobGen's own words. Also published as FAQPage
+// structured data so search engines can show the answers.
+import { FAQ } from "../data/faq";
+interface Props {
+  eyebrow?: string;
+  /** Which questions to show (by question text start); all when omitted. */
+  only?: string[];
+  /** Light (cream) or dark section. */
+  tone?: "light" | "dark";
+}
+const { eyebrow = "PLAIN ANSWERS", only, tone = "light" } = Astro.props;
+const items = only ? FAQ.filter((f) => only.some((o) => f.q.startsWith(o))) : FAQ;
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+};
+---
+<section class={`chapter home-faq ${tone === "light" ? "light" : ""}`} id="faq" aria-labelledby="faq-title">
+  <div class="wrap faq-layout">
+    <div>
+      <p class="mono chapter-no reveal">{eyebrow}</p>
+      <h2 id="faq-title" class="reveal">Questions,<br /><span class="muted">answered.</span></h2>
+      <p class="section-sub reveal">Anything else? Ask us on the demo, or email <a href="mailto:hello@jobgen.ai">hello@jobgen.ai</a>.</p>
+    </div>
+    <div class="faq-items">
+      {items.map((f, i) => (
+        <details class="faq-item reveal" open={i === 0}>
+          <summary>{f.q}<span class="faq-icon" aria-hidden="true"></span></summary>
+          <div class="faq-answer">
+            <p>{f.a}</p>
+            {f.link && <a href={f.link.href}>{f.link.label} <span aria-hidden="true">→</span></a>}
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+</section>

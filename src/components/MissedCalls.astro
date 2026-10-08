@@ -1,8 +1,11 @@
 ---
 // "What are missed calls costing you?": the visitor's own numbers, wired up in /js/app.js.
+// The total stays hidden until they press Calculate; then the working is revealed line by line,
+// followed by a short form (email + phone) for the sales team; see LINKS.leadEndpoint.
 // Used on the home page, Jenny's page and the pricing page. The latest result is also kept on
 // [data-missed-calls] (data-missed, data-lost) and announced with a "missedcalls" event, so the
 // pricing page can set it against what answering those calls would cost.
+import { LINKS } from "../data/site";
 interface Props {
   eyebrow?: string;
   cta?: { label: string; href: string };
@@ -14,7 +17,7 @@ const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", hre
     <div>
       <p class="mono reveal">{eyebrow}</p>
       <h2 id="cost-title" class="reveal">What are missed calls <span class="muted">costing you?</span></h2>
-      <p class="section-sub reveal">Move the sliders to match your business. Your numbers, not ours. All estimates are in AUD.</p>
+      <p class="section-sub reveal">Move the sliders to match your business, then calculate. Your numbers, not ours. All estimates are in AUD.</p>
       <slot name="aside" />
     </div>
     <div class="calc reveal" data-missed-calls>
@@ -27,17 +30,84 @@ const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", hre
         <input type="range" id="in-missed" min="5" max="60" step="5" value="20" />
       </label>
       <label class="slider">
+        <span class="slider-top"><span>Missed callers who’d become customers</span><output id="out-conv" for="in-conv">33%</output></span>
+        <input type="range" id="in-conv" min="5" max="80" step="1" value="33" />
+      </label>
+      <label class="slider">
         <span class="slider-top"><span>New customer value (AUD)</span><output id="out-value" for="in-value">A$150</output></span>
         <input type="range" id="in-value" min="20" max="2000" step="10" value="150" />
       </label>
-      <div class="calc-result" aria-live="polite">
-        <p class="mono">WALKING TO WHOEVER PICKS UP FIRST</p>
-        <p class="calc-number" id="calc-number">A$6,600</p>
-        <p class="calc-sub">a month, from <b id="calc-missed">132</b> missed calls.</p>
-        <slot name="result" />
-        <a class="btn btn-light" href={cta.href}>{cta.label} <span aria-hidden="true">→</span></a>
+
+      <div class="calc-go">
+        <button type="button" class="btn btn-calc" data-calc-go>
+          <span data-calc-go-label>Calculate my revenue opportunity</span> <span aria-hidden="true">→</span>
+        </button>
+        <p class="calc-go-hint" data-calc-stale hidden>You changed your numbers. Recalculate to see the new estimate.</p>
       </div>
-      <p class="calc-note">An estimate to start the conversation, not a promise. Assumes 1 in 3 missed callers would have become a customer, over 22 working days a month.</p>
+
+      <div class="calc-reveal" data-calc-reveal hidden>
+        <div class="calc-assumptions">
+          <p class="mono">HOW WE CALCULATED IT</p>
+          <ol>
+            <li>
+              <span><b id="as-calls">30</b> calls a day × <b id="as-missed">20%</b> unanswered × 22 working days</span>
+              <strong>= <b id="as-month">132</b> missed calls a month</strong>
+            </li>
+            <li>
+              <span><b id="as-month2">132</b> missed calls × <b id="as-conv">33%</b> who’d become customers</span>
+              <strong>= <b id="as-cust">44</b> new customers</strong>
+            </li>
+            <li>
+              <span><b id="as-cust2">44</b> customers × <b id="as-value">A$150</b> each</span>
+              <strong>= <b id="as-total">A$6,600</b> a month</strong>
+            </li>
+          </ol>
+        </div>
+
+        <div class="calc-result" aria-live="polite">
+          <p class="mono">ESTIMATED REVENUE OPPORTUNITY</p>
+          <p class="calc-number" id="calc-number">A$0</p>
+          <p class="calc-sub">a month, from <b id="calc-missed">132</b> missed calls.</p>
+          <p class="calc-zero" data-calc-zero hidden>That’s less than one new customer a month at these numbers. Try your busiest week, or a higher customer value.</p>
+          <slot name="result" />
+          <p class="calc-note">An estimate to start the conversation, not a promise. Every number is yours to change, apart from the 22 working days.</p>
+        </div>
+
+        <form class="lead" data-lead-form data-endpoint={LINKS.leadEndpoint} novalidate>
+          <div class="lead-body" data-lead-body>
+            <p class="lead-title">Want help winning these calls back?</p>
+            <p class="lead-sub">Leave your email and number and we’ll get in touch with a plan built around your numbers.</p>
+            <div class="lead-fields">
+              <label>
+                <span>Email</span>
+                <input type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@yourbusiness.com.au" required maxlength="200" aria-describedby="lead-email-error" />
+                <small class="lead-error" id="lead-email-error" data-error-for="email"></small>
+              </label>
+              <label>
+                <span>Phone</span>
+                <input type="tel" name="phone" autocomplete="tel" placeholder="04xx xxx xxx" required maxlength="40" aria-describedby="lead-phone-error" />
+                <small class="lead-error" id="lead-phone-error" data-error-for="phone"></small>
+              </label>
+            </div>
+            <label class="lead-hp" aria-hidden="true">Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+            <div class="lead-actions">
+              <button type="submit" class="btn btn-light" data-lead-submit>Get in touch <span aria-hidden="true">→</span></button>
+              <a class="lead-alt" href={cta.href}>Or pick a time now</a>
+            </div>
+            <p class="lead-legal">
+              By sending this you agree to JOBGEN.AI contacting you about your estimate.{" "}
+              <a href={LINKS.privacy} target="_blank" rel="noopener">Privacy policy</a>.
+            </p>
+          </div>
+          <p class="lead-status" role="status" aria-live="polite" data-lead-status></p>
+          <div class="lead-done" data-lead-done hidden>
+            <p class="lead-title">Thanks, we’ve got your numbers.</p>
+            <p class="lead-sub">Someone from our team will be in touch. Want to skip the wait?</p>
+            <p class="lead-preview mono" data-lead-preview hidden>Preview: this form isn’t connected yet, so nothing was sent.</p>
+            <a class="btn btn-light" href={cta.href}>Pick a time now <span aria-hidden="true">→</span></a>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </section>

@@ -5,12 +5,16 @@ import RealRecording from "../components/RealRecording.astro";
 import Testimonials from "../components/Testimonials.astro";
 import BookDemo from "../components/BookDemo.astro";
 import MissedCalls from "../components/MissedCalls.astro";
-import { WORKFORCE, LINKS } from "../data/site";
+import LogoStrip from "../components/LogoStrip.astro";
+import VideoTestimonial from "../components/VideoTestimonial.astro";
+import HowItWorks from "../components/HowItWorks.astro";
+import Faq from "../components/Faq.astro";
+import { WORKFORCE } from "../data/site";
 import { RECORDINGS } from "../data/recordings";
 import { TESTIMONIALS } from "../data/testimonials";
 import { FOUNDER } from "../data/founder";
 
-// The founder note only goes live once Kush has approved the words and a photo is added.
+// The founder card only shows once Kush has approved the words and a photo is added.
 const founderLive = FOUNDER.approved && FOUNDER.photo !== "";
 
 // One real call per product that has one, and one voice per product from the testimonials.
@@ -23,23 +27,45 @@ const quotes = ["George Limberis", "Buta Deogun", "Pri Gillett", "McGill Institu
   .map((n) => TESTIMONIALS.find((t) => t.name === n))
   .filter((t) => t !== undefined);
 
-const problems = [
-  ...WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}` })),
-  {
-    key: "web",
-    name: "Web development",
-    role: "Websites and web apps",
-    href: LINKS.webDevelopment,
-    tint: "var(--rest)",
-    problem: "A website that doesn’t bring in work",
-    promise: "Get a site that does",
-    label: "Our web team",
-  },
+// Example activity for each professional's card in "Meet the team" (illustrative, labelled as such).
+const LIVE: Record<string, string[]> = {
+  jenny: ["Answered at 9:42pm · tour booked for Sat 10am", "Took a message · callback set for 8am", "Transferred to a person · urgent request"],
+  olivia: ["Owner in Ryde · property report sent", "Owner in Castle Hill · appraisal booked", "Owner in Epping · not selling, noted"],
+  jess: ["Payroll officer · 92% match · shortlisted", "Written to your ATS · interview booked", "Bookkeeper · kept on file for later"],
+};
+
+// Each problem card plays a small before → after (illustrative): what slips through today, then the same
+// work handled.
+const SCENES: Record<string, [string, string][]> = {
+  jenny: [["Missed call · 6:04pm", "Answered · enquiry logged"], ["Missed call · 7:15pm", "Answered · booked for Tue 9am"], ["Voicemail · 9:48pm", "Answered · message passed on"]],
+  olivia: [["Owner · last spoke months ago", "Called · report requested"], ["Owner · no reply yet", "Called · appraisal booked"], ["Owner · still on the list", "Called · not selling, noted"]],
+  jess: [["Applicant · waiting since Monday", "Screened · shortlisted"], ["Applicant · not read yet", "Screened · interview booked"], ["Applicant · not read yet", "Screened · kept on file"]],
+};
+// The complete digital workforce, in the order a lead meets it (from JobGen's own positioning).
+const ICON = (d: string) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const STACK = [
+  { title: "AI-ready website", role: "The front door, built to convert", tint: "var(--edu)", icon: ICON('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'), points: ["Designed to turn visitors into enquiries", "Chat, booking and offers built in"], link: { label: "Web development", href: "/web-development/" } },
+  { title: "AI chat and voice agents", role: "Your always-on team", tint: "#b48cff", icon: ICON('<path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/>'), points: ["Answer inbound calls and chats", "Make outbound calls", "Book straight into the diary"], link: { label: "Meet Jenny, Olivia and Jess", href: "#team" } },
+  { title: "Lead magnets and offers", role: "Turn visitors into captured leads", tint: "var(--rest)", icon: ICON('<path d="M6 3h9l3 3v15H6z"/><path d="M14 3v4h4M9 12h6M9 16h4"/>'), points: ["Referral campaigns", "Evaluation reports", "Renovation guides and more"] },
+  { title: "Built-in CRM, SMS and email", role: "Every lead followed up, automatically", tint: "var(--prop)", icon: ICON('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'), points: ["Every lead in one place", "SMS and email campaigns that chase for you"] },
+  { title: "Custom integrations", role: "The data your industry runs on", tint: "var(--care)", icon: ICON('<path d="M9 7H6a3 3 0 0 0 0 6h3M15 7h3a3 3 0 0 1 0 6h-3M8 10h8"/><path d="M12 15v5M9 20h6"/>'), points: ["Council planning data", "Real estate portals", "Booking systems"] },
 ];
+// Point solutions vs the complete workforce (generic: no competitor named).
+const COMPARE: [string, string, string][] = [
+  ["Website", "Separate supplier", "AI-ready website, built to convert"],
+  ["Inbound and outbound calls", "Often, on its own", "Voice agents that book into your diary"],
+  ["Chat", "Sometimes", "Chat agents on your site"],
+  ["Lead magnets and offers", "Not included", "Referral campaigns, reports and guides"],
+  ["CRM, SMS and email follow-up", "Another tool to buy", "Built in: every lead followed up"],
+  ["Industry data and systems", "Do it yourself", "Custom integrations"],
+  ["Who joins it all up", "You", "We do"],
+  ["What you’re buying", "A tool", "The outcome: leads in, bookings made, admin gone"],
+];
+const problems = WORKFORCE.map((w) => ({ ...w, label: `${w.name} · ${w.role}`, scene: SCENES[w.key] ?? [] }));
 ---
 <Base
-  title="JobGen.AI — Your AI workforce: AI receptionist, sales agent and recruiter"
-  description="Grow your business with an AI workforce. Jenny answers your calls, Olivia follows up property owners, Jess screens candidates, around the clock. We automate work, not replace people."
+  title="A complete AI workforce for your business | JOBGEN.AI"
+  description="An AI-ready website, chat and voice agents that book into your diary, lead magnets, a built-in CRM with SMS and email follow-up, and custom integrations. Leads in, bookings made, admin gone."
   ogTitle="Grow your business with an AI workforce. JOBGEN.AI"
   ogDescription="AI professionals that answer your calls, book appointments, win new business and recruit talent, 24/7."
   ogImage="/og/home.png"
@@ -47,40 +73,92 @@ const problems = [
 >
   <PageHero
     eyebrow="WE AUTOMATE WORK, NOT REPLACE PEOPLE"
-    sub="AI professionals that answer your calls, book appointments, win new business and recruit talent, 24/7. Each one a specialist, working alongside your team."
-    secondary={{ label: "Meet the team ↓", href: "#team" }}
+    sub="Not another AI tool. We deploy a complete digital workforce: an AI-ready website, chat and voice agents that book straight into your diary, lead capture, and a CRM that follows up every lead."
+    secondary={{ label: "Hear a real call ↓", href: "#listen" }}
   >
     <span class="h1-line">Grow your business</span>
     <span class="h1-line h1-muted">with an AI workforce.</span>
-    <ul slot="under" class="team-strip" aria-label="Your AI workforce">
-      {WORKFORCE.map((w) => (
-        <li style={`--tint: ${w.tint}`}>
-          <a href={w.href}>
-            <span class="team-voice" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-            <span><b>{w.name}</b><small>{w.role}</small></span>
-          </a>
-        </li>
-      ))}
-    </ul>
+    <div slot="below" class="wrap hero-team">
+      <ul class="team-strip" aria-label="Your AI workforce">
+        {WORKFORCE.map((w) => (
+          <li style={`--tint: ${w.tint}`}>
+            <a href={w.href}>
+              <span class="team-voice" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span><b>{w.name}</b><small>{w.role}</small></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   </PageHero>
 
-  <!-- 01 · THE PROBLEM -->
+  <LogoStrip />
+
+  <!-- 01 · HEAR A REAL CALL -->
+  <section class="chapter proof listen light" id="listen" aria-labelledby="listen-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">01 · HEAR A REAL CALL</p>
+        <h2 id="listen-title" class="reveal">Don’t take our word for it.<br /><span class="muted">Listen.</span></h2>
+        <p class="section-sub reveal">Real calls from real businesses, with personal details removed.</p>
+      </div>
+      <div class="proof-recordings home-calls">
+        {calls.map((rec) => <RealRecording rec={rec} aiLabel={labels[rec.product ?? ""] ?? "AI"} />)}
+      </div>
+      <div class="listen-live reveal">
+        <p><b>Rather talk to one yourself?</b> Try a short live conversation in your browser. Microphone required · Up to 2 minutes · No account needed.</p>
+        <a class="btn btn-ink" href="/demo/" data-live-demo="receptionist">Try a live demo <span aria-hidden="true">→</span></a>
+        <span class="listen-live-status" data-live-demo-status aria-live="polite"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 · THE PROBLEM -->
   <section class="chapter problem light" id="problem" aria-labelledby="problem-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">01 · THE PROBLEM</p>
-        <h2 id="problem-title" class="reveal">Work doesn’t wait<br /><span class="muted">for business hours.</span></h2>
+        <p class="mono chapter-no reveal">02 · THE PROBLEM</p>
+        <h2 id="problem-title" class="reveal">Revenue leaks<br /><span class="muted">in two places.</span></h2>
         <p class="section-sub reveal">
-          The call that rings out at 6pm. The owner nobody got back to. The applicant still waiting on Friday. Every
-          business has work falling through the gaps. What’s falling through yours?
+          Most small businesses can’t afford to hire for either. And generic AI tools leave you to stitch everything
+          together yourself.
         </p>
       </div>
-      <ul class="picker">
+      <div class="leaks">
+        <article class="leak reveal">
+          <span class="leak-no mono">LEAK 1</span>
+          <h3>Leads that never get followed up</h3>
+          <ul>
+            <li>Missed calls</li>
+            <li>Slow replies</li>
+            <li>Forms nobody chases</li>
+          </ul>
+        </article>
+        <article class="leak reveal" style="transition-delay: 80ms">
+          <span class="leak-no mono">LEAK 2</span>
+          <h3>Staff time swallowed by admin</h3>
+          <ul>
+            <li>Bookings and reception</li>
+            <li>Data entry</li>
+            <li>Follow-up campaigns</li>
+          </ul>
+        </article>
+      </div>
+      <p class="picker-lead mono reveal">WHERE IT SHOWS UP FIRST</p>
+      <ul class="picker picker-3">
         {problems.map((p, i) => (
           <li class="reveal" style={`--tint: ${p.tint}; transition-delay: ${i * 60}ms`}>
             <a href={p.href}>
               <span class="picker-problem mono">{p.problem}</span>
               <strong>{p.promise}</strong>
+              <span class="picker-scene" data-scene aria-hidden="true">
+                {p.scene.map(([before, after], k) => (
+                  <span class="scene-row" style={`--k: ${k}`}>
+                    <span class="scene-before"><i></i>{before}</span>
+                    <span class="scene-after"><i></i>{after}</span>
+                  </span>
+                ))}
+              </span>
               <span class="picker-who"><span class="dot"></span>{p.label}<span class="arrow" aria-hidden="true">→</span></span>
             </a>
           </li>
@@ -89,15 +167,82 @@ const problems = [
     </div>
   </section>
 
-  <!-- 01 · THE PROBLEM, IN NUMBERS -->
-  <MissedCalls eyebrow="01 · THE COST OF A MISSED CALL" />
+  <!-- 03 · THE SOLUTION -->
+  <section class="chapter stack-section" id="solution" aria-labelledby="solution-title">
+    <div class="aurora aurora-soft" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">03 · THE SOLUTION</p>
+        <h2 id="solution-title" class="reveal">Not a single tool.<br /><span class="grad">A complete digital workforce.</span></h2>
+        <p class="section-sub reveal">We deploy every piece into your business and join it up, so each lead is caught, followed up and booked.</p>
+      </div>
+      <ol class="stack">
+        {STACK.map((item, i) => (
+          <li class="stack-item reveal" style={`--tint: ${item.tint}; transition-delay: ${i * 60}ms`}>
+            <span class="stack-no mono">{String(i + 1).padStart(2, "0")}</span>
+            <span class="stack-icon" aria-hidden="true" set:html={item.icon}></span>
+            <h3>{item.title}</h3>
+            <p class="stack-role">{item.role}</p>
+            <ul>
+              {item.points.map((pt) => <li>{pt}</li>)}
+            </ul>
+            {item.link && <a class="stack-link" href={item.link.href}>{item.link.label} <span aria-hidden="true">→</span></a>}
+          </li>
+        ))}
+      </ol>
+      <ol class="flow reveal" aria-label="What it adds up to">
+        <li><b>Leads in</b><span>Website, offers and agents catch every enquiry</span></li>
+        <li><b>Followed up</b><span>CRM, SMS and email chase every lead</span></li>
+        <li><b>Bookings made</b><span>Straight into your diary</span></li>
+        <li><b>Admin gone</b><span>Reception, data entry and campaigns handled</span></li>
+      </ol>
+    </div>
+  </section>
 
-  <!-- 02 · MEET THE TEAM -->
+  <!-- 04 · WHY JOBGEN -->
+  <section class="chapter why light" id="why" aria-labelledby="why-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">04 · WHY JOBGEN.AI</p>
+        <h2 id="why-title" class="reveal">Others sell a piece.<br /><span class="muted">We deliver the outcome.</span></h2>
+        <p class="section-sub reveal">Most providers sell a point solution: a voice bot, or a website. We take the whole job, end to end.</p>
+      </div>
+      <div class="compare reveal" role="region" aria-label="Point solutions compared with JobGen.AI" tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col"><span class="sr-only">What you need</span></th>
+              <th scope="col">A point solution</th>
+              <th scope="col" class="compare-us">JOBGEN.AI</th>
+            </tr>
+          </thead>
+          <tbody>
+            {COMPARE.map(([need, them, us]) => (
+              <tr>
+                <th scope="row">{need}</th>
+                <td data-label="A point solution">{them}</td>
+                <td class="compare-us" data-label="JOBGEN.AI"><span class="tick" aria-hidden="true">✓</span>{us}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="why-cta reveal">
+        <a class="btn btn-ink" href="#book">Book a demo <span aria-hidden="true">→</span></a>
+        <span>See the whole workforce working for your business in 30 minutes.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 · THE COST OF A MISSED CALL -->
+  <MissedCalls eyebrow="05 · THE COST OF A MISSED CALL" />
+
+  <!-- 06 · MEET THE TEAM -->
   <section class="chapter team" id="team" aria-labelledby="team-title">
     <div class="aurora aurora-soft" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">02 · MEET THE TEAM</p>
+        <p class="mono chapter-no reveal">06 · MEET THE TEAM</p>
         <h2 id="team-title" class="reveal">Specialists,<br /><span class="grad">not one chatbot.</span></h2>
         <p class="section-sub reveal">
           Every JobGen.AI professional does one job and does it well. Pick the one that fits the work.
@@ -114,6 +259,11 @@ const problems = [
               </div>
             </header>
             <p class="member-summary">{w.summary}</p>
+            <p class="member-live" data-live={JSON.stringify(LIVE[w.key] ?? [])}>
+              <span class="member-live-dot" aria-hidden="true"></span>
+              <span class="member-live-text">{LIVE[w.key]?.[0]}</span>
+              <small>example</small>
+            </p>
             <ul>
               {w.capabilities.map((c) => <li>{c}</li>)}
             </ul>
@@ -124,26 +274,27 @@ const problems = [
     </div>
   </section>
 
-  <!-- 03 · REAL CALLS -->
+
+  <!-- 07 · WHAT CUSTOMERS SAY -->
   <section class="chapter proof light" id="proof" aria-labelledby="proof-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">03 · REAL CALLS</p>
-        <h2 id="proof-title" class="reveal">Don’t take our word for it.<br /><span class="muted">Listen.</span></h2>
-        <p class="section-sub reveal">Real calls from real businesses, with personal details removed.</p>
+        <p class="mono chapter-no reveal">07 · WHAT CUSTOMERS SAY</p>
+        <h2 id="proof-title" class="reveal">Calls answered.<br /><span class="muted">Teams back on the work.</span></h2>
       </div>
-      <div class="proof-recordings home-calls">
-        {calls.map((rec) => <RealRecording rec={rec} aiLabel={labels[rec.product ?? ""] ?? "AI"} />)}
-      </div>
+      <VideoTestimonial />
       <Testimonials items={quotes} />
     </div>
   </section>
 
-  <!-- 04 · WITH YOUR PEOPLE -->
+  <!-- 08 · HOW IT WORKS -->
+  <HowItWorks eyebrow="08 · HOW IT WORKS" />
+
+  <!-- 09 · WITH YOUR PEOPLE -->
   <section class="chapter people" aria-labelledby="people-title">
     <div class="wrap people-grid">
       <div>
-        <p class="mono chapter-no reveal">04 · WITH YOUR PEOPLE</p>
+        <p class="mono chapter-no reveal">09 · WITH YOUR PEOPLE</p>
         <h2 id="people-title" class="reveal">We automate work,<br /><span class="muted">not replace people.</span></h2>
         <p class="section-sub reveal">
           Your AI workforce handles the repetitive, round-the-clock work, so your team spends its day on the
@@ -168,81 +319,64 @@ const problems = [
         </li>
       </ol>
     </div>
-  </section>
-
-  <!-- 05 · OUR STORY + FOUNDER -->
-  <section class="chapter story light" id="story" aria-labelledby="story-title">
     <div class="wrap">
-      <div class="section-head">
-        <p class="mono chapter-no reveal">05 · OUR STORY</p>
-        <h2 id="story-title" class="reveal">Built in Sydney.<br /><span class="muted">Started with job seekers.</span></h2>
-      </div>
-      <ol class="timeline">
-        <li class="reveal">
-          <span class="mono">2024 · SYDNEY</span>
-          <h3>JobGen.AI begins</h3>
-          <p>Founded in Sydney as an AI job-search assistant, helping candidates find and land roles.</p>
-        </li>
-        <li class="reveal">
-          <span class="mono">TODAY · FOR JOB SEEKERS</span>
-          <h3>Still helping people find work</h3>
-          <p>Emma, our AI job-search assistant, has her own home at <a href="https://candidates.jobgen.ai/">candidates.jobgen.ai</a>.</p>
-        </li>
-        <li class="reveal">
-          <span class="mono">TODAY · FOR BUSINESSES</span>
-          <h3>An AI workforce</h3>
-          <p>Jenny answers calls, Olivia follows up property owners and Jess screens candidates, with a web team building sites alongside. Offices in Sydney and San Francisco.</p>
-        </li>
-      </ol>
-      <figure class="founder reveal" id="founder" data-founder data-approved={String(founderLive)} hidden={!founderLive}>
-          <div class="founder-photo">
-            {FOUNDER.photo ? (
-              <img src={FOUNDER.photo} alt={FOUNDER.photoAlt} width="720" height="900" loading="lazy" />
-            ) : (
-              <span class="founder-initials" aria-hidden="true">KB</span>
-            )}
-          </div>
-          <div class="founder-body">
-            <p class="founder-draft mono" hidden>DRAFT · NOT ON THE LIVE SITE UNTIL KUSH APPROVES IT AND A PHOTO IS ADDED</p>
-            <p class="mono">A NOTE FROM OUR FOUNDER</p>
-            <blockquote>
-              {FOUNDER.note.map((para) => <p>{para}</p>)}
-            </blockquote>
-            <dl class="founder-mv">
-              <div><dt class="mono">OUR MISSION</dt><dd>{FOUNDER.mission}</dd></div>
-              <div><dt class="mono">OUR VISION</dt><dd>{FOUNDER.vision}</dd></div>
-            </dl>
-            <figcaption>
-              <span class="founder-sign">— {FOUNDER.signoff}</span>
-              <b>{FOUNDER.name}</b>
-              <span>{FOUNDER.title}</span>
-            </figcaption>
-          </div>
-      </figure>
+      <p class="mono boundaries-title reveal">YOUR BOUNDARIES, BUILT IN · YOU DECIDE WHERE THEY STOP</p>
+      <ul class="boundaries">
+        {[
+          ["Knowledge", "Your approved business facts and answers."],
+          ["Identity", "Verification before customer-specific information."],
+          ["Outreach", "Selected contacts, DNC checks and configured schedules."],
+          ["Exceptions", "Urgent or unsupported requests go to your chosen team."],
+          ["Review", "Call records, transcripts and follow-up status."],
+        ].map(([t, d]) => <li class="reveal"><b>{t}</b><span>{d}</span></li>)}
+      </ul>
     </div>
   </section>
+
+  <!-- 10 · PLAIN ANSWERS -->
+  <Faq eyebrow="10 · PLAIN ANSWERS" />
+
+  <!-- FROM OUR FOUNDER (the full note and our story are on the About page) -->
+  {founderLive && (
+    <section class="founder-strip light" aria-label="From our founder">
+      <div class="wrap founder-card reveal">
+        <img src={FOUNDER.photo} alt={FOUNDER.photoAlt} width="720" height="900" loading="lazy" />
+        <div>
+          <p class="mono">FROM OUR FOUNDER</p>
+          <blockquote>“{FOUNDER.mission}”</blockquote>
+          <p class="founder-by"><b>{FOUNDER.name}</b> · {FOUNDER.title}</p>
+          <a class="founder-more" href="/about/#story">Read our story <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+  )}
 
   <BookDemo
     eyebrow="30 MINUTES · SYDNEY AND SAN FRANCISCO"
     line1="Put an AI professional"
     line2="on your team."
-    sub="Tell us which calls, candidates or conversations are falling through the cracks. We’ll show you the professional who handles them, on a live call, with your own scenarios, no slide deck."
-    agenda={[
-      { title: "Hear them live.", text: "Hear Jenny, Olivia or Jess handle a real conversation, not a recording of a script." },
-      { title: "Map your work.", text: "Talk through the calls, owners or candidates slipping through, and when your team should take over." },
-      { title: "Discuss setup & pricing.", text: "Review what getting started involves and the options that suit your business." },
-    ]}
+    sub="Pick a time and we’ll show you the right professional on a live call."
+    agenda={[{ title: "Hear them live" }, { title: "Map the work slipping through" }, { title: "Setup and pricing" }]}
   />
 
   <Fragment slot="scripts">
     <script is:inline>
-      // Founder note preview: ?founder=preview shows the draft (clearly labelled) before it's approved.
+      // "Meet the team": each card cycles through example activity, staggered so they don't change together.
       (() => {
-        const el = document.querySelector("[data-founder]");
-        if (!el || el.dataset.approved === "true") return;
-        if (new URLSearchParams(location.search).get("founder") !== "preview") return;
-        el.hidden = false;
-        el.querySelector(".founder-draft").hidden = false;
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        document.querySelectorAll("[data-live]").forEach((el, n) => {
+          const items = JSON.parse(el.dataset.live || "[]");
+          const text = el.querySelector(".member-live-text");
+          if (items.length < 2 || !text) return;
+          let i = 0;
+          setTimeout(() => setInterval(() => {
+            i = (i + 1) % items.length;
+            text.classList.remove("is-in");
+            void text.offsetWidth;
+            text.textContent = items[i];
+            text.classList.add("is-in");
+          }, 3200), n * 1050);
+        });
       })();
     </script>
   </Fragment>

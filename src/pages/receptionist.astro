@@ -3,11 +3,14 @@ import Base from "../layouts/Base.astro";
 import RealRecording from "../components/RealRecording.astro";
 import Testimonials from "../components/Testimonials.astro";
 import MissedCalls from "../components/MissedCalls.astro";
+import BookDemo from "../components/BookDemo.astro";
+import VideoTestimonial from "../components/VideoTestimonial.astro";
 import { RECORDINGS } from "../data/recordings";
 import { TESTIMONIALS } from "../data/testimonials";
 
 const jennyCalls = RECORDINGS.filter((r) => r.product === "jenny");
-const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
+// Mandar Gokhale appears in the video card, so his written quote isn’t repeated below it.
+const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny" && t.name !== "Mandar Gokhale");
 ---
 <Base
   title="Jenny, AI Receptionist | JOBGEN.AI"
@@ -56,7 +59,7 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
 
         <div class="wrap">
           <div class="desk" aria-label="Example calls Jenny could handle">
-            <p class="desk-label mono">EXAMPLES · OLIVIA ON SHIFT AT THE FRONT DESK</p>
+            <p class="desk-label mono">EXAMPLES · JENNY ON SHIFT AT THE FRONT DESK</p>
             <div class="desk-grid">
               <article class="mini" style="--tint: var(--edu)" data-result="Campus tour booked">
                 <header><span class="dot"></span>School</header>
@@ -115,7 +118,7 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
               <div class="phone-body" id="phone-body" aria-live="polite">
                 <p class="phone-hint">Press the green button to ring Jenny, or just listen to a full example call.</p>
               </div>
-              <div class="phone-replies" id="phone-replies" aria-label="Choose what to say"></div>
+              <div class="phone-replies" id="phone-replies" role="group" aria-label="Choose what to say"></div>
               <div class="phone-actions">
                 <button class="call-btn" id="call-btn" aria-label="Call Northside College">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z" /></svg>
@@ -148,6 +151,12 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
           <div class="proof-recordings">
             {jennyCalls.map((rec) => <RealRecording rec={rec} aiLabel="Jenny" />)}
           </div>
+          <div class="listen-live reveal">
+            <p><b>Rather try a call yourself?</b> Have a short live reception call in your browser. Microphone required · Up to 2 minutes · No account needed.</p>
+            <a class="btn btn-ink" href="/demo/" data-live-demo="receptionist">Try a live call <span aria-hidden="true">→</span></a>
+            <span class="listen-live-status" data-live-demo-status aria-live="polite"></span>
+          </div>
+          <VideoTestimonial />
           <Testimonials items={jennyQuotes} />
         </div>
       </section>
@@ -167,7 +176,7 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
             <label class="rule"><span><b>Take booking requests</b><small>Tours, inspections, tables</small></span><input type="checkbox" role="switch" data-rule="take booking requests" checked /><i></i></label>
             <label class="rule"><span><b>Escalate urgent calls</b><small>Straight to your on-call person</small></span><input type="checkbox" role="switch" data-rule="send urgent calls to a person" checked /><i></i></label>
             <label class="rule"><span><b>After-hours mode</b><small>Set expectations for follow-up</small></span><input type="checkbox" role="switch" data-rule="tell after-hours callers when you’ll follow up" /><i></i></label>
-            <p class="console-out" aria-live="polite"><span class="mono">OLIVIA WILL</span><span id="rule-summary"></span></p>
+            <p class="console-out" aria-live="polite"><span class="mono">JENNY WILL</span><span id="rule-summary"></span></p>
           </div>
         </div>
       </section>
@@ -244,6 +253,14 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
               <p>Any business where the phone rarely stops. The schools, agencies, restaurants, childcare centres and trades on this page are examples; Jenny is set up around your own calls and rules.</p>
             </details>
             <details>
+              <summary>How long does setup take?</summary>
+              <p>A straightforward deployment can be live within a few business days. JobGen.AI configures the voice, scripts, calendar connections and handover rules with the business, then runs a test period before handling live calls.</p>
+            </details>
+            <details>
+              <summary>What does Jenny cost?</summary>
+              <p>Pricing depends on the expected call volume and setup. You can <a href="/pricing/">estimate the price per conversation</a>, and we’ll give you pricing for your usage in the demo.</p>
+            </details>
+            <details>
               <summary>Is the voice in the demo Jenny’s real voice?</summary>
               <p>No. The interactive demo is a simulated call that uses your device’s built-in voice so you can try it instantly. To hear Jenny herself, play the real recorded call on this page, or book a demo.</p>
             </details>
@@ -252,42 +269,14 @@ const jennyQuotes = TESTIMONIALS.filter((t) => t.product === "jenny");
       </section>
 
       <!-- BOOK -->
-      <section class="final" id="book" aria-labelledby="final-title">
-        <div class="final-glow" aria-hidden="true"></div>
-        <div class="wrap">
-          <p class="mono reveal">30 MINUTES · YOUR BUSINESS, YOUR CALLS</p>
-          <h2 id="final-title" class="reveal">Give your next call<br /><span class="muted">a better ending.</span></h2>
-          <p class="section-sub book-sub reveal">Hear Jenny for yourself and explore where she fits in your business. Here’s what we’ll cover together.</p>
-          <ol class="demo-agenda reveal" aria-label="What we’ll cover in your 30-minute demo">
-            <li>
-              <span class="agenda-number mono" aria-hidden="true">01</span>
-              <h3>Hear Jenny.</h3>
-              <p>Listen to her actual voice and how she handles a conversation in a live demo.</p>
-            </li>
-            <li>
-              <span class="agenda-number mono" aria-hidden="true">02</span>
-              <h3>Map your calls.</h3>
-              <p>Talk through common questions, booking requests and when your team should take over.</p>
-            </li>
-            <li>
-              <span class="agenda-number mono" aria-hidden="true">03</span>
-              <h3>Discuss setup &amp; pricing.</h3>
-              <p>Review what getting started involves and the options that suit your needs.</p>
-            </li>
-          </ol>
-          <p class="takeaway reveal">You’ll leave knowing which of your calls Jenny can take, and what it would cost.</p>
-          <div class="booking reveal">
-            <iframe
-              title="Book a JOBGEN.AI demo"
-              data-src="https://calendly.com/jobgen-demo/30min?embed_type=Inline&amp;hide_gdpr_banner=1&amp;hide_event_type_details=1&amp;background_color=131316&amp;text_color=efede8&amp;primary_color=7b8cff"
-              loading="lazy"
-            ></iframe>
-            <p class="booking-fallback">
-              Calendar not loading? <a href="https://calendly.com/jobgen-demo/30min" target="_blank" rel="noopener">Open the booking page ↗</a>
-            </p>
-          </div>
-        </div>
-      </section>
+      <BookDemo
+        eyebrow="30 MINUTES · YOUR BUSINESS, YOUR CALLS"
+        line1="Give your next call"
+        line2="a better ending."
+        sub="Pick a time and hear Jenny on a live call."
+        agenda={[{ title: "Hear Jenny live" }, { title: "Map your calls and handovers" }, { title: "Setup and pricing" }]}
+        quoteFrom="McGill Institute"
+      />
 
 
   <Fragment slot="scripts">

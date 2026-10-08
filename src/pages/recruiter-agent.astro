@@ -3,11 +3,14 @@ import Base from "../layouts/Base.astro";
 import PageHero from "../components/PageHero.astro";
 import Testimonials from "../components/Testimonials.astro";
 import BookDemo from "../components/BookDemo.astro";
+import Faq from "../components/Faq.astro";
+import JessPipeline from "../components/JessPipeline.astro";
 import { TESTIMONIALS } from "../data/testimonials";
 
 const quotes = TESTIMONIALS.filter((t) => t.product === "jess");
 ---
 <Base
+  persona="jess"
   title="Jess, AI Recruitment Assistant | JOBGEN.AI"
   description="Jess finds candidates, screens them with natural voice calls, grades their responses and writes the best profiles back to your ATS."
   ogTitle="Every applicant. Screened. Meet Jess, the AI recruitment assistant by JOBGEN.AI."
@@ -26,6 +29,9 @@ const quotes = TESTIMONIALS.filter((t) => t.product === "jess");
     <span class="h1-line">Every applicant.</span>
     <span class="h1-line h1-muted">Screened.</span>
   </PageHero>
+
+  <!-- SIGNATURE: only on this page -->
+  <JessPipeline />
 
   <!-- WHAT SHE DOES -->
   <section class="chapter does" id="how" aria-labelledby="does-title">
@@ -94,21 +100,25 @@ const quotes = TESTIMONIALS.filter((t) => t.product === "jess");
       <div class="section-head">
         <p class="mono chapter-no reveal">FROM RECRUITERS</p>
         <h2 id="proof-title" class="reveal">The shortlist is waiting<br /><span class="muted">in the morning.</span></h2>
-        <p class="section-sub reveal">What recruitment teams using Jess say. Want to hear her on a call? Book a demo and we’ll run one live.</p>
+        <p class="section-sub reveal">What recruitment teams using Jess say.</p>
       </div>
       <Testimonials items={quotes} />
+      <div class="listen-live listen-live-dark reveal">
+        <p><b>Want to hear a screening call?</b> Have a short live candidate screening call in your browser. Microphone required · Up to 2 minutes · No account needed.</p>
+        <a class="btn btn-light" href="/demo/" data-live-demo="recruiter">Try a live call <span aria-hidden="true">→</span></a>
+        <span class="listen-live-status" data-live-demo-status aria-live="polite"></span>
+      </div>
     </div>
   </section>
+
+  <Faq eyebrow="QUESTIONS RECRUITERS ASK" only={["Does JobGen.AI integrate with Bullhorn", "How does JobGen.AI handle", "How long does setup", "What does JobGen.AI cost"]} />
 
   <BookDemo
     eyebrow="30 MINUTES · YOUR ROLES, YOUR PIPELINE"
     line1="Give your next hire"
     line2="a shorter search."
-    sub="Hear Jess for yourself and see where she fits in your recruitment process. Here’s what we’ll cover together."
-    agenda={[
-      { title: "Hear Jess.", text: "Listen to her run a screening call, live." },
-      { title: "Map your pipeline.", text: "Talk through your roles, your screening questions and where your consultants take over." },
-      { title: "Discuss setup & pricing.", text: "Review your ATS, what getting started involves and the options that suit your team." },
-    ]}
+    sub="Pick a time and hear Jess run a screening call."
+    agenda={[{ title: "Hear Jess live" }, { title: "Map your roles and pipeline" }, { title: "Setup and pricing" }]}
+    quoteFrom="Pri Gillett"
   />
 </Base>

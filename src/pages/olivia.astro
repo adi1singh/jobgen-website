@@ -4,6 +4,8 @@ import PageHero from "../components/PageHero.astro";
 import RealRecording from "../components/RealRecording.astro";
 import Testimonials from "../components/Testimonials.astro";
 import BookDemo from "../components/BookDemo.astro";
+import Faq from "../components/Faq.astro";
+import OliviaList from "../components/OliviaList.astro";
 import { RECORDINGS } from "../data/recordings";
 import { TESTIMONIALS } from "../data/testimonials";
 
@@ -11,9 +13,10 @@ const calls = RECORDINGS.filter((r) => r.product === "olivia");
 const quotes = TESTIMONIALS.filter((t) => t.product === "olivia");
 ---
 <Base
-  title="Olivia, AI Sales Agent for Property | JOBGEN.AI"
+  persona="olivia"
+  title="Olivia, AI Sales Agent for Real Estate | JOBGEN.AI"
   description="Olivia calls the property owners already in your database, offers a useful property report, listens for selling intent and books appraisals and agent callbacks."
-  ogTitle="Every owner on your list. Called. Meet Olivia, the AI sales agent by JOBGEN.AI."
+  ogTitle="Every owner on your list. Called. Meet Olivia, the AI sales agent for real estate by JOBGEN.AI."
   ogDescription="Olivia calls known owners, listens for selling intent and leaves your agents with the next action already organised."
   ogImage="/og/olivia.png"
   ogImageAlt="Olivia by JOBGEN.AI: Every owner on your list. Called."
@@ -21,14 +24,17 @@ const quotes = TESTIMONIALS.filter((t) => t.product === "olivia");
 >
   <PageHero
     name="Olivia"
-    role="AI sales agent"
-    position="Outbound calls for property teams."
+    role="AI sales agent for real estate"
+    position="Outbound calls for real estate agencies."
     sub="Olivia calls the owners already in your database, offers a useful digital property report, listens for selling intent, and leaves your agents with the next action already organised."
     secondary={{ label: "Hear a real call", href: "#proof" }}
   >
     <span class="h1-line">Every owner on your list.</span>
     <span class="h1-line h1-muted">Called.</span>
   </PageHero>
+
+  <!-- SIGNATURE: only on this page -->
+  <OliviaList />
 
   <!-- WHAT SHE DOES -->
   <section class="chapter does" aria-labelledby="does-title">
@@ -70,6 +76,11 @@ const quotes = TESTIMONIALS.filter((t) => t.product === "olivia");
       <div class="proof-recordings">
         {calls.map((rec) => <RealRecording rec={rec} aiLabel="Olivia" />)}
       </div>
+      <div class="listen-live reveal">
+        <p><b>Rather try one yourself?</b> Have a short live property owner call in your browser. Microphone required · Up to 2 minutes · No account needed.</p>
+        <a class="btn btn-ink" href="/demo/" data-live-demo="sales">Try a live call <span aria-hidden="true">→</span></a>
+        <span class="listen-live-status" data-live-demo-status aria-live="polite"></span>
+      </div>
       <Testimonials items={quotes} />
     </div>
   </section>
@@ -109,15 +120,14 @@ const quotes = TESTIMONIALS.filter((t) => t.product === "olivia");
     </div>
   </section>
 
+  <Faq eyebrow="QUESTIONS AGENCIES ASK" only={["How does JobGen.AI handle", "How long does setup", "What does JobGen.AI cost"]} />
+
   <BookDemo
     eyebrow="30 MINUTES · YOUR AGENCY, YOUR LIST"
     line1="Give your next listing"
     line2="a head start."
-    sub="Hear Olivia for yourself and see where she fits in your agency. Here’s what we’ll cover together."
-    agenda={[
-      { title: "Hear Olivia.", text: "Listen to how she opens a conversation with an owner and handles a follow-up, live." },
-      { title: "Map your owner list.", text: "Talk through who she should call, what she offers and when an agent takes over." },
-      { title: "Discuss setup & pricing.", text: "Review what getting started involves and the options that suit your agency." },
-    ]}
+    sub="Pick a time and hear Olivia work an owner list."
+    agenda={[{ title: "Hear Olivia live" }, { title: "Map your owner list" }, { title: "Setup and pricing" }]}
+    quoteFrom="Buta Deogun"
   />
 </Base>
