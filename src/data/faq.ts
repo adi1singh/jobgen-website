@@ -1,5 +1,5 @@
 // Plain answers, word for word from https://jobgen.ai/about/ (the cost answer adds a pointer to the
-// pricing page, which now exists). The "do I have to buy everything" answer is JobGen's own positioning (Oct 2026), to be confirmed by the owner.
+// pricing page, which now exists). The "do I have to buy everything" answer is JobGen's own positioning, confirmed by the owner (Oct 2026): customers can start with one solution.
 export const FAQ = [
   {
     q: "Do I have to buy a website, CRM and every assistant?",
