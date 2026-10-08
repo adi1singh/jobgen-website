@@ -17,10 +17,11 @@ const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", hre
     <div>
       <p class="mono reveal">{eyebrow}</p>
       <h2 id="cost-title" class="reveal">What are missed calls <span class="muted">costing you?</span></h2>
-      <p class="section-sub reveal">Move the sliders to match your business, then calculate. Your numbers, not ours. All estimates are in AUD.</p>
+      <p class="section-sub reveal">Move the sliders to match your business, then calculate. All estimates are in AUD.</p>
       <slot name="aside" />
     </div>
     <div class="calc reveal" data-missed-calls>
+      <p class="calc-preset mono">Starting values are illustrative. Change them to match your business.</p>
       <label class="slider">
         <span class="slider-top"><span>Calls you get a day</span><output id="out-calls" for="in-calls">30</output></span>
         <input type="range" id="in-calls" min="5" max="200" step="5" value="30" />
@@ -55,11 +56,11 @@ const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", hre
             </li>
             <li>
               <span><b id="as-month2">132</b> missed calls × <b id="as-conv">33%</b> who’d become customers</span>
-              <strong>= <b id="as-cust">44</b> new customers</strong>
+              <strong>= <b id="as-cust">43.56</b> new customers</strong>
             </li>
             <li>
-              <span><b id="as-cust2">44</b> customers × <b id="as-value">A$150</b> each</span>
-              <strong>= <b id="as-total">A$6,600</b> a month</strong>
+              <span><b id="as-cust2">43.56</b> customers × <b id="as-value">A$150</b> each</span>
+              <strong>= <b id="as-total">A$6,534</b> a month</strong>
             </li>
           </ol>
         </div>
@@ -70,7 +71,7 @@ const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", hre
           <p class="calc-sub">a month, from <b id="calc-missed">132</b> missed calls.</p>
           <p class="calc-zero" data-calc-zero hidden>That’s less than one new customer a month at these numbers. Try your busiest week, or a higher customer value.</p>
           <slot name="result" />
-          <p class="calc-note">An estimate to start the conversation, not a promise. Every number is yours to change, apart from the 22 working days.</p>
+          <p class="calc-note">This estimates the potential revenue in calls you currently miss, based only on your numbers. It isn’t guaranteed recovered revenue, profit or savings from JobGen.AI. Every number is yours to change, apart from the 22 working days.</p>
         </div>
 
         <form class="lead" data-lead-form data-endpoint={LINKS.leadEndpoint} novalidate>

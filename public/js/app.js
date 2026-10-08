@@ -145,7 +145,8 @@
     const inMissed = $("#in-missed"), inConv = $("#in-conv"), inValue = $("#in-value");
     const inputs = [inCalls, inMissed, inConv, inValue].filter(Boolean);
     const aud = (v) => "A$" + Math.round(v).toLocaleString("en-AU");
-    const num = (v) => Math.round(v).toLocaleString("en-AU");
+    // Steps keep their decimals (e.g. 43.56 customers); only the final dollar figure is rounded.
+    const num = (v) => (+v.toFixed(2)).toLocaleString("en-AU", { maximumFractionDigits: 2 });
     const put = (sel, v) => { const el = $(sel, box); if (el) el.textContent = v; };
     const goBtn = $("[data-calc-go]", box), goLabel = $("[data-calc-go-label]", box);
     const staleHint = $("[data-calc-stale]", box), reveal = $("[data-calc-reveal]", box);
@@ -155,8 +156,8 @@
     const read = () => {
       const calls = +inCalls.value, missedPct = +inMissed.value, value = +inValue.value;
       const conv = inConv ? +inConv.value : 33;
-      const missedMonth = Math.round(((calls * missedPct) / 100) * 22);
-      const customers = Math.round((missedMonth * conv) / 100);
+      const missedMonth = ((calls * missedPct) / 100) * 22;
+      const customers = (missedMonth * conv) / 100;
       return { calls, missedPct, conv, value, missedMonth, customers, total: customers * value };
     };
     // Sliders only update their own labels; the estimate waits for Calculate.
@@ -197,7 +198,7 @@
       put("#as-cust2", num(r.customers));
       put("#calc-missed", num(r.missedMonth));
       put("#calc-number", aud(0));
-      $("[data-calc-zero]", box).hidden = r.customers > 0;
+      $("[data-calc-zero]", box).hidden = r.customers >= 1;
       steps.forEach((li) => li.classList.remove("is-shown"));
       box.classList.remove("is-result");
       reveal.hidden = false;
@@ -309,13 +310,42 @@
     }
   }
 
+  /* ---------- Quiet zones: floating controls step aside while people use audio, transcripts, forms
+     and calendars (anything of these reaching the bottom of the screen, a playing call, or a focused
+     field), so nothing fixed sits on top of what they're using. ---------- */
+  {
+    const QUIET = ".recording, [data-missed-calls], form, .booking, .try-stage, .estimator, .video-frame";
+    const near = new Set();
+    const update = () => {
+      const field = document.activeElement?.matches?.("input, textarea, select") ?? false;
+      const playing = [...document.querySelectorAll("audio, video")].some((m) => !m.paused);
+      const on = near.size > 0 || playing || field;
+      if (document.body.classList.contains("quiet-zone") === on) return;
+      document.body.classList.toggle("quiet-zone", on);
+      document.dispatchEvent(new Event("quietzone"));
+    };
+    // Only the bottom strip of the screen matters: that's where the floating controls live.
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => (e.isIntersecting ? near.add(e.target) : near.delete(e.target)));
+        update();
+      },
+      { rootMargin: "-75% 0px 0px 0px" },
+    );
+    $$(QUIET).forEach((el) => io.observe(el));
+    // media events don't bubble, so listen in the capture phase
+    ["play", "pause", "ended"].forEach((t) => document.addEventListener(t, update, true));
+    document.addEventListener("focusin", update);
+    document.addEventListener("focusout", () => setTimeout(update, 0));
+  }
+
   /* ---------- Phones: a slim booking bar once the hero is out of view ---------- */
   const bookBar = $("#book-bar");
   if (bookBar) {
     const phone = matchMedia("(max-width: 900px)");
     const seen = { hero: true, book: false, footer: false };
     const sync = () => {
-      bookBar.hidden = !phone.matches || seen.hero || seen.book || seen.footer;
+      bookBar.hidden = !phone.matches || seen.hero || seen.book || seen.footer || document.body.classList.contains("quiet-zone");
       // one booking button at a time: the header button steps aside while the bar is up
       document.body.classList.toggle("book-bar-on", !bookBar.hidden);
     };
@@ -329,6 +359,7 @@
     watch($("#book"), "book");
     watch($(".footer"), "footer");
     phone.addEventListener("change", sync);
+    document.addEventListener("quietzone", sync);
   }
 
   /* ---------- Reveal on scroll ---------- */
@@ -358,9 +389,21 @@
   /* ---------- Booking calendar loads when it's close to view ---------- */
   const calendar = $(".booking iframe");
   if (calendar) {
+    // A visible loading state until Calendly is in, and a plain link if it's slow.
+    const status = $("[data-booking-status]");
     const load = () => {
       const url = new URL(calendar.dataset.src);
       url.searchParams.set("embed_domain", location.hostname || "localhost");
+      if (status) {
+        status.hidden = false;
+        calendar.addEventListener("load", () => (status.hidden = true), { once: true });
+        setTimeout(() => {
+          if (status.hidden) return;
+          $("[data-booking-text]", status).innerHTML =
+            'The calendar is taking a while. <a href="https://calendly.com/jobgen-demo/30min" target="_blank" rel="noopener">Open the booking page ↗</a>';
+          status.classList.add("is-slow");
+        }, 10000);
+      }
       calendar.src = url.toString();
     };
     const near = new IntersectionObserver(

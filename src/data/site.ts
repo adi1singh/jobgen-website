@@ -32,10 +32,10 @@ export const WORKFORCE = [
     href: "/receptionist/",
     tint: "var(--edu)",
     problem: "Calls ringing out",
-    promise: "Answer every call, day or night",
+    promise: "Handle calls around the clock",
     summary: "Answers calls around the clock, handles approved enquiries, takes messages, manages appointments and escalates calls that need a person.",
     capabilities: [
-      "Answers and greets every call, day or night",
+      "Answers and greets callers around the clock, with handover to your team",
       "Books, moves and confirms appointments",
       "Routes calls, takes messages and transfers to a person on request",
     ],
@@ -47,7 +47,7 @@ export const WORKFORCE = [
     href: "/olivia/",
     tint: "var(--prop)",
     problem: "Owners on your list going cold",
-    promise: "Win more listings",
+    promise: "Follow up the owners on your list",
     summary: "Calls known property owners, identifies selling intent, handles follow-ups and organises appraisals or agent callbacks.",
     capabilities: [
       "Known-owner outbound conversations",
@@ -62,7 +62,7 @@ export const WORKFORCE = [
     href: "/recruiter-agent/",
     tint: "var(--care)",
     problem: "Too many applicants, too little time",
-    promise: "Screen every candidate",
+    promise: "Screen applicants at scale",
     summary: "Sources and screens candidates, conducts voice interviews, scores responses and writes results back to supported applicant tracking systems.",
     capabilities: [
       "Sourcing from LinkedIn and job boards",

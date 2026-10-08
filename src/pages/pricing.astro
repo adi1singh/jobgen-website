@@ -36,22 +36,55 @@ const setupLine = [
   bookBarText="Talk through your pricing"
 >
   <PageHero
-    eyebrow="SIMPLE, TRANSPARENT PRICING"
-    sub="Choose your call type, product area and conversation length to see the price your team would pay. Every number updates as you go."
-    primary={{ label: "See your price", href: "#estimate" }}
+    eyebrow="PRICING"
+    sub="Your costs come in two parts: the running cost of each AI conversation, which you can estimate below, and the work to set up and connect your solution, which we confirm with you on a demo."
+    primary={{ label: "Estimate running costs", href: "#estimate" }}
     secondary={{ label: "Book a demo", href: "#book" }}
   >
     <span class="h1-line">Price every conversation</span>
     <span class="h1-line h1-muted">with confidence.</span>
   </PageHero>
 
-  <!-- 01 · ESTIMATOR -->
+  <!-- 01 · WHAT YOU PAY FOR -->
+  <section class="chapter pay light" id="what-you-pay" aria-labelledby="pay-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="mono chapter-no reveal">01 · WHAT YOU PAY FOR</p>
+        <h2 id="pay-title" class="reveal">Running costs,<br /><span class="muted">and the work to set it up.</span></h2>
+      </div>
+      <div class="pay-grid">
+        <article class="pay-card reveal">
+          <p class="mono">IN THE ESTIMATE BELOW</p>
+          <h3>Running cost of each AI conversation</h3>
+          <ul>
+            <li>The AI conversation itself</li>
+            <li>Voice and transcription</li>
+            <li>Telephone and audio streaming, if JobGen manages your number</li>
+            <li>Phone number rental each month, if JobGen provides the number</li>
+          </ul>
+          <p class="pay-foot">Estimates, in USD or approximate AUD at today’s exchange rate.</p>
+        </article>
+        <article class="pay-card pay-card-quote reveal" style="transition-delay: 80ms">
+          <p class="mono">QUOTED SEPARATELY</p>
+          <h3>Building and connecting your solution</h3>
+          <ul>
+            <li>Setting up your assistant: information, questions, calendar connections and handover rules</li>
+            <li>Websites, lead offers, CRM campaigns and custom integrations</li>
+            <li>Jess (recruitment) and web development, which aren’t in this estimator</li>
+          </ul>
+          <p class="pay-foot">We’ll talk these through with you on a demo.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 · ESTIMATOR -->
   <section class="chapter estimator" id="estimate" aria-labelledby="estimate-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">01 · CONFIGURE YOUR PLAN</p>
-        <h2 id="estimate-title" class="reveal">See your price<br /><span class="grad">in seconds.</span></h2>
-        <p class="section-sub reveal">Compare Property, Education and Accounting using the same call volume and average call length.</p>
+        <p class="mono chapter-no reveal">02 · ESTIMATE RUNNING COSTS</p>
+        <h2 id="estimate-title" class="reveal">Four questions.<br /><span class="grad">One running cost.</span></h2>
+        <p class="section-sub reveal">Who starts the call, your industry, how many calls and how long they last. The defaults suit most businesses.</p>
       </div>
 
       <div class="est" data-estimator>
@@ -92,10 +125,11 @@ const setupLine = [
 
           <details class="est-more">
             <summary>
-              <span><b>Fine-tune your setup</b><small data-out="setup">{setupLine}</small></span>
+              <span><b>Advanced configuration</b><small>Optional. AI model, voice, transcription and telephone. The defaults suit most businesses.</small></span>
               <span class="est-more-icon" aria-hidden="true">+</span>
             </summary>
             <div class="est-more-body">
+              <p class="est-current">Current setup: <span data-out="setup">{setupLine}</span></p>
               <fieldset class="est-group">
                 <legend><b>AI model</b><small>Choose the conversation experience</small></legend>
                 <div class="opts opts-3" role="radiogroup" aria-label="AI model" data-key="model">
@@ -169,12 +203,12 @@ const setupLine = [
             </div>
           </div>
           <div aria-live="polite">
-            <p class="est-label">Estimated price / conversation</p>
+            <p class="est-label">Running cost / conversation</p>
             <p class="calc-number est-per" data-out="per">{fmtUSD(est.per.total, 3)}</p>
             <p class="est-monthly">
               <span>For <b data-out="callsText">{d.calls.toLocaleString("en-US")}</b> conversations</span>
               <strong data-out="monthly">{fmtUSD(est.monthly)}</strong>
-              <small>Estimated monthly price</small>
+              <small>Estimated monthly running cost</small>
             </p>
           </div>
           <dl class="est-break">
@@ -184,10 +218,12 @@ const setupLine = [
             <div class="est-break-month"><dt data-out="rentalLabel">Number rental, per month</dt><dd data-out="rental">{fmtUSD(est.rental)}</dd></div>
           </dl>
           <p class="est-who" data-out="who"><span class="dot" style="--tint: var(--prop)"></span>Outbound property calls are <a href="/olivia/">Olivia’s</a> work.</p>
+          <p class="est-scope">Running costs only. Setup and implementation are quoted separately.</p>
           <div class="est-actions">
             <a class="btn btn-light" href={LINKS.startFree}>Start free <span aria-hidden="true">→</span></a>
             <a class="btn btn-ghost" href="#book">Book a demo</a>
           </div>
+          <p class="est-start">Start free creates an account on sales.jobgen.ai. No card required.</p>
           <p class="est-fx" data-out="fx">Prices are estimates in USD.</p>
         </aside>
       </div>
@@ -195,9 +231,9 @@ const setupLine = [
   </section>
 
   <!-- 02 · MISSING VS ANSWERING -->
-  <MissedCalls eyebrow="02 · MISSING THEM VS ANSWERING THEM" cta={{ label: "Book a demo", href: "#book" }}>
+  <MissedCalls eyebrow="03 · MISSING THEM VS ANSWERING THEM" cta={{ label: "Book a demo", href: "#book" }}>
     <p slot="result" class="calc-vs" data-vs>
-      Answering them with Jenny: about <b data-out="answer">…</b> a month, at the setup above.
+      Answering them with Jenny: about <b data-out="answer">…</b> a month in running costs, at the setup above. Setup is quoted separately.
     </p>
   </MissedCalls>
 
@@ -205,7 +241,7 @@ const setupLine = [
   <section class="chapter lengths light" aria-labelledby="lengths-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">03 · CONVERSATION LENGTH</p>
+        <p class="mono chapter-no reveal">04 · CONVERSATION LENGTH</p>
         <h2 id="lengths-title" class="reveal">Longer calls,<br /><span class="muted">clearly priced.</span></h2>
         <p class="section-sub reveal">See how the estimated conversation price changes as a call continues, at the setup above.</p>
       </div>
@@ -215,7 +251,7 @@ const setupLine = [
             <span class="mono">At {l.m} minute{l.m === 1 ? "" : "s"}</span>
             <span class="length-bar" aria-hidden="true"><i></i></span>
             <strong data-out={`len${l.m}`}>{fmtUSD(l.price, 3)}</strong>
-            <small>Estimated price / conversation</small>
+            <small>Running cost / conversation</small>
           </li>
         ))}
       </ol>
@@ -226,7 +262,7 @@ const setupLine = [
   <section class="chapter included" aria-labelledby="included-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">04 · INCLUDED IN YOUR ESTIMATE</p>
+        <p class="mono chapter-no reveal">05 · INCLUDED IN YOUR ESTIMATE</p>
         <h2 id="included-title" class="reveal">One clear number,<br /><span class="muted">built from your setup.</span></h2>
         <p class="section-sub reveal">Choose the experience you want and adjust the call pattern to match your team.</p>
       </div>
@@ -243,7 +279,7 @@ const setupLine = [
           <p>Prices are estimates in USD and update as you change your call pattern, product area and setup. AUD amounts are approximate, converted at today’s reference rate.</p>
         </div>
         <ul class="capabilities">
-          <li>No hidden setup in the estimate</li>
+          <li>Setup and implementation quoted separately, not hidden in the estimate</li>
           <li>Change your calling provider anytime</li>
           <li>Adjust your plan as usage grows</li>
         </ul>

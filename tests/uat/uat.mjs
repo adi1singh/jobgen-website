@@ -25,11 +25,13 @@ const check = (name, ok, detail = "") => {
 const section = (t) => { current = t; console.log("\n" + t); };
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const aud = (v) => "A$" + Math.round(v).toLocaleString("en-AU");
+// Full precision until the final dollar figure, which is the only number rounded.
 const calcModel = (calls, missedPct, conv, value) => {
-  const missedMonth = Math.round(((calls * missedPct) / 100) * 22);
-  const customers = Math.round((missedMonth * conv) / 100);
+  const missedMonth = ((calls * missedPct) / 100) * 22;
+  const customers = (missedMonth * conv) / 100;
   return { missedMonth, customers, total: customers * value };
 };
+const dec = (v) => (+v.toFixed(2)).toLocaleString("en-AU", { maximumFractionDigits: 2 });
 
 const b = await chromium.launch();
 const external = [];
@@ -165,15 +167,16 @@ section("UAT-2b · Dana, plumbing business owner, phone: “Will it handle an ur
 }
 
 /* ================= UAT-3: Mia, ops manager, uses the calculator on her phone ================= */
-section("UAT-3 · Mia, ops manager, phone (360×740): “What are missed calls costing us?”");
+section("UAT-3 · Mia, ops manager, phone (360×740): “What are missed calls costing us?” (on Jenny’s page)");
 {
   const c = await ctx({ viewport: { width: 360, height: 740 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
-  const p = await page(c, "/");
+  const p = await page(c, "/receptionist/");
   const sent = [];
   p.on("request", (r) => r.method() === "POST" && sent.push(r.url()));
   await settle(p);
   await p.locator("#cost").scrollIntoViewIfNeeded();
   check("No number before she asks for it (calculate gate)", await p.locator("[data-calc-reveal]").isHidden());
+  check("Starting values are labelled illustrative", /illustrative/i.test(await p.locator("[data-missed-calls]").innerText()));
   await p.locator("#in-calls").fill("50");
   await p.locator("#in-missed").fill("25");
   check("Slider labels update as she drags", (await p.locator("#out-calls").textContent()) === "50" && (await p.locator("#out-missed").textContent()) === "25%");
@@ -186,7 +189,7 @@ section("UAT-3 · Mia, ops manager, phone (360×740): “What are missed calls c
   const m = calcModel(50, 25, 33, 150);
   check("Estimate is correct", (await p.locator("#calc-number").textContent()) === aud(m.total), `${await p.locator("#calc-number").textContent()} vs ${aud(m.total)}`);
   const working = (await p.locator(".calc-assumptions").innerText()).replace(/\s+/g, " ");
-  check("Working shows each step with her numbers", working.includes(`= ${m.missedMonth.toLocaleString("en-AU")} missed calls a month`) && working.includes(`= ${m.customers} new customers`), working);
+  check("Working shows each step with her numbers", working.includes(`= ${dec(m.missedMonth)} missed calls a month`) && working.includes(`= ${dec(m.customers)} new customers`), working);
   await p.locator(".calc").screenshot({ path: `${OUT}/uat3-calculated.png` });
   // form: empty, bad email, bad phone, good
   await p.locator("[data-lead-submit]").tap();
@@ -216,7 +219,12 @@ section("UAT-3 · Mia, ops manager, phone (360×740): “What are missed calls c
 
   // Ironclad maths: random and extreme inputs (reduced motion so the result is immediate)
   const c2 = await ctx({ viewport: { width: 320, height: 640 }, reducedMotion: "reduce", isMobile: true });
-  const p2 = await page(c2, "/");
+  const p2 = await page(c2, "/receptionist/");
+  await p2.locator("[data-calc-go]").click();
+  await wait(200);
+  const def = (await p2.locator(".calc-assumptions").innerText()).replace(/\s+/g, " ");
+  check("Defaults: 30 × 20% × 22 days × 33% × A$150 = A$6,534 (rounded only at the end)", (await p2.locator("#calc-number").textContent()) === "A$6,534" && def.includes("43.56"), def);
+  check("Says it’s a potential revenue opportunity, not guaranteed revenue, profit or savings", /isn’t guaranteed recovered revenue, profit or savings/.test(await p2.locator(".calc-result").innerText()));
   const cases = [[5, 5, 5, 20], [200, 60, 80, 2000], [30, 20, 33, 150]];
   for (let i = 0; i < 12; i++) cases.push([5 * (1 + Math.floor(Math.random() * 40)), 5 * (1 + Math.floor(Math.random() * 12)), 5 + Math.floor(Math.random() * 76), 20 + 10 * Math.floor(Math.random() * 199)]);
   let bad = [];
@@ -260,7 +268,8 @@ section("UAT-4 · Sam, keyboard-only visitor (1280×720) + automated accessibili
   check("Enter opens the AI workforce menu", (await p.locator(".nav-trigger").getAttribute("aria-expanded")) === "true");
   await p.keyboard.press("Escape");
   check("Escape closes it and returns focus", (await p.locator(".nav-trigger").getAttribute("aria-expanded")) === "false" && (await p.evaluate(() => document.activeElement.classList.contains("nav-trigger"))));
-  // calculator by keyboard
+  // calculator by keyboard (it lives on Jenny's page and the pricing page)
+  await p.goto(BASE + "/receptionist/");
   await p.locator("#in-calls").focus();
   for (let i = 0; i < 4; i++) await p.keyboard.press("ArrowRight");
   check("Sliders work with arrow keys", (await p.locator("#out-calls").textContent()) === "50");
@@ -269,6 +278,7 @@ section("UAT-4 · Sam, keyboard-only visitor (1280×720) + automated accessibili
   await wait(3200);
   check("Calculate works with Enter", await p.locator("[data-calc-reveal]").isVisible());
   // a real call by keyboard: play, then skip ahead with the arrow keys
+  await p.goto(BASE + "/");
   await p.evaluate(() => document.querySelectorAll("audio").forEach((a) => (a.muted = true)));
   const rec = p.locator("[data-recording]").first();
   await rec.locator("[data-play]").focus();
@@ -382,6 +392,7 @@ section("UAT-6 · Ken, reduced-motion setting on a slow 3G phone (390×844)");
   const weight = await p.evaluate(() => Math.round(performance.getEntriesByType("resource").reduce((s, r) => s + (r.transferSize || 0), 0) / 1024));
   check("First load is light (< 1.5 MB before any audio is played)", weight < 1536, `${weight} KB`);
   check("Scroll colour bar is off with reduced motion", await p.locator(".scroll-progress").evaluate((e) => getComputedStyle(e).display === "none"));
+  await p.goto(BASE + "/receptionist/");
   await p.locator("#in-calls").fill("40");
   await p.locator("[data-calc-go]").tap();
   await wait(150);
@@ -391,10 +402,6 @@ section("UAT-6 · Ken, reduced-motion setting on a slow 3G phone (390×844)");
   await p.goto(BASE + "/recruiter-agent/"); await wait(500);
   check("Jess’s pipeline shows its finished state instantly", (await p.locator("[data-jp-short]").textContent()) === "4");
   await p.goto(BASE + "/");
-  const scene = p.locator("#problem .picker-scene").first();
-  await scene.scrollIntoViewIfNeeded();
-  await wait(400);
-  check("Problem cards switch to the handled state without animating", await scene.evaluate((s) => s.classList.contains("play") && getComputedStyle(s.querySelector(".scene-after")).opacity === "1"));
   await c.addInitScript(() => addEventListener("pagereveal", (e) => (window.__vt = !!e.viewTransition)));
   await p.locator(".footer a", { hasText: "Pricing" }).first().tap();
   await p.waitForURL(/\/pricing\//);
@@ -488,9 +495,9 @@ section("UAT-8 · Ella, sceptical operations director (desktop): “What’s the
   const faqLd = ld.find((x) => x["@type"] === "FAQPage");
   check("FAQ is also published for search engines, matching the page", faqLd && faqLd.mainEntity.length === (await faq.count()));
   check("Live-demo and video prompts don’t load anything until asked", (await p.evaluate(() => document.querySelectorAll('iframe[src*="youtube"], script[src*="voice-demo-widget"]').length)) === 0);
-  // every simulation is labelled as one
-  const labels = await p.evaluate(() => [...document.querySelectorAll(".member-live")].every((m) => /example/i.test(m.textContent)));
-  check("Team tickers are labelled as examples", labels);
+  // the featured story only restates the customer's own words: no figures added
+  const story = await p.locator(".story-section .video-quote").innerText();
+  check("Featured customer story: summarised from the customer’s own words, no figures added", /Summarised from Mandar’s own words/.test(story) && !/\$\s?\d|\d\s?%/.test(story));
   await p.close();
   for (const [path, sel] of [["/olivia/", ".ol-board"], ["/recruiter-agent/", ".sig-jess"]]) {
     const q = await page(c, path);
@@ -720,38 +727,120 @@ section("UAT-14 · Grace, café owner, isn’t sure which professional she needs
   check("On the first screen the guide stays out of the way of Jenny, Olivia and Jess", (await p.locator(".guide").evaluate((g) => getComputedStyle(g).opacity)) === "0");
   await p.evaluate(() => scrollTo(0, 1800));
   await wait(900);
-  const launch = p.locator("[data-guide-open]");
-  check("Once she scrolls, “Which one do I need?” sits in the corner", await launch.isVisible() && /Which one do I need/.test(await launch.innerText()));
-  const lb = await launch.boundingBox();
-  const bar = await p.locator("#book-bar").boundingBox();
-  check("…above the booking bar, not on top of it", !bar || lb.y + lb.height <= bar.y, JSON.stringify({ launch: lb && Math.round(lb.y + lb.height), bar: bar && Math.round(bar.y) }));
+  // On a phone the guide lives in the booking bar: one floating control, not two.
+  await p.evaluate(() => scrollTo(0, document.querySelector("#solutions").offsetTop));
+  await wait(900);
+  const launch = p.locator("#book-bar [data-guide-open-alt]");
+  check("Once she scrolls, the guide sits inside the booking bar (one floating control)", (await launch.isVisible()) && !(await p.locator(".guide-launch").isVisible()));
   await launch.tap();
-  const answer = async (a) => { const btn = p.locator(".guide-answer", { hasText: new RegExp("^" + a + "$") }); await btn.waitFor(); await btn.tap(); };
-  for (const a of ["Yes", "No", "No", "No"]) await answer(a);
-  await p.locator(".guide-card").first().waitFor();
-  check("Four yes/no questions point her to Jenny", (await p.locator(".guide-card b").allTextContents()).join() === "Jenny" && (await p.locator(".guide-card").first().getAttribute("href")) === "/receptionist/");
-  check("…with Book a demo ready, and focus on it", await p.evaluate(() => document.activeElement.classList.contains("guide-book")));
+  const answer = async (a) => { const btn = p.locator(".guide-answer", { hasText: a }).first(); await btn.waitFor(); await btn.tap(); };
+  const picks = async () => { await p.locator(".guide-book").waitFor(); return p.locator(".guide-card b").allTextContents(); };
+  await p.locator(".guide-answer", { hasText: "Real estate agency" }).waitFor();
+  check("It asks about her business first, not about our products", /what kind of business/i.test(await p.locator("[data-guide-log]").innerText()));
+  for (const a of ["Clinic, trades or local services", "Calls we miss or answer late", "They call us", "No"]) await answer(a);
+  let got = await picks();
+  check("A clinic missing calls is pointed to Jenny", got.join() === "Jenny" && (await p.locator(".guide-card.is-main").getAttribute("href")) === "/receptionist/", got.join());
+  check("…with the reason, and Book a demo ready with focus", (await p.locator(".guide-why").count()) === got.length && (await p.evaluate(() => document.activeElement.classList.contains("guide-book"))));
+  check("It says it’s a starting point, not a quote", /starting point, not a quote/.test(await p.locator("[data-guide-log]").innerText()));
   await p.locator(".guide-again").tap();
-  for (const a of ["Yes", "Yes", "Yes", "Yes"]) await answer(a);
-  await p.locator(".guide-card").nth(3).waitFor();
-  check("All yes suggests the whole workforce, website included", (await p.locator(".guide-card b").allTextContents()).join() === "Jenny,Olivia,Jess,AI-ready website");
+  await answer("Real estate agency");
+  const realEstateQ = await p.locator("[data-guide-log]").innerText();
+  for (const a of ["Leads nobody follows up", "A bit of both"]) await answer(a);
+  await p.locator(".guide-answer", { hasText: /^Yes$/ }).waitFor();
+  check("The last question fits her business (property owners for an agency)", /property owners in your database/.test(await p.locator("[data-guide-log]").innerText()) && /kind of business/.test(realEstateQ));
+  await answer("Yes");
+  got = await picks();
+  check("An agency with a cold database starts with Olivia, plus follow-up", got[0] === "Olivia" && got.includes("CRM with SMS and email") && got.length <= 3, got.join());
   await p.locator(".guide-again").tap();
-  for (const a of ["No", "No", "No", "No"]) await answer(a);
-  await p.locator(".guide-book").waitFor();
-  check("All no doesn’t force a product: it offers a call instead", (await p.locator(".guide-card").count()) === 0 && /None of these quite fit/.test(await p.locator("[data-guide-log]").innerText()));
+  for (const a of ["Something else", "Not enough enquiries coming in", "Online, through our website or forms", "No"]) await answer(a);
+  got = await picks();
+  check("A business short of enquiries online starts with the website and lead offers, no phone agent", got.join() === "AI-ready website,Lead magnets and offers", got.join());
   await p.keyboard.press("Escape");
-  check("Escape closes it and focus returns to the button", (await p.locator(".guide-panel").isHidden()) && (await p.evaluate(() => document.activeElement.hasAttribute("data-guide-open"))));
+  check("Escape closes it and focus returns to the button", (await p.locator(".guide-panel").isHidden()) && (await p.evaluate(() => document.activeElement.hasAttribute("data-guide-open-alt"))));
   check("The guide sends nothing anywhere", sent.length === 0, sent.join(" | "));
   await c.close();
   // On a page without its own calendar, Book a demo goes straight to Calendly.
   const c2 = await ctx({ viewport: { width: 1440, height: 900 } });
   const q = await page(c2, "/industries/");
   await q.locator("[data-guide-open]").click();
-  for (const a of ["No", "Yes", "No", "No"]) { const btn = q.locator(".guide-answer", { hasText: new RegExp("^" + a + "$") }); await btn.waitFor(); await btn.click(); }
+  for (const a of ["Recruitment or staffing", "Admin eating our team’s time", "They call us", "Yes"]) { const btn = q.locator(".guide-answer", { hasText: a }).first(); await btn.waitFor(); await btn.click(); }
   await q.locator(".guide-book").waitFor();
+  check("A recruiter swamped with applicants starts with Jess", (await q.locator(".guide-card.is-main b").textContent()) === "Jess");
   const href = await q.locator(".guide-book").getAttribute("href");
   check("Booking from the guide works on every page", href === "#book" ? (await q.locator("#book").count()) === 1 : /calendly\.com/.test(href), href);
   await c2.close();
+}
+
+/* ================= UAT-15: An Australian business owner, first visit, then pricing ================= */
+section("UAT-15 · Tom, café owner in Brisbane: “What do you do, is it real, what will it cost?”");
+{
+  const c = await ctx({ viewport: { width: 1440, height: 900 } });
+  const p = await page(c, "/");
+  const sub = await p.locator(".hero-sub").innerText();
+  check("Opening line says what JobGen does", /identify where AI can help your business, then build and connect/.test(sub), sub);
+  const acts = await p.locator(".hero-actions").boundingBox();
+  const re = await p.locator(".hero-reassure").boundingBox();
+  check("“Start with one solution” sits right under Book a demo and Hear a real call", !!re && re.y - (acts.y + acts.height) < 60 && /Start with one solution\. Expand as your business needs\./.test(await p.locator(".hero-reassure").innerText()));
+  const order = await p.evaluate(() => [...document.querySelectorAll("main > section[id], main > div[id], main #book")].map((e) => e.id).filter((id) => ["listen", "proof", "solutions", "process", "faq", "book"].includes(id)));
+  check("Page order: calls → customer story → solutions → how we work → FAQ → booking", order.join(",") === "listen,proof,solutions,process,faq,book", order.join(","));
+  check("Customer logos sit near the top, before the calls", await p.evaluate(() => { const l = document.querySelector(".logo-strip, [class*=logo]"); const c = document.querySelector("#listen"); return !!l && l.getBoundingClientRect().top < c.getBoundingClientRect().top; }));
+  check("Featured story is structured problem → what we did → what changed", (await p.locator(".story dt").allTextContents()).join("|") === "THE PROBLEM|WHAT WE IMPLEMENTED|WHAT CHANGED");
+  check("Solutions are organised by business problem, each one linking somewhere useful", (await p.locator(".fix").count()) >= 5 && (await p.locator(".fix-problem").count()) === (await p.locator(".fix").count()));
+  check("Human handover sits with the process", (await p.locator("#process .handover").count()) === 1);
+  check("Kush is introduced beside the customer proof, well above the FAQ", (await p.locator("#proof .founder-card img").count()) === 1 && /Kush/.test(await p.locator("#proof .founder-card").innerText()));
+  check("FAQ answers “Do I have to buy everything?”", (await p.locator("#faq summary", { hasText: "Do I have to buy" }).count()) === 1);
+  const mainText = await p.locator("main").innerText();
+  const absolutes = ["every lead followed up", "admin gone", "answer every call", "never miss"].filter((w) => mainText.toLowerCase().includes(w));
+  check("No sweeping absolutes in our own claims on the home page", absolutes.length === 0, absolutes.join(", "));
+  // the calendar shows a loading state, then the calendar, with a fallback link either way
+  await p.locator(".header-book").click();
+  await wait(1500);
+  check("Calendar has a visible fallback link", await p.locator(".booking-fallback a").isVisible());
+  check("Calendar's loading message clears once it has loaded", await p.locator("[data-booking-status]").isHidden());
+  await p.close();
+
+  // floating controls at phone, small phone and tablet widths: never two at once, never over what you're using
+  for (const [w, h] of [[320, 640], [360, 760], [390, 844], [820, 1180]]) {
+    const cc = await ctx({ viewport: { width: w, height: h }, isMobile: w < 600, hasTouch: true });
+    const q = await page(cc, "/");
+    await q.evaluate(() => (document.documentElement.style.scrollBehavior = "auto"));
+    const H = await q.evaluate(() => document.documentElement.scrollHeight);
+    let both = 0, over = 0, shown = 0;
+    for (let y = 0; y < H; y += 350) {
+      await q.evaluate((y) => scrollTo(0, y), y);
+      await wait(200);
+      const r = await q.evaluate(() => {
+        const vis = (el) => el && !el.hidden && getComputedStyle(el).display !== "none" && getComputedStyle(el).opacity !== "0" && el.getBoundingClientRect().height > 0;
+        const bar = document.querySelector("#book-bar");
+        const guide = vis(document.querySelector(".guide-launch")) && getComputedStyle(document.querySelector(".guide")).opacity !== "0";
+        let under = false;
+        if (vis(bar)) {
+          const b = bar.getBoundingClientRect();
+          bar.style.visibility = "hidden";
+          for (const x of [b.left + 20, b.left + b.width / 2, b.right - 20]) {
+            const el = document.elementFromPoint(x, b.top + b.height / 2);
+            if (el?.closest(".recording, [data-missed-calls], form, .booking, .video-frame, .try-stage")) under = true;
+          }
+          bar.style.visibility = "";
+        }
+        return { bar: vis(bar), guide, under };
+      });
+      if (r.bar) shown++;
+      if (r.bar && r.guide) both++;
+      if (r.under) over++;
+    }
+    check(`${w}px: one floating control at a time, never over audio, forms or the calendar`, both === 0 && over === 0 && shown > 0, `bar shown at ${shown} stops, both ${both}, over content ${over}`);
+    await cc.close();
+  }
+
+  // pricing: what you pay for, before the technical bits
+  const pp = await page(c, "/pricing/");
+  check("Pricing explains what you pay for before the estimator", await pp.evaluate(() => { const a = document.querySelector("#what-you-pay"); const b = document.querySelector("#estimate"); return !!a && !!b && a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING; }));
+  const pay = await pp.locator("#what-you-pay").innerText();
+  check("…and says setup and implementation are quoted separately", /QUOTED SEPARATELY/i.test(pay) && /Setting up your assistant/.test(pay));
+  check("Model names and providers stay inside Advanced configuration (closed by default)", !(await pp.locator(".est-more").evaluate((d) => d.open)) && !(await pp.locator("#estimate").innerText()).includes("GPT-4o"));
+  check("The estimate is labelled running costs, separate from implementation", /Running costs only/.test(await pp.locator(".est-summary").innerText()));
+  await c.close();
 }
 
 await b.close();
