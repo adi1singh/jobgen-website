@@ -780,13 +780,14 @@ section("UAT-15 · Tom, café owner in Brisbane: “What do you do, is it real, 
   check("Opening line says what JobGen does", /identify where AI can help your business, then build and connect/.test(sub), sub);
   const acts = await p.locator(".hero-actions").boundingBox();
   const re = await p.locator(".hero-reassure").boundingBox();
-  check("“Start with one solution” sits right under Book a demo and Hear a real call", !!re && re.y - (acts.y + acts.height) < 60 && /Start with one solution/.test(await p.locator(".hero-reassure").innerText()));
+  check("“Start with one solution” sits right under Book a demo and Hear a real call", !!re && re.y - (acts.y + acts.height) < 60 && /Start with one solution\. Expand as your business needs\./.test(await p.locator(".hero-reassure").innerText()));
   const order = await p.evaluate(() => [...document.querySelectorAll("main > section[id], main > div[id], main #book")].map((e) => e.id).filter((id) => ["listen", "proof", "solutions", "process", "faq", "book"].includes(id)));
   check("Page order: calls → customer story → solutions → how we work → FAQ → booking", order.join(",") === "listen,proof,solutions,process,faq,book", order.join(","));
   check("Customer logos sit near the top, before the calls", await p.evaluate(() => { const l = document.querySelector(".logo-strip, [class*=logo]"); const c = document.querySelector("#listen"); return !!l && l.getBoundingClientRect().top < c.getBoundingClientRect().top; }));
   check("Featured story is structured problem → what we did → what changed", (await p.locator(".story dt").allTextContents()).join("|") === "THE PROBLEM|WHAT WE IMPLEMENTED|WHAT CHANGED");
   check("Solutions are organised by business problem, each one linking somewhere useful", (await p.locator(".fix").count()) >= 5 && (await p.locator(".fix-problem").count()) === (await p.locator(".fix").count()));
-  check("Human handover and the founder sit with the process", (await p.locator("#process .handover").count()) === 1 && (await p.locator("#process .founder-mini img").count()) === 1);
+  check("Human handover sits with the process", (await p.locator("#process .handover").count()) === 1);
+  check("Kush is introduced beside the customer proof, well above the FAQ", (await p.locator("#proof .founder-card img").count()) === 1 && /Kush/.test(await p.locator("#proof .founder-card").innerText()));
   check("FAQ answers “Do I have to buy everything?”", (await p.locator("#faq summary", { hasText: "Do I have to buy" }).count()) === 1);
   const mainText = await p.locator("main").innerText();
   const absolutes = ["every lead followed up", "admin gone", "answer every call", "never miss"].filter((w) => mainText.toLowerCase().includes(w));
@@ -799,7 +800,7 @@ section("UAT-15 · Tom, café owner in Brisbane: “What do you do, is it real, 
   await p.close();
 
   // floating controls at phone, small phone and tablet widths: never two at once, never over what you're using
-  for (const [w, h] of [[360, 760], [390, 844], [820, 1180]]) {
+  for (const [w, h] of [[320, 640], [360, 760], [390, 844], [820, 1180]]) {
     const cc = await ctx({ viewport: { width: w, height: h }, isMobile: w < 600, hasTouch: true });
     const q = await page(cc, "/");
     await q.evaluate(() => (document.documentElement.style.scrollBehavior = "auto"));

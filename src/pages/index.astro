@@ -109,7 +109,7 @@ const PROCESS = [
   >
     <span class="h1-line">Grow your business</span>
     <span class="h1-line h1-muted">with an AI workforce.</span>
-    <p slot="under" class="hero-reassure"><span class="hero-reassure-dot" aria-hidden="true"></span>Start with one solution. We build and connect what your business needs.</p>
+    <p slot="under" class="hero-reassure"><span class="hero-reassure-dot" aria-hidden="true"></span>Start with one solution. Expand as your business needs.</p>
     <div slot="below" class="wrap hero-team">
       <ul class="team-strip" aria-label="Your AI workforce">
         {WORKFORCE.map((w) => (
@@ -155,6 +155,18 @@ const PROCESS = [
       <VideoTestimonial heading="The phone stopped interrupting the work." story={STORY} storyNote="Summarised from Mandar’s own words, below and in the video." />
       <p class="more-quotes mono reveal">MORE FROM OUR CUSTOMERS</p>
       <Testimonials items={quotes} />
+      {founderLive && (
+        <div class="founder-card founder-in-story reveal">
+          <img src={FOUNDER.photo} alt={FOUNDER.photoAlt} width="720" height="900" loading="lazy" />
+          <div>
+            <p class="mono">THE PEOPLE BEHIND IT · FROM OUR FOUNDER</p>
+            <blockquote>“{FOUNDER.mission}”</blockquote>
+            <p class="founder-by"><b>{FOUNDER.name}</b> · {FOUNDER.title}</p>
+            <p class="founder-intro">JobGen.AI was founded in Sydney in 2024. Book a demo and you’ll talk it through with our team.</p>
+            <a class="founder-more" href="/about/#story">Read our story <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      )}
     </div>
   </section>
 
@@ -214,16 +226,6 @@ const PROCESS = [
             <p>When the AI can’t answer, it escalates instead of guessing. Depending on your rules it can live-transfer the caller, take a message or create a callback, with the transcript, summary and details passed to your team.</p>
             <p>You decide what it answers, what it collects and who takes over.</p>
           </div>
-          {founderLive && (
-            <figure class="founder-mini reveal">
-              <img src={FOUNDER.photo} alt={FOUNDER.photoAlt} width="720" height="900" loading="lazy" />
-              <figcaption>
-                <p class="mono">THE PEOPLE BEHIND IT</p>
-                <p class="founder-mini-text">JobGen.AI was founded in Sydney in 2024 by <b>{FOUNDER.name}</b>, our founder and CEO. Book a demo and you’ll talk it through with our team.</p>
-                <a class="founder-more" href="/about/#story">Read our story <span aria-hidden="true">→</span></a>
-              </figcaption>
-            </figure>
-          )}
         </div>
       </div>
     </div>

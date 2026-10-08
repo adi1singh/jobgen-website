@@ -6137,3 +6137,12 @@ h2 .muted {
 .try-pick button[aria-checked="true"] small {
   color: #e2e4f2;
 }
+/* home: Kush, right after the customer stories */
+.founder-in-story {
+  margin-top: 40px;
+}
+.founder-intro {
+  margin: 10px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+}
