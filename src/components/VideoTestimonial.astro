@@ -38,7 +38,7 @@ const parts = (text: string) => text.split(/\b(Jenny|Olivia|Jess)\b/);
   <div class="video-quote-body">
     {heading && <h3 class="story-heading">{heading}</h3>}
     {story && (
-      <dl class="story">
+      <dl class="story-steps">
         {story.map(([k, v]) => (
           <div>
             <dt class="mono">{k}</dt>
