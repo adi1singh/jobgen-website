@@ -7,6 +7,7 @@ import BookDemo from "../components/BookDemo.astro";
 import LogoStrip from "../components/LogoStrip.astro";
 import VideoTestimonial from "../components/VideoTestimonial.astro";
 import Faq from "../components/Faq.astro";
+import CostOfWaiting from "../components/CostOfWaiting.astro";
 import { WORKFORCE, LINKS } from "../data/site";
 import { RECORDINGS } from "../data/recordings";
 import { TESTIMONIALS } from "../data/testimonials";
@@ -199,12 +200,15 @@ const PROCESS = [
     </div>
   </section>
 
-  <!-- 04 · HOW WE WORK WITH YOU -->
+  <!-- 04 · WHAT WAITING COSTS -->
+  <CostOfWaiting eyebrow="04 · WHAT WAITING COSTS" />
+
+  <!-- 05 · HOW WE WORK WITH YOU -->
   <section class="chapter how-we-work" id="process" aria-labelledby="process-title">
     <div class="aurora aurora-soft" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">04 · HOW WE WORK WITH YOU</p>
+        <p class="mono chapter-no reveal">05 · HOW WE WORK WITH YOU</p>
         <h2 id="process-title" class="reveal">We set it up with you.<br /><span class="grad">Your people stay in charge.</span></h2>
       </div>
       <div class="process-grid">
@@ -226,13 +230,18 @@ const PROCESS = [
             <p>When the AI can’t answer, it escalates instead of guessing. Depending on your rules it can live-transfer the caller, take a message or create a callback, with the transcript, summary and details passed to your team.</p>
             <p>You decide what it answers, what it collects and who takes over.</p>
           </div>
+          <div class="handover data-home reveal">
+            <p class="mono">YOUR DATA</p>
+            <h3>Stored in Australia.</h3>
+            <p>Your data is stored in Australia, and handled under our privacy policy.</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 05 · PLAIN ANSWERS -->
-  <Faq eyebrow="05 · PLAIN ANSWERS" />
+  <!-- 06 · PLAIN ANSWERS -->
+  <Faq eyebrow="06 · PLAIN ANSWERS" />
 
   <BookDemo
     eyebrow="30 MINUTES · SYDNEY AND SAN FRANCISCO"

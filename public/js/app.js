@@ -314,7 +314,7 @@
      and calendars (anything of these reaching the bottom of the screen, a playing call, or a focused
      field), so nothing fixed sits on top of what they're using. ---------- */
   {
-    const QUIET = ".recording, [data-missed-calls], form, .booking, .try-stage, .estimator, .video-frame";
+    const QUIET = ".recording, [data-missed-calls], [data-cost], form, .booking, .try-stage, .estimator, .video-frame";
     const near = new Set();
     const update = () => {
       const field = document.activeElement?.matches?.("input, textarea, select") ?? false;

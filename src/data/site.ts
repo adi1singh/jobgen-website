@@ -2,7 +2,6 @@
 // jobgen.ai; switch each `href` to the local page as it ships.
 export const LINKS = {
   calendly: "https://calendly.com/jobgen-demo/30min",
-  startFree: "https://sales.jobgen.ai/register",
   login: "https://sales.jobgen.ai/login",
   jobSeekers: "https://candidates.jobgen.ai/",
   webDevelopment: "/web-development/",

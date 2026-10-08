@@ -6,6 +6,9 @@ import BookDemo from "../../components/BookDemo.astro";
 import { INDUSTRIES, type Industry } from "../../data/industries";
 import { SOLUTIONS } from "../../data/solutions";
 import { WORKFORCE } from "../../data/site";
+import { HELP } from "../../data/industryHelp";
+import { RECORDINGS } from "../../data/recordings";
+import RealRecording from "../../components/RealRecording.astro";
 
 export function getStaticPaths() {
   return INDUSTRIES.map((industry) => ({ params: { slug: industry.slug }, props: { industry } }));
@@ -14,16 +17,21 @@ const { industry: ind } = Astro.props as { industry: Industry };
 const agent = WORKFORCE.find((w) => w.key === ind.agent)!;
 const related = ind.related.map((slug) => SOLUTIONS.find((s) => s.slug === slug)).filter((s) => s !== undefined);
 const others = INDUSTRIES.filter((i) => i.slug !== ind.slug);
-const quoteFrom = ind.slug === "property" ? "Buta Deogun" : ind.slug === "accounting" ? "Mandar Gokhale" : "George Limberis";
+const QUOTES: Record<string, string> = { property: "Buta Deogun", accounting: "Mandar Gokhale", recruitment: "Pri Gillett", education: "McGill Institute" };
+const quoteFrom = QUOTES[ind.slug] ?? "George Limberis";
+const help = HELP[ind.slug];
+// Education has a real call to show: Jenny answering a student for McGill Institute.
+const call = ind.slug === "education" ? RECORDINGS.find((r) => r.id === "education-support") : undefined;
+const og: Record<string, string> = { olivia: "/og/olivia.png", jess: "/og/jess.png", jenny: "/og/jenny.png" };
 ---
 <Base
-  title={ind.agent === "olivia" ? `AI sales agent for ${ind.label.toLowerCase()} | JOBGEN.AI` : `AI receptionist for ${ind.label.toLowerCase()} | JOBGEN.AI`}
+  title={`${agent.role.replace(" for real estate", "")} for ${ind.label.toLowerCase()} | JOBGEN.AI`}
   description={ind.intro}
   ogTitle={`${ind.headline} ${agent.name} for ${ind.label.toLowerCase()}, by JOBGEN.AI.`}
   ogDescription={ind.intro}
-  ogImage={ind.agent === "olivia" ? "/og/olivia.png" : "/og/jenny.png"}
+  ogImage={og[ind.agent]}
   ogImageAlt={`${agent.name} by JOBGEN.AI, ${agent.role}`}
-  persona={ind.agent === "olivia" ? "olivia" : undefined}
+  persona={ind.agent === "jenny" ? undefined : ind.agent}
   bookBarText={`Bring us a real ${ind.shortLabel.toLowerCase()} enquiry`}
 >
   <script type="application/ld+json" slot="head" set:html={JSON.stringify({
@@ -66,11 +74,39 @@ const quoteFrom = ind.slug === "property" ? "Buta Deogun" : ind.slug === "accoun
     </div>
   </section>
 
-  <!-- 02 · INSIDE THE CONVERSATION -->
+  <!-- 02 · HOW WE CAN HELP: the whole offering for this industry -->
+  {help && (
+    <section class="chapter ind-help" id="help" aria-labelledby="help-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="mono chapter-no reveal">02 · HOW WE CAN HELP</p>
+          <h2 id="help-title" class="reveal ind-h2">{help.title}</h2>
+          <p class="section-sub reveal">Start with one. Our Sydney team builds and connects it, and you can add more as your business needs.</p>
+        </div>
+        <ul class="help-grid">
+          {help.items.map((h, i) => (
+            <li class="help-item reveal" style={`transition-delay: ${(i % 3) * 60}ms`}>
+              <p class="mono">{h.area}</p>
+              <h3>{h.title}</h3>
+              <p>{h.text}</p>
+              {h.link && <a href={h.link.href}>{h.link.label} <span aria-hidden="true">→</span></a>}
+            </li>
+          ))}
+        </ul>
+        {call && (
+          <div class="proof-recordings help-call">
+            <RealRecording rec={call} aiLabel="Jenny" />
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- 03 · INSIDE THE CONVERSATION -->
   <section class="chapter ind-example" id="example" aria-labelledby="example-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">02 · INSIDE THE CONVERSATION</p>
+        <p class="mono chapter-no reveal">03 · INSIDE THE CONVERSATION</p>
         <h2 id="example-title" class="reveal ind-h2">{ind.caseTitle}</h2>
         <p class="section-sub reveal">Choose an example to see what is captured and what still needs a person.</p>
       </div>
@@ -97,11 +133,11 @@ const quoteFrom = ind.slug === "property" ? "Buta Deogun" : ind.slug === "accoun
     </div>
   </section>
 
-  <!-- 03 · WHAT GETS CAPTURED -->
+  <!-- 04 · WHAT GETS CAPTURED -->
   <section class="chapter ind-captured light" aria-labelledby="captured-title">
     <div class="wrap people-grid">
       <div>
-        <p class="mono chapter-no reveal">03 · WHAT {agent.name.toUpperCase()} ASKS</p>
+        <p class="mono chapter-no reveal">04 · WHAT {agent.name.toUpperCase()} ASKS</p>
         <h2 id="captured-title" class="reveal">The right questions,<br /><span class="muted">every call.</span></h2>
         <ul class="capabilities reveal" aria-label="Outcomes">
           {ind.outcomes.map((o) => <li>{o}</li>)}
@@ -113,11 +149,11 @@ const quoteFrom = ind.slug === "property" ? "Buta Deogun" : ind.slug === "accoun
     </div>
   </section>
 
-  <!-- 04 · BEFORE YOU GO LIVE -->
+  <!-- 05 · BEFORE YOU GO LIVE -->
   <section class="chapter ind-prep" aria-labelledby="prep-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">04 · BEFORE YOU GO LIVE</p>
+        <p class="mono chapter-no reveal">05 · BEFORE YOU GO LIVE</p>
         <h2 id="prep-title" class="reveal ind-h2">{ind.prepTitle}</h2>
       </div>
       <ol class="service-grid prep-grid">

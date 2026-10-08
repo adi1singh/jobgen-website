@@ -6146,3 +6146,229 @@ h2 .muted {
   font-size: 15px;
   color: var(--muted);
 }
+.footer-trust {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #c9c5cc;
+}
+.footer-trust span {
+  margin-right: 6px;
+  color: var(--care);
+  font-size: 9px;
+  vertical-align: 2px;
+}
+.data-home .mono {
+  color: #8fe3bd;
+}
+
+/* ---------- what is waiting costing you? ---------- */
+.waiting-grid {
+  align-items: start;
+}
+.waiting-copy {
+  position: sticky;
+  top: 110px;
+}
+.waiting-legs {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+  color: #c9c5cc;
+}
+.waiting-legs .dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--tint);
+}
+.waiting-calc .slider-top > span:first-child {
+  max-width: 78%;
+  line-height: 1.35;
+}
+.waiting-result {
+  display: grid;
+  gap: 22px;
+  margin-top: 8px;
+}
+.waiting-result[hidden] {
+  display: none;
+}
+.waiting-vs {
+  margin: 6px 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #c9c5cc;
+}
+@media (max-width: 1000px) {
+  .waiting-copy {
+    position: static;
+  }
+}
+.cost.waiting {
+  overflow: clip;
+  padding: 112px 0;
+}
+@media (max-width: 620px) {
+  .cost.waiting {
+    padding: 72px 0;
+  }
+}
+
+/* ---------- pricing: the four parts ---------- */
+.price-parts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 36px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.price-part {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px 22px;
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 60% at 0% 0%, color-mix(in srgb, var(--tint) 22%, transparent), transparent 65%),
+    var(--surface);
+  box-shadow: 0 30px 60px -40px rgba(30, 20, 10, 0.25), inset 0 0 0 1px var(--line);
+}
+.price-part .mono {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: color-mix(in srgb, var(--tint) 45%, #000);
+}
+.price-part h3 {
+  margin: 6px 0 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.price-part-price {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+}
+.price-part-text {
+  margin: 6px 0 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.price-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.price-facts li {
+  padding: 8px 14px;
+  border-radius: 99px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 14px;
+}
+.price-facts b {
+  font-weight: 600;
+}
+.price-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  margin-top: 18px;
+  padding: 20px 24px;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.price-cta p {
+  flex: 1 1 360px;
+  margin: 0;
+  color: var(--muted);
+}
+@media (max-width: 1100px) {
+  .price-parts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 620px) {
+  .price-parts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- industry pages: how we can help ---------- */
+.ind-help {
+  background: #0d0b1a;
+}
+.ind-help .chapter-no,
+.ind-help .section-sub {
+  color: #bdbab3;
+}
+.help-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 36px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.help-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  background: rgba(20, 19, 28, 0.85);
+}
+.help-item .mono {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #a9b9ff;
+}
+.help-item h3 {
+  margin: 4px 0 0;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.help-item p:not(.mono) {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #b9b5bd;
+}
+.help-item a {
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+}
+.help-call {
+  margin-top: 24px;
+}
+@media (max-width: 1000px) {
+  .help-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 620px) {
+  .help-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,8 +1,9 @@
 // Industry pages, moved from sales.jobgen.ai/industries/* (copy kept word for word from that site's
 // data; the receptionist there was still called Olivia, so receptionist copy now says Jenny).
-// Photos are the same workplace images that site used.
+// Photos are the same workplace images that site used. Recruitment and education (added Oct 2026) are
+// written from Jess's and Jenny's published capabilities, not copied from that site.
 export type Industry = {
-  slug: string; label: string; shortLabel: string; agent: "jenny" | "olivia";
+  slug: string; label: string; shortLabel: string; agent: "jenny" | "olivia" | "jess";
   headline: string; intro: string; image: string | null;
   painTitle: string; problems: [string, string][]; outcomes: string[]; questions: string[];
   caseTitle: string; cases: { label: string; request: string; fields: [string, string][]; outcome: string; next: string }[];
@@ -912,5 +913,89 @@ export const INDUSTRIES: Industry[] = [
       "booking",
       "after-hours"
     ]
-  }
+  },
+  {
+    "slug": "recruitment",
+    "label": "Recruitment & staffing",
+    "shortLabel": "Recruitment",
+    "agent": "jess",
+    "headline": "More applicants screened. Less time on the phone.",
+    "intro": "Jess calls applicants, runs your checks, scores their responses and writes results to your ATS, so consultants start the day with a shortlist instead of a call list.",
+    "image": null,
+    "painTitle": "Good candidates slip away while the call list waits.",
+    "problems": [
+      ["Screening calls eat the day", "Consultants spend hours on first-round calls that follow the same questions every time."],
+      ["Applicants wait too long", "Good candidates move on while they wait for a first conversation."],
+      ["Notes don’t reach the ATS", "Screening answers live in notebooks and inboxes instead of the system the team works from."]
+    ],
+    "outcomes": ["Voice screening calls", "Consistent scoring", "ATS writeback", "Interview booking"],
+    "questions": ["Do you have the right to work here?", "When could you start?", "What salary range are you looking for?", "Tell me about your experience with…"],
+    "caseTitle": "A screening call your consultant can act on.",
+    "cases": [
+      {
+        "label": "New applicant",
+        "request": "“I applied for the payroll officer role yesterday.”",
+        "fields": [["Role", "Payroll officer"], ["Right to work", "Answer recorded"], ["Availability", "Start date recorded"], ["Match", "Scored against your criteria"]],
+        "outcome": "Screening summary written to the ATS",
+        "next": "A consultant reviews the shortlist and books interviews with the strongest candidates."
+      },
+      {
+        "label": "Not the right fit yet",
+        "request": "“I’m looking for something part-time.”",
+        "fields": [["Role", "Full-time vacancy"], ["Preference", "Part-time work"], ["Status", "Kept on file"], ["Next step", "Consider for future roles"]],
+        "outcome": "Candidate kept on file, not lost",
+        "next": "The agency decides whether to contact the candidate about suitable roles later."
+      }
+    ],
+    "prepTitle": "What your team sets before the first call.",
+    "preparation": [
+      ["Screening questions", "The checks and questions for each role, and what a strong answer looks like."],
+      ["Scoring", "How responses are scored and which candidates go to the shortlist."],
+      ["Your ATS", "Which supported system results are written to: Bullhorn, JobDiva or Ceipal."]
+    ],
+    "boundary": "Hiring decisions, offers and anything sensitive stay with your consultants.",
+    "related": []
+  },
+  {
+    "slug": "education",
+    "label": "Education & training",
+    "shortLabel": "Education",
+    "agent": "jenny",
+    "headline": "Course enquiries answered between classes.",
+    "intro": "Jenny answers student and parent questions about courses, classes, tuition and enrolment from your approved information, and passes on only what needs a person.",
+    "image": null,
+    "painTitle": "Enquiries arrive when the office is busiest, or closed.",
+    "problems": [
+      ["Routine questions fill the phone", "Class times, fees and enrolment steps are asked again and again."],
+      ["Enquiries arrive after hours", "Prospective students call and message in the evening, when nobody is there to answer."],
+      ["Follow-up slips", "Enrolment enquiries go quiet without a reminder or a next step."]
+    ],
+    "outcomes": ["Course and tuition answers", "Tour and consultation booking", "Student identification", "Staff handoffs"],
+    "questions": ["Are you a current or prospective student?", "Which course are you asking about?", "What would you like to know?", "What’s the best way to reach you?"],
+    "caseTitle": "A course enquiry, answered and recorded.",
+    "cases": [
+      {
+        "label": "Current student",
+        "request": "“When is my next class, and what do I still owe?”",
+        "fields": [["Student", "Identified as configured"], ["Question", "Next class and tuition"], ["Answered", "From approved information"], ["Handover", "Anything account-specific"]],
+        "outcome": "Course and tuition details confirmed",
+        "next": "Staff follow up only on what Jenny couldn’t answer."
+      },
+      {
+        "label": "Prospective student",
+        "request": "“I’m interested in your evening courses.”",
+        "fields": [["Interest", "Evening courses"], ["Contact", "Preferred callback details"], ["Request", "Course information and a consultation"], ["Follow-up", "Enrolment enquiry recorded"]],
+        "outcome": "Consultation request recorded",
+        "next": "The team confirms course fit, intake dates and enrolment steps."
+      }
+    ],
+    "prepTitle": "What your team sets before the first call.",
+    "preparation": [
+      ["Course information", "Courses, class times, fees and enrolment steps Jenny can share."],
+      ["Student checks", "How students are identified before anything account-specific is discussed."],
+      ["Handovers", "Who takes enrolment, fee and welfare questions, and how urgent ones are routed."]
+    ],
+    "boundary": "Enrolment decisions, fee arrangements and student welfare matters stay with your staff.",
+    "related": ["booking", "after-hours"]
+  },
 ];
