@@ -8,7 +8,7 @@ const name = (key: string) => WORKFORCE.find((w) => w.key === key)!.name;
 ---
 <Base
   title="Industries | JOBGEN.AI"
-  description="How Jenny and Olivia handle calls for property, plumbing, electricians, accounting, medical and dental clinics, law firms, automotive and home services."
+  description="How JobGen.AI helps property, recruitment, education, trades, accounting, medical, legal, automotive and home services businesses: calls, bookings, follow-up and more."
   ogTitle="Your AI workforce, set up for your industry. JOBGEN.AI"
   ogDescription="Industry-specific questions, human handoff and full call context."
   ogImage="/og/home.png"
@@ -16,7 +16,7 @@ const name = (key: string) => WORKFORCE.find((w) => w.key === key)!.name;
 >
   <PageHero
     eyebrow="INDUSTRIES"
-    sub="Industry-specific questions, a human handoff when it matters, and the full context of every call for your team."
+    sub="See where AI can help your industry: calls, bookings, follow-up, your website and the systems you already use. Start with one solution and expand as your business needs."
     secondary={{ label: "See industries ↓", href: "#industries" }}
   >
     <span class="h1-line">Set up for</span>
@@ -26,12 +26,12 @@ const name = (key: string) => WORKFORCE.find((w) => w.key === key)!.name;
     <div class="wrap">
       <div class="section-head">
         <p class="mono chapter-no reveal">PICK YOUR INDUSTRY</p>
-        <h2 id="ind-title" class="reveal">Eight industries,<br /><span class="muted">one standard for every call.</span></h2>
+        <h2 id="ind-title" class="reveal">Ten industries,<br /><span class="muted">set up for how each one works.</span></h2>
       </div>
       <ul class="ind-index">
         {INDUSTRIES.map((i) => (
           <li class="reveal">
-            <a href={`/industries/${i.slug}/`} style={`--tint: ${i.agent === "olivia" ? "var(--prop)" : "var(--edu)"}`}>
+            <a href={`/industries/${i.slug}/`} style={`--tint: ${{ olivia: "var(--prop)", jess: "var(--care)", jenny: "var(--edu)" }[i.agent]}`}>
               {i.image ? <img src={i.image} alt="" width="1400" height="932" loading="lazy" /> : <span class="ind-index-art" aria-hidden="true"></span>}
               <span class="ind-index-body">
                 <span class="mono">{i.label}</span>
@@ -47,7 +47,7 @@ const name = (key: string) => WORKFORCE.find((w) => w.key === key)!.name;
   <BookDemo
     line1="Bring us a real"
     line2="enquiry from your business."
-    sub="Pick a time and we’ll run it with Jenny or Olivia, live."
+    sub="Pick a time and we’ll show you where AI can help, live."
     agenda={[{ title: "Hear them live" }, { title: "Map your calls and handovers" }, { title: "Setup and pricing" }]}
   />
 </Base>

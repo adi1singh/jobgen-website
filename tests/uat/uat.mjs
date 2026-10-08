@@ -13,7 +13,7 @@ mkdirSync(OUT, { recursive: true });
 const AXE = readFileSync(process.env.AXE_PATH || require.resolve("axe-core/axe.min.js"), "utf8");
 const PAGES = ["/", "/receptionist/", "/olivia/", "/recruiter-agent/", "/web-development/", "/pricing/", "/about/", "/demo/",
   "/industries/", "/industries/property/", "/industries/plumbing/", "/industries/electricians/", "/industries/accounting/",
-  "/industries/medical/", "/industries/legal/", "/industries/automotive/", "/industries/home-services/",
+  "/industries/medical/", "/industries/legal/", "/industries/automotive/", "/industries/home-services/", "/industries/recruitment/", "/industries/education/",
   "/solutions/", "/solutions/after-hours/", "/solutions/overflow/", "/solutions/booking/", "/solutions/property-outreach/",
   "/partners/", "/news/", "/news/australia-job-market-2026/"];
 const results = [];
@@ -358,7 +358,10 @@ section("UAT-5 · Priya, finance lead in Sydney, desktop: “What will this cost
   check("Numbers needed is capped at 99 and the box shows what’s charged", nums === "99" && rental === "$1,102.86", `box ${nums}, rental ${rental}`);
   await p.locator('[data-key="numbers"]').fill("-3"); await p.locator('[data-key="numbers"]').blur();
   check("Negative number of lines is not accepted", (await p.locator('[data-key="numbers"]').inputValue()) === "0");
-  check("Says Jess and web development aren’t in the estimator", /Jess.*web development.*isn’t in this estimator/.test(await p.locator(".price-notes-more").innerText()));
+  const parts = await p.locator("#how-pricing").innerText();
+  check("Pricing shows all four parts: setup, A$100–1,000 monthly usage, advanced features, maintenance and support", /Setup/.test(parts) && /A\$100 to A\$1,000 a month/.test(parts) && /Advanced features/.test(parts) && /Maintenance and support/.test(parts));
+  check("Says prices exclude GST and can be discussed", /Prices exclude GST/i.test(parts) && /can be discussed/i.test(parts));
+  check("No “Start free” anywhere on the page", !/Start free/.test(await p.locator("body").innerText()));
   check("No script errors", p.errors.length === 0, p.errors.join(" | "));
   await c.close();
   const c2 = await ctx({ timezoneId: "Australia/Sydney" }, { fx: "fail" });
@@ -505,9 +508,9 @@ section("UAT-8 · Ella, sceptical operations director (desktop): “What’s the
     await q.close();
   }
   // Honesty audit: percentages, multipliers and money/time-saved claims only where they are the visitor's
-  // own inputs, pricing maths, labelled examples, or the press release (its figures are the ABS's, named
+  // own inputs, pricing maths and our published price range, labelled examples, or the press release (its figures are the ABS's, named
   // in the release).
-  const ALLOW = "[data-missed-calls], .estimator, .lengths, .news-article, .news-list, .jp, .member-live, .ol-board, script, style, noscript";
+  const ALLOW = "[data-missed-calls], [data-cost], .price-parts, .estimator, .lengths, .news-article, .news-list, .jp, .member-live, .ol-board, script, style, noscript";
   const offenders = [];
   for (const path of PAGES) {
     const q = await page(c, path);
@@ -531,7 +534,7 @@ section("UAT-8 · Ella, sceptical operations director (desktop): “What’s the
   // Each professional's pages only talk about that professional (links to the others aside). Catches the
   // receptionist's old name, Olivia, surviving anywhere on Jenny's pages.
   const property = ["/olivia/", "/industries/property/", "/solutions/property-outreach/"];
-  const own = (path) => (path === "/recruiter-agent/" ? "Jess" : property.includes(path) ? "Olivia" : "Jenny");
+  const own = (path) => (["/recruiter-agent/", "/industries/recruitment/"].includes(path) ? "Jess" : property.includes(path) ? "Olivia" : "Jenny");
   const mixed = [];
   for (const path of PAGES.filter((x) => /^\/(receptionist|olivia|recruiter-agent|industries\/.|solutions\/.)/.test(x))) {
     const q = await page(c, path);
@@ -786,7 +789,7 @@ section("UAT-15 · Tom, café owner in Brisbane: “What do you do, is it real, 
   check("Customer logos sit near the top, before the calls", await p.evaluate(() => { const l = document.querySelector(".logo-strip, [class*=logo]"); const c = document.querySelector("#listen"); return !!l && l.getBoundingClientRect().top < c.getBoundingClientRect().top; }));
   check("Featured story is structured problem → what we did → what changed", (await p.locator(".story dt").allTextContents()).join("|") === "THE PROBLEM|WHAT WE IMPLEMENTED|WHAT CHANGED");
   check("Solutions are organised by business problem, each one linking somewhere useful", (await p.locator(".fix").count()) >= 5 && (await p.locator(".fix-problem").count()) === (await p.locator(".fix").count()));
-  check("Human handover sits with the process", (await p.locator("#process .handover").count()) === 1);
+  check("Human handover sits with the process", (await p.locator("#process .handover h3", { hasText: "Human handover" }).count()) === 1);
   check("Kush is introduced beside the customer proof, well above the FAQ", (await p.locator("#proof .founder-card img").count()) === 1 && /Kush/.test(await p.locator("#proof .founder-card").innerText()));
   check("FAQ answers “Do I have to buy everything?”", (await p.locator("#faq summary", { hasText: "Do I have to buy" }).count()) === 1);
   const mainText = await p.locator("main").innerText();
@@ -835,11 +838,71 @@ section("UAT-15 · Tom, café owner in Brisbane: “What do you do, is it real, 
 
   // pricing: what you pay for, before the technical bits
   const pp = await page(c, "/pricing/");
-  check("Pricing explains what you pay for before the estimator", await pp.evaluate(() => { const a = document.querySelector("#what-you-pay"); const b = document.querySelector("#estimate"); return !!a && !!b && a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING; }));
-  const pay = await pp.locator("#what-you-pay").innerText();
-  check("…and says setup and implementation are quoted separately", /QUOTED SEPARATELY/i.test(pay) && /Setting up your assistant/.test(pay));
+  check("Pricing explains how pricing works before any calculator", await pp.evaluate(() => { const a = document.querySelector("#how-pricing"); const b = document.querySelector("#estimate"); const c = document.querySelector("#waiting"); return !!a && !!b && !!c && !!(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) && !!(a.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING); }));
+  const pay = await pp.locator("#how-pricing").innerText();
+  check("…setup is quoted for the business and negotiable; data stored in Australia", /Quoted for your business/.test(pay) && /negotiable/i.test(pay) && /stored in Australia/.test(pay));
   check("Model names and providers stay inside Advanced configuration (closed by default)", !(await pp.locator(".est-more").evaluate((d) => d.open)) && !(await pp.locator("#estimate").innerText()).includes("GPT-4o"));
-  check("The estimate is labelled running costs, separate from implementation", /Running costs only/.test(await pp.locator(".est-summary").innerText()));
+  check("The call estimator is labelled as call costs only, before GST", /Call costs only, before GST/.test(await pp.locator(".est-summary").innerText()));
+  await c.close();
+}
+
+/* ================= UAT-16: What is waiting costing me? Industry pages, data and pricing facts ================= */
+section("UAT-16 · Leah, owner of a physio clinic: “What is waiting costing me, and what would you do for clinics?”");
+{
+  const waiting = (v) => {
+    const missedMonth = ((v.calls * v.missed) / 100) * 22;
+    const revenue = (missedMonth + v.cold) * (v.conv / 100) * v.value;
+    const admin = v.hours * (52 / 12) * v.rate;
+    return { missedMonth, revenue, admin, total: revenue + admin };
+  };
+  for (const path of ["/", "/pricing/"]) {
+    const c = await ctx({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
+    const p = await page(c, path);
+    const box = p.locator("[data-cost]");
+    await box.scrollIntoViewIfNeeded();
+    check(`${path}: no figure until she presses Calculate`, await p.locator("[data-cost-result]").isHidden());
+    check(`${path}: starting values are labelled illustrative`, /illustrative/i.test(await box.innerText()));
+    await p.locator("[data-cost-go]").tap();
+    await wait(200);
+    const w = (k) => p.locator(`[data-cost] [data-w="${k}"]`).first().textContent();
+    check(`${path}: defaults add up: 132 missed calls, A$4,560 revenue + A$1,517 staff time = A$6,077 a month`, (await w("missedMonth")) === "132" && (await w("revenue")) === "A$4,560" && (await w("admin")) === "A$1,517" && (await w("total")) === "A$6,077" && (await w("year")) === "A$72,920");
+    check(`${path}: says it isn’t guaranteed revenue, profit or savings, and gives the plan range ex GST`, /isn’t guaranteed revenue, profit or savings/.test(await box.innerText()) && /A\$100 to A\$1,000/.test(await box.innerText()) && /exclude GST/.test(await box.innerText()));
+    if (path === "/") {
+      const bad = [];
+      for (const v of [{ calls: 5, missed: 0, cold: 0, conv: 5, value: 20, hours: 0, rate: 20 }, { calls: 200, missed: 60, cold: 200, conv: 80, value: 5000, hours: 60, rate: 150 }, { calls: 35, missed: 15, cold: 5, conv: 33, value: 270, hours: 7, rate: 41 }]) {
+        for (const [k, val] of Object.entries(v)) await p.locator(`[data-cost-in="${k}"]`).fill(String(val));
+        await wait(80);
+        const want = "A$" + Math.round(waiting(v).total).toLocaleString("en-AU");
+        const got = await w("total");
+        if (got !== want) bad.push(`${JSON.stringify(v)}: got ${got} want ${want}`);
+      }
+      check("After calculating, it follows the sliders and the maths holds at the extremes (full precision, rounded once)", bad.length === 0, bad.join(" | "));
+      check("Largest figure still fits a 390px phone", (await p.evaluate(() => document.documentElement.scrollWidth)) <= 390);
+    }
+    check(`${path}: no script errors`, p.errors.length === 0, p.errors.join(" | "));
+    await c.close();
+  }
+
+  const c = await ctx({ viewport: { width: 1440, height: 900 } });
+  // every industry page shows how we can help across the whole offering
+  const thin = [];
+  for (const path of PAGES.filter((x) => /^\/industries\/./.test(x))) {
+    const q = await page(c, path);
+    const n = await q.locator("#help .help-item").count();
+    if (n < 5) thin.push(`${path}: ${n}`);
+    await q.close();
+  }
+  check("Every industry page shows at least five ways we can help", thin.length === 0, thin.join(", "));
+  const rec = await page(c, "/industries/recruitment/");
+  check("Recruitment has its own page, run by Jess", (await rec.evaluate(() => document.body.dataset.persona)) === "jess" && /Jess/.test(await rec.locator("main").innerText()));
+  await rec.close();
+  const edu = await page(c, "/industries/education/");
+  check("Education’s page plays a real call (Jenny for McGill Institute)", (await edu.locator("#help [data-recording]").count()) === 1);
+  await edu.close();
+  const home = await page(c, "/");
+  check("No “Start free” in the header or menu", !(await home.locator("body > header, .header").first().evaluate((h) => h.textContent)).includes("Start free") && (await home.locator('a[href*="register"]').count()) === 0);
+  check("Data stored in Australia: said in the footer and answered in the FAQ", /stored in Australia/.test(await home.locator("footer").innerText()) && (await home.locator("#faq summary", { hasText: "Where is my data kept?" }).count()) === 1);
+  check("Cost answer: setup, A$100–1,000 a month, ex GST, can be discussed", await home.locator("#faq").evaluate((el) => /A\$100 to A\$1,000/.test(el.textContent) && /exclude GST/.test(el.textContent)));
   await c.close();
 }
 

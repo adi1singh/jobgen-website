@@ -1,7 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import PageHero from "../components/PageHero.astro";
-import MissedCalls from "../components/MissedCalls.astro";
+import CostOfWaiting from "../components/CostOfWaiting.astro";
 import BookDemo from "../components/BookDemo.astro";
 import { LINKS } from "../data/site";
 import {
@@ -25,66 +25,72 @@ const setupLine = [
   label(TRANSCRIPTION, d.transcription),
   d.telephone === "managed" ? `JobGen Telephone (${PHONE[d.numberType].label.toLowerCase()})` : "Your telephone",
 ].join(" · ");
+// How pricing works: the four parts and the facts below them were confirmed by the owner (Oct 2026).
+const PARTS = [
+  { kind: "ONE-OFF", title: "Setup", price: "Quoted for your business", tint: "var(--edu)", text: "We work out where AI can help, then our Sydney team builds, connects and tests your solution before it goes live. Setup is negotiable." },
+  { kind: "MONTHLY", title: "Usage", price: "A$100 to A$1,000 a month", tint: "#b48cff", text: "Depends on how much your AI workforce does: the calls, conversations and follow-ups it handles each month." },
+  { kind: "AS NEEDED", title: "Advanced features", price: "Quoted on request", tint: "var(--rest)", text: "Customised features, workflows and integrations built for your business, such as booking systems, real estate portals or council planning data." },
+  { kind: "ONGOING", title: "Maintenance and support", price: "Quoted with your plan", tint: "var(--care)", text: "Ongoing support from our team, keeping your solution running and adjusting it as your business changes." },
+];
 ---
 <Base
-  title="Pricing: price every conversation | JOBGEN.AI"
-  description="Estimate what your AI workforce costs per conversation. Choose inbound or outbound, your product area, call volume and call length, and see the price in USD or AUD."
-  ogTitle="Price every conversation with confidence. JOBGEN.AI pricing."
-  ogDescription="Choose your call type, product area and conversation length to see the price your team would pay."
+  title="Pricing: setup, then a monthly plan | JOBGEN.AI"
+  description="A one-off setup, then a monthly usage plan from A$100 to A$1,000. Customised features and ongoing support quoted for your business. Prices exclude GST."
+  ogTitle="Clear pricing, shaped around your business. JOBGEN.AI"
+  ogDescription="A one-off setup, then a monthly usage plan from A$100 to A$1,000. Prices exclude GST and can always be discussed."
   ogImage="/og/pricing.png"
-  ogImageAlt="JOBGEN.AI pricing: price every conversation with confidence."
+  ogImageAlt="JOBGEN.AI pricing"
   bookBarText="Talk through your pricing"
 >
   <PageHero
     eyebrow="PRICING"
-    sub="Your costs come in two parts: the running cost of each AI conversation, which you can estimate below, and the work to set up and connect your solution, which we confirm with you on a demo."
-    primary={{ label: "Estimate running costs", href: "#estimate" }}
-    secondary={{ label: "Book a demo", href: "#book" }}
+    sub="A one-off setup, then a monthly usage plan from A$100 to A$1,000. Customised features and ongoing support are quoted for your business. Prices exclude GST, and every price can be discussed."
+    primary={{ label: "Book a demo", href: "#book" }}
+    secondary={{ label: "How pricing works ↓", href: "#how-pricing" }}
   >
-    <span class="h1-line">Price every conversation</span>
-    <span class="h1-line h1-muted">with confidence.</span>
+    <span class="h1-line">Clear pricing,</span>
+    <span class="h1-line h1-muted">shaped around your business.</span>
   </PageHero>
 
-  <!-- 01 · WHAT YOU PAY FOR -->
-  <section class="chapter pay light" id="what-you-pay" aria-labelledby="pay-title">
+  <!-- 01 · HOW PRICING WORKS (confirmed by the owner, Oct 2026) -->
+  <section class="chapter pay light" id="how-pricing" aria-labelledby="pay-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">01 · WHAT YOU PAY FOR</p>
-        <h2 id="pay-title" class="reveal">Running costs,<br /><span class="muted">and the work to set it up.</span></h2>
+        <p class="mono chapter-no reveal">01 · HOW PRICING WORKS</p>
+        <h2 id="pay-title" class="reveal">Four parts,<br /><span class="muted">all open to discussion.</span></h2>
       </div>
-      <div class="pay-grid">
-        <article class="pay-card reveal">
-          <p class="mono">IN THE ESTIMATE BELOW</p>
-          <h3>Running cost of each AI conversation</h3>
-          <ul>
-            <li>The AI conversation itself</li>
-            <li>Voice and transcription</li>
-            <li>Telephone and audio streaming, if JobGen manages your number</li>
-            <li>Phone number rental each month, if JobGen provides the number</li>
-          </ul>
-          <p class="pay-foot">Estimates, in USD or approximate AUD at today’s exchange rate.</p>
-        </article>
-        <article class="pay-card pay-card-quote reveal" style="transition-delay: 80ms">
-          <p class="mono">QUOTED SEPARATELY</p>
-          <h3>Building and connecting your solution</h3>
-          <ul>
-            <li>Setting up your assistant: information, questions, calendar connections and handover rules</li>
-            <li>Websites, lead offers, CRM campaigns and custom integrations</li>
-            <li>Jess (recruitment) and web development, which aren’t in this estimator</li>
-          </ul>
-          <p class="pay-foot">Our Sydney team builds and connects everything. We’ll talk these costs through with you on a demo.</p>
-        </article>
+      <ol class="price-parts">
+        {PARTS.map((part, i) => (
+          <li class="price-part reveal" style={`--tint: ${part.tint}; transition-delay: ${i * 60}ms`}>
+            <p class="mono">{String(i + 1).padStart(2, "0")} · {part.kind}</p>
+            <h3>{part.title}</h3>
+            <p class="price-part-price">{part.price}</p>
+            <p class="price-part-text">{part.text}</p>
+          </li>
+        ))}
+      </ol>
+      <ul class="price-facts reveal" aria-label="Good to know">
+        <li><b>Prices exclude GST</b></li>
+        <li><b>Every price can be discussed</b></li>
+        <li><b>Your data is stored in Australia</b></li>
+      </ul>
+      <div class="price-cta reveal">
+        <p>We’ll work out where AI can help, then quote setup and your plan for your business.</p>
+        <a class="btn btn-ink" href="#book">Book a demo for your business <span aria-hidden="true">→</span></a>
       </div>
     </div>
   </section>
 
-  <!-- 02 · ESTIMATOR -->
+  <!-- 02 · WHAT WAITING COSTS -->
+  <CostOfWaiting eyebrow="02 · WHAT WAITING COSTS" />
+
+  <!-- 03 · CALL USAGE ESTIMATOR (optional detail) -->
   <section class="chapter estimator" id="estimate" aria-labelledby="estimate-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">02 · ESTIMATE RUNNING COSTS</p>
-        <h2 id="estimate-title" class="reveal">Four questions.<br /><span class="grad">One running cost.</span></h2>
-        <p class="section-sub reveal">Who starts the call, your industry, how many calls and how long they last. The defaults suit most businesses.</p>
+        <p class="mono chapter-no reveal">03 · CALL USAGE, IN DETAIL</p>
+        <h2 id="estimate-title" class="reveal">See how calls add up<br /><span class="grad">in your monthly usage.</span></h2>
+        <p class="section-sub reveal">Optional. Who starts the call, your industry, how many calls and how long they last. Calls are one part of your monthly usage plan.</p>
       </div>
 
       <div class="est" data-estimator>
@@ -218,30 +224,22 @@ const setupLine = [
             <div class="est-break-month"><dt data-out="rentalLabel">Number rental, per month</dt><dd data-out="rental">{fmtUSD(est.rental)}</dd></div>
           </dl>
           <p class="est-who" data-out="who"><span class="dot" style="--tint: var(--prop)"></span>Outbound property calls are <a href="/olivia/">Olivia’s</a> work.</p>
-          <p class="est-scope">Running costs only. Setup and implementation are quoted separately.</p>
+          <p class="est-scope">Call costs only, before GST. Monthly usage plans start at A$100; setup, customised features and support are separate.</p>
           <div class="est-actions">
-            <a class="btn btn-light" href={LINKS.startFree}>Start free <span aria-hidden="true">→</span></a>
-            <a class="btn btn-ghost" href="#book">Book a demo</a>
+            <a class="btn btn-light" href="#book">Book a demo for your business <span aria-hidden="true">→</span></a>
           </div>
-          <p class="est-start">Start free creates an account on sales.jobgen.ai. No card required.</p>
           <p class="est-fx" data-out="fx">Prices are estimates in USD.</p>
         </aside>
       </div>
     </div>
   </section>
 
-  <!-- 02 · MISSING VS ANSWERING -->
-  <MissedCalls eyebrow="03 · MISSING THEM VS ANSWERING THEM" cta={{ label: "Book a demo", href: "#book" }}>
-    <p slot="result" class="calc-vs" data-vs>
-      Answering them with Jenny: about <b data-out="answer">…</b> a month in running costs, at the setup above. Setup is quoted separately.
-    </p>
-  </MissedCalls>
 
   <!-- 03 · CONVERSATION LENGTH -->
   <section class="chapter lengths light" aria-labelledby="lengths-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="mono chapter-no reveal">04 · CONVERSATION LENGTH</p>
+        <p class="mono chapter-no reveal">04 · CALL LENGTH</p>
         <h2 id="lengths-title" class="reveal">Longer calls,<br /><span class="muted">clearly priced.</span></h2>
         <p class="section-sub reveal">See how the estimated conversation price changes as a call continues, at the setup above.</p>
       </div>
@@ -255,38 +253,6 @@ const setupLine = [
           </li>
         ))}
       </ol>
-    </div>
-  </section>
-
-  <!-- 04 · INCLUDED + NOTES -->
-  <section class="chapter included" aria-labelledby="included-title">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="mono chapter-no reveal">05 · INCLUDED IN YOUR ESTIMATE</p>
-        <h2 id="included-title" class="reveal">One clear number,<br /><span class="muted">built from your setup.</span></h2>
-        <p class="section-sub reveal">Choose the experience you want and adjust the call pattern to match your team.</p>
-      </div>
-      <div class="service-grid included-grid">
-        <article class="service reveal"><span class="mono">01</span><h3>AI conversations</h3><p>Your selected AI model handles the conversation for your chosen product area.</p></article>
-        <article class="service reveal"><span class="mono">02</span><h3>Natural voice</h3><p>Choose the voice experience that matches your brand and callers.</p></article>
-        <article class="service reveal"><span class="mono">03</span><h3>Live transcription</h3><p>Your assistant can understand callers in real time throughout the conversation.</p></article>
-        <article class="service reveal"><span class="mono">04</span><h3 data-out="phoneTitle">JobGen Telephone</h3><p data-out="phoneText">Use JobGen Telephone with your chosen number type and audio connection.</p></article>
-      </div>
-      <div class="price-notes reveal">
-        <div>
-          <p class="mono">PRICING NOTES</p>
-          <h3>Designed to stay simple.</h3>
-          <p>Prices are estimates in USD and update as you change your call pattern, product area and setup. AUD amounts are approximate, converted at today’s reference rate.</p>
-        </div>
-        <ul class="capabilities">
-          <li>Setup and implementation quoted separately, not hidden in the estimate</li>
-          <li>Change your calling provider anytime</li>
-          <li>Adjust your plan as usage grows</li>
-        </ul>
-        <p class="price-notes-more">
-          Pricing for <a href="/recruiter-agent/">Jess</a> and for <a href={LINKS.webDevelopment}>web development</a> isn’t in this estimator. Book a call and we’ll take you through it.
-        </p>
-      </div>
     </div>
   </section>
 

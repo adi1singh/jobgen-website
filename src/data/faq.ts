@@ -1,9 +1,14 @@
 // Plain answers, word for word from https://jobgen.ai/about/ (the cost answer adds a pointer to the
-// pricing page, which now exists). The "do I have to buy everything" answer is JobGen's own positioning, confirmed by the owner (Oct 2026): customers can start with one solution.
+// pricing page, which now exists). Pricing, GST and data residency answers were confirmed by the owner
+// (Oct 2026). The "do I have to buy everything" answer is JobGen's own positioning, confirmed by the owner (Oct 2026): customers can start with one solution.
 export const FAQ = [
   {
     q: "Do I have to buy a website, CRM and every assistant?",
     a: "No. Most businesses start with one solution, such as an AI receptionist, appointment booking or a follow-up workflow. We build it and connect it to the tools you already use. A website, CRM with SMS and email campaigns, more assistants or custom integrations can be added later if they’d help.",
+  },
+  {
+    q: "Where is my data kept?",
+    a: "In Australia. Your data is stored in Australia.",
   },
   {
     q: "What does Jenny from JobGen.AI do?",
@@ -19,8 +24,8 @@ export const FAQ = [
   },
   {
     q: "What does JobGen.AI cost?",
-    a: "Pricing depends on the assistant and the expected call or candidate volume. JobGen.AI provides pricing for the intended usage during a product demonstration.",
-    link: { label: "Estimate the price per conversation", href: "/pricing/" },
+    a: "A one-off setup fee, then a monthly usage plan from A$100 to A$1,000 depending on how much you use it. Customised features and ongoing maintenance and support are quoted for your business. All prices exclude GST, and every price can be discussed.",
+    link: { label: "See how pricing works", href: "/pricing/" },
   },
   {
     q: "Does JobGen.AI integrate with Bullhorn?",

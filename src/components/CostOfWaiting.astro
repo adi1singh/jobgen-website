@@ -1,0 +1,157 @@
+---
+// "What is waiting costing you?": the visitor's own numbers for the two leaks JobGen fixes (missed
+// calls and enquiries nobody follows up) plus the staff time spent on admin we could take over.
+// Nothing is sent anywhere. Full precision throughout; only the dollar figures shown are rounded.
+// Used on the home page and the pricing page.
+interface Props {
+  eyebrow?: string;
+  id?: string;
+}
+const { eyebrow = "WHAT WAITING COSTS", id = "waiting" } = Astro.props;
+const SLIDERS = [
+  { key: "calls", label: "Calls you get a day", min: 5, max: 200, step: 5, value: 30, unit: "" },
+  { key: "missed", label: "Share you can’t answer", min: 0, max: 60, step: 5, value: 20, unit: "%" },
+  { key: "cold", label: "Enquiries a month nobody follows up (forms, emails, messages)", min: 0, max: 200, step: 5, value: 20, unit: "" },
+  { key: "conv", label: "Share who’d become customers", min: 5, max: 80, step: 1, value: 20, unit: "%" },
+  { key: "value", label: "New customer value (AUD)", min: 20, max: 5000, step: 10, value: 150, unit: "$" },
+  { key: "hours", label: "Hours a week your team spends on bookings, reception, data entry and follow-ups", min: 0, max: 60, step: 1, value: 10, unit: "h" },
+  { key: "rate", label: "What an hour of that time costs you (AUD)", min: 20, max: 150, step: 1, value: 35, unit: "$" },
+];
+const show = (s: (typeof SLIDERS)[number]) => (s.unit === "$" ? `A$${s.value.toLocaleString("en-AU")}` : `${s.value}${s.unit}`);
+---
+<section class="cost waiting" id={id} aria-labelledby={`${id}-title`}>
+  <div class="wrap cost-grid waiting-grid">
+    <div class="waiting-copy">
+      <p class="mono chapter-no reveal">{eyebrow}</p>
+      <h2 id={`${id}-title`} class="reveal">What is waiting<br /><span class="muted">costing you?</span></h2>
+      <p class="section-sub reveal">
+        Every month without help, some calls go unanswered, some enquiries go cold and your team loses hours to admin.
+        Put in your own numbers to see what that adds up to.
+      </p>
+      <ul class="waiting-legs reveal" aria-label="What it adds up">
+        <li><span class="dot" style="--tint: var(--rest)"></span>Missed calls and cold enquiries</li>
+        <li><span class="dot" style="--tint: var(--prop)"></span>Staff time on repetitive admin</li>
+      </ul>
+    </div>
+
+    <div class="calc waiting-calc reveal" data-cost>
+      <p class="calc-preset mono">Starting values are illustrative. Change them to match your business. All figures in AUD.</p>
+      {SLIDERS.map((s) => (
+        <label class="slider">
+          <span class="slider-top"><span>{s.label}</span><output data-cost-out={s.key}>{show(s)}</output></span>
+          <input type="range" data-cost-in={s.key} data-unit={s.unit} min={s.min} max={s.max} step={s.step} value={s.value} />
+        </label>
+      ))}
+      <div class="calc-go">
+        <button type="button" class="btn btn-calc" data-cost-go>
+          <span data-cost-go-label>Calculate what waiting costs</span> <span aria-hidden="true">→</span>
+        </button>
+      </div>
+
+      <div class="waiting-result" data-cost-result hidden>
+        <div class="calc-assumptions">
+          <p class="mono">HOW WE CALCULATED IT</p>
+          <ol>
+            <li class="is-shown">
+              <span><b data-w="calls">30</b> calls a day × <b data-w="missed">20%</b> unanswered × 22 working days</span>
+              <strong>= <b data-w="missedMonth">132</b> missed calls a month</strong>
+            </li>
+            <li class="is-shown">
+              <span>(<b data-w="missedMonth2">132</b> missed calls + <b data-w="cold">20</b> cold enquiries) × <b data-w="conv">20%</b> × <b data-w="value">A$150</b></span>
+              <strong>= <b data-w="revenue">A$4,560</b> in missed revenue</strong>
+            </li>
+            <li class="is-shown">
+              <span><b data-w="hours">10</b> hours a week × 52 ÷ 12 weeks × <b data-w="rate">A$35</b> an hour</span>
+              <strong>= <b data-w="admin">A$1,517</b> of staff time</strong>
+            </li>
+          </ol>
+        </div>
+        <div class="calc-result" aria-live="polite">
+          <p class="mono">ESTIMATED COST OF WAITING</p>
+          <p class="calc-number" data-w="total">A$6,077</p>
+          <p class="calc-sub">a month, or about <b data-w="year">A$72,920</b> a year.</p>
+          <p class="waiting-vs">For comparison, our monthly usage plans run from A$100 to A$1,000, plus a one-off setup. Prices exclude GST and can always be discussed.</p>
+          <a class="btn btn-light" href="#book">Book a demo for your business <span aria-hidden="true">→</span></a>
+          <p class="calc-note">An estimate of potential revenue and staff time, based only on your numbers. It isn’t guaranteed revenue, profit or savings from JobGen.AI.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  // Full precision until display; only the dollar amounts shown are rounded.
+  (() => {
+    document.querySelectorAll("[data-cost]").forEach((box) => {
+      const ins = Object.fromEntries([...box.querySelectorAll("[data-cost-in]")].map((el) => [el.dataset.costIn, el]));
+      const result = box.querySelector("[data-cost-result]");
+      const label = box.querySelector("[data-cost-go-label]");
+      const still = matchMedia("(prefers-reduced-motion: reduce)");
+      const aud = (v) => "A$" + Math.round(v).toLocaleString("en-AU");
+      const num = (v) => (+v.toFixed(2)).toLocaleString("en-AU", { maximumFractionDigits: 2 });
+      const put = (k, v) => box.querySelectorAll(`[data-w="${k}"]`).forEach((el) => (el.textContent = v));
+      let shown = false;
+      let frame = 0;
+
+      const read = () => {
+        const v = Object.fromEntries(Object.entries(ins).map(([k, el]) => [k, +el.value]));
+        const missedMonth = ((v.calls * v.missed) / 100) * 22;
+        const revenue = (missedMonth + v.cold) * (v.conv / 100) * v.value;
+        const admin = v.hours * (52 / 12) * v.rate;
+        return { ...v, missedMonth, revenue, admin, total: revenue + admin };
+      };
+      const fill = (el) => el.style.setProperty("--fill", ((el.value - el.min) / (el.max - el.min)) * 100 + "%");
+      const showInput = (el) => {
+        const out = box.querySelector(`[data-cost-out="${el.dataset.costIn}"]`);
+        const u = el.dataset.unit;
+        if (out) out.textContent = u === "$" ? aud(+el.value) : `${el.value}${u}`;
+        fill(el);
+      };
+      const paint = (animate) => {
+        const r = read();
+        put("calls", num(r.calls));
+        put("missed", r.missed + "%");
+        put("missedMonth", num(r.missedMonth));
+        put("missedMonth2", num(r.missedMonth));
+        put("cold", num(r.cold));
+        put("conv", r.conv + "%");
+        put("value", aud(r.value));
+        put("revenue", aud(r.revenue));
+        put("hours", num(r.hours));
+        put("rate", aud(r.rate));
+        put("admin", aud(r.admin));
+        put("year", aud(r.total * 12));
+        const totalEl = box.querySelector('[data-w="total"]');
+        cancelAnimationFrame(frame);
+        if (!animate || still.matches) {
+          totalEl.textContent = aud(r.total);
+          return;
+        }
+        const start = performance.now();
+        const tick = (now) => {
+          const k = Math.min(1, (now - start) / 900);
+          totalEl.textContent = aud(r.total * (1 - Math.pow(1 - k, 3)));
+          if (k < 1) frame = requestAnimationFrame(tick);
+        };
+        frame = requestAnimationFrame(tick);
+      };
+
+      Object.values(ins).forEach((el) => {
+        showInput(el);
+        el.addEventListener("input", () => {
+          showInput(el);
+          // after the first calculation, the estimate follows the sliders
+          if (shown) paint(false);
+        });
+      });
+      box.querySelector("[data-cost-go]").addEventListener("click", () => {
+        const first = !shown;
+        shown = true;
+        result.hidden = false;
+        label.textContent = "Recalculate";
+        paint(true);
+        if (first && !still.matches) result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    });
+  })();
+</script>

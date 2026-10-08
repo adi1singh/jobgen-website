@@ -35,7 +35,6 @@ const external = bookHref.startsWith("http");
       <a href={LINKS.about}>About</a>
     </nav>
     <div class="header-actions">
-      <a class="nav-start" href={LINKS.startFree}>Start free</a>
       <a class="btn btn-light btn-small header-book" href={bookHref} {...(external ? { target: "_blank", rel: "noopener" } : {})}>Book a demo</a>
       <button type="button" class="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
         <span></span><span></span>
@@ -57,7 +56,6 @@ const external = bookHref.startsWith("http");
         <a href={LINKS.pricing}>Pricing</a>
         <a href={LINKS.about}>About</a>
         <a href={LINKS.webDevelopment}>Web development</a>
-        <a href={LINKS.startFree}>Start free</a>
         <a href={LINKS.login}>Log in</a>
       </div>
     </div>
