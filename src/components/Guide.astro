@@ -1,22 +1,45 @@
 ---
-// "Not sure which one you need?": a short guide in the corner. Four yes/no questions, then the
-// professional, website or team that fits. Scripted, not an AI chat, and nothing is sent anywhere.
+// "Not sure which one you need?": a short guide in the corner. Four quick questions about the business
+// (not about our products), then a suggested starting point with the reason for each piece.
+// Scripted, not an AI chat, and nothing is sent anywhere.
 import { WORKFORCE, LINKS } from "../data/site";
 interface Props {
   bookHref?: string;
 }
 const { bookHref = "#book" } = Astro.props;
-// One question per professional, in the order they're asked.
-const QUESTIONS: Record<string, string> = {
-  jenny: "Do calls ring out or go to voicemail when your team is busy or after hours?",
-  olivia: "Are you a real estate agency with property owners on your list to follow up?",
-  jess: "Are you hiring, or recruiting for clients, with more applicants than time to screen them?",
-  website: "Does your website bring in fewer enquiries than it should, or do you need a new one?",
-};
-const steps = [...WORKFORCE.map((w) => ({ key: w.key, q: QUESTIONS[w.key] })), { key: "website", q: QUESTIONS.website }];
+// The questions, in order. The last one changes with the kind of business.
+const steps = [
+  {
+    id: "type",
+    q: "First, what kind of business do you run?",
+    options: [["realestate", "Real estate agency"], ["recruit", "Recruitment or staffing"], ["service", "Clinic, trades or local services"], ["other", "Something else"]],
+  },
+  {
+    id: "leak",
+    q: "Where are you losing the most right now?",
+    options: [["calls", "Calls we miss or answer late"], ["followup", "Leads nobody follows up"], ["admin", "Admin eating our team’s time"], ["enquiries", "Not enough enquiries coming in"]],
+  },
+  {
+    id: "channel",
+    q: "How do most new customers reach you?",
+    options: [["phone", "They call us"], ["online", "Online, through our website or forms"], ["both", "A bit of both"]],
+  },
+  {
+    id: "list",
+    q: {
+      realestate: "Are there property owners in your database nobody has spoken to in a while?",
+      recruit: "Do you get more applicants than your team can screen?",
+      other: "Do you have past enquiries or customers nobody has followed up?",
+    },
+    options: [["yes", "Yes"], ["no", "No"]],
+  },
+];
+// Everything the guide can suggest: the three professionals, plus the rest of the workforce.
 const people = {
-  ...Object.fromEntries(WORKFORCE.map((w) => [w.key, { name: w.name, say: w.name, role: w.role, href: w.href, tint: w.tint, summary: w.summary, cta: `Meet ${w.name}` }])),
-  website: { name: "AI-ready website", say: "an AI-ready website", role: "Web development", href: LINKS.webDevelopment, tint: "var(--rest)", summary: "The front door of your AI workforce, built to convert, with chat, voice agents and lead capture ready to plug in.", cta: "See web development" },
+  ...Object.fromEntries(WORKFORCE.map((w) => [w.key, { name: w.name, role: w.role, href: w.href, tint: w.tint, cta: `Meet ${w.name}` }])),
+  website: { name: "AI-ready website", role: "The front door, built to convert", href: LINKS.webDevelopment, tint: "var(--rest)", cta: "See web development" },
+  crm: { name: "CRM with SMS and email", role: "Every lead followed up", href: "/#solution", tint: "#b48cff", cta: "See how it fits" },
+  magnets: { name: "Lead magnets and offers", role: "Visitors into captured leads", href: "/#solution", tint: "var(--trade)", cta: "See how it fits" },
 };
 ---
 <div class="guide in-hero" data-guide>
@@ -57,7 +80,7 @@ const people = {
     const still = matchMedia("(prefers-reduced-motion: reduce)");
     // "#book" only works where the page has a calendar; elsewhere go straight to Calendly.
     const bookUrl = book.startsWith("#") && !document.querySelector(book) ? calendly : book;
-    let yes = [];
+    let a = {};
     let run = 0;
 
     const el = (tag, cls, html) => {
@@ -99,34 +122,62 @@ const people = {
     };
 
     const ask = async (i, id) => {
-      if (!(await say(steps[i].q, id))) return;
-      const next = (answer) => () => {
-        reply(answer ? "Yes" : "No");
-        if (answer) yes.push(steps[i].key);
-        if (i + 1 < steps.length) ask(i + 1, id);
-        else result(id);
-      };
-      offer([["Yes", next(true)], ["No", next(false)]]);
+      const step = steps[i];
+      const q = typeof step.q === "string" ? step.q : step.q[a.type] || step.q.other;
+      if (!(await say(q, id))) return;
+      offer(
+        step.options.map(([value, label]) => [
+          label,
+          () => {
+            reply(label);
+            a[step.id] = value;
+            if (i + 1 < steps.length) ask(i + 1, id);
+            else result(id);
+          },
+        ]),
+      );
+      answers.classList.toggle("is-list", step.options.length > 2);
     };
 
-    const card = (p) =>
-      `<a class="guide-card" href="${p.href}" style="--tint: ${p.tint}">` +
-      `<b>${p.name}</b><small>${p.role}</small><span>${p.summary}</span>` +
-      `<em>${p.cta} <span aria-hidden="true">→</span></em></a>`;
+    // What to start with, and why, from the answers. First item is the main suggestion.
+    const suggest = () => {
+      const out = [];
+      const add = (key, why) => out.some(([k]) => k === key) || out.push([key, why]);
+      const phone = a.channel !== "online";
+      if (a.type === "recruit") add("jess", a.list === "yes" ? "You get more applicants than your team can screen. Jess calls every one." : "Jess screens applicants by phone and writes the results to your ATS.");
+      if (a.type === "realestate" && (a.list === "yes" || a.leak === "followup")) add("olivia", a.list === "yes" ? "Owners in your database haven’t heard from you in a while. Olivia calls them." : "Leads aren’t being followed up. Olivia calls owners and books appraisals.");
+      if (a.leak === "calls") add("jenny", "Calls are being missed or answered late. Jenny answers every one, day or night.");
+      if (a.leak === "admin") add("jenny", "Jenny takes bookings, reception and messages off your team.");
+      if (a.leak === "enquiries") add("website", "You need more enquiries. A website built to convert brings them in.");
+      if (a.leak === "followup") add("crm", "Every lead gets followed up by SMS and email, automatically.");
+      if (a.type !== "realestate" && a.type !== "recruit" && a.list === "yes") add("crm", "Old enquiries get a follow-up campaign instead of sitting in a list.");
+      if (a.leak === "enquiries") add("magnets", a.type === "realestate" ? "Offers like property evaluation reports turn visitors into leads." : "Offers like guides and referral campaigns turn visitors into leads.");
+      if (phone) add("jenny", "Customers ring you, so every call gets answered and booked.");
+      if (a.channel === "online") add("website", "Customers find you online, so your website does the first job.");
+      if (a.type === "realestate") add("olivia", "She calls owners already in your database and books appraisals.");
+      return out.slice(0, 3);
+    };
+
+    const card = ([key, why], main) => {
+      const p = people[key];
+      return (
+        `<a class="guide-card${main ? " is-main" : ""}" href="${p.href}" style="--tint: ${p.tint}">` +
+        `<b>${p.name}</b><small>${p.role}</small><span class="guide-why">${why}</span>` +
+        `<em>${p.cta} <span aria-hidden="true">→</span></em></a>`
+      );
+    };
 
     const result = async (id) => {
-      const fit = yes.map((k) => people[k]);
-      const intro = !fit.length
-        ? "None of these quite fit? Tell us what’s slipping through on a 30-minute call and we’ll show you what would."
-        : fit.length === 1
-          ? `Sounds like <b>${fit[0].say}</b> is the one for you.`
-          : `Sounds like a few pieces working together: ${fit.map((p) => `<b>${p.say}</b>`).join(fit.length === 2 ? " and " : ", ")}.`;
-      if (!(await say(intro, id))) return;
-      if (fit.length) {
-        const cards = el("div", "guide-cards", fit.map(card).join(""));
-        log.append(cards);
-        scroll();
+      const fit = suggest();
+      if (!(await say(`Here’s where I’d start: <b>${people[fit[0][0]].name}</b>.`, id))) return;
+      log.append(el("div", "guide-cards", card(fit[0], true)));
+      if (fit.length > 1) {
+        log.append(el("p", "guide-msg", "Then add:"));
+        log.append(el("div", "guide-cards", fit.slice(1).map((f) => card(f, false)).join("")));
       }
+      log.append(el("p", "guide-msg guide-note", "A starting point, not a quote. We’ll shape it around your business on a 30-minute demo."));
+      scroll();
+      answers.classList.remove("is-list");
       answers.innerHTML = "";
       const bookLink = el("a", "btn btn-light btn-small guide-book", `Book a demo <span aria-hidden="true">→</span>`);
       bookLink.href = bookUrl;
@@ -141,16 +192,16 @@ const people = {
       answers.append(bookLink, again);
       (answers.querySelector(".guide-book") || again).focus({ preventScroll: true });
       // Keyboard users can reach the cards from the answers too.
-      log.querySelectorAll(".guide-card").forEach((a) => a.addEventListener("click", () => close(false)));
+      log.querySelectorAll(".guide-card").forEach((link) => link.addEventListener("click", () => close(false)));
     };
 
     function start() {
       run++;
-      yes = [];
+      a = {};
       log.innerHTML = "";
       answers.innerHTML = "";
       const id = run;
-      say("Hi! Not sure which one you need? Answer four quick questions and I’ll point you to what fits your business.", id).then(
+      say("Hi! Four quick questions about your business and I’ll suggest where to start.", id).then(
         (ok) => ok && ask(0, id),
       );
     }
