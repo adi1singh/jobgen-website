@@ -19,9 +19,9 @@ All 28 original generated routes remain, plus the complete six-call library. Pla
 
 ## Preview status
 
-The final GitHub checkpoint and local screenshots are saved. The separate owner-private hosted preview has **not** been updated: automatic approval review rejected the source upload because the user's explicit authorization covered GitHub checkpointing, not disclosure to the separate preview service. A user approval request is pending.
+The final GitHub checkpoint and local screenshots are saved. The user chose **GitHub and local files only** on 19 October 2026. The hosted preview was not updated; no production domain or sharing setting changed.
 
-The existing URL, https://jobgen-blue-revamp.adityasingh-ind28.chatgpt.site, still shows the earlier version. After approval, publish the prepared source with the Sites workflow while preserving its existing owner-only audience. The final source is staged in the existing local Sites checkout; no production domain or sharing setting was changed.
+The existing URL, https://jobgen-blue-revamp.adityasingh-ind28.chatgpt.site, still shows the earlier version. Use the final local screenshots/source and the GitHub branch for this release.
 
 ## Local use
 
