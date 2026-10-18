@@ -38,7 +38,7 @@ const steps = [
 const people = {
   ...Object.fromEntries(WORKFORCE.map((w) => [w.key, { name: w.name, role: w.role, href: w.href, tint: w.tint, cta: `Meet ${w.name}` }])),
   website: { name: "AI-ready website", role: "The front door, built to convert", href: LINKS.webDevelopment, tint: "var(--rest)", cta: "See web development" },
-  crm: { name: "CRM with SMS and email", role: "Automated follow-up", href: "/#solution", tint: "#b48cff", cta: "See how it fits" },
+  crm: { name: "CRM with SMS and email", role: "Automated follow-up", href: "/#solution", tint: "var(--accent)", cta: "See how it fits" },
   magnets: { name: "Lead magnets and offers", role: "Visitors into captured leads", href: "/#solution", tint: "var(--trade)", cta: "See how it fits" },
 };
 ---

@@ -1,7 +1,7 @@
 // Real recordings/transcripts retained from the published JobGen sites.
 // Voice labels verified against jobgen.ai production call-library metadata, 19 Oct 2026.
 // `product` decides which page shows each one. The restaurant and child care calls are outbound
-// follow-ups whose product is still to be confirmed, so no page shows them yet.
+// follow-ups with no dedicated product assignment; both remain available in /calls/.
 import data from "./recordings.json";
 
 export type Recording = (typeof data)[number] & { product: "jenny" | "olivia" | null };

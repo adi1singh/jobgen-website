@@ -5,7 +5,7 @@ import { NEWS } from "../data/news";
 
 const SITE = "https://jobgen.ai";
 const pages = [
-  "/", "/receptionist/", "/olivia/", "/recruiter-agent/", "/web-development/", "/pricing/", "/about/", "/demo/",
+  "/", "/receptionist/", "/olivia/", "/recruiter-agent/", "/web-development/", "/pricing/", "/about/", "/demo/", "/calls/",
   "/industries/", ...INDUSTRIES.map((i) => `/industries/${i.slug}/`),
   "/solutions/", ...SOLUTIONS.map((s) => `/solutions/${s.slug}/`),
   "/partners/", "/news/", ...NEWS.map((n) => `/news/${n.slug}/`),

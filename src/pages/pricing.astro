@@ -28,7 +28,7 @@ const setupLine = [
 // How pricing works: the four parts and the facts below them were confirmed by the owner (Oct 2026).
 const PARTS = [
   { kind: "ONE-OFF", title: "Setup", price: "Quoted for your business", tint: "var(--edu)", text: "We work out where AI can help, then our Sydney team builds, connects and tests your solution before it goes live. Setup is negotiable." },
-  { kind: "MONTHLY", title: "Usage", price: "A$100 to A$1,000 a month", tint: "#b48cff", text: "Depends on how much your AI workforce does: the calls, conversations and follow-ups it handles each month." },
+  { kind: "MONTHLY", title: "Usage", price: "A$100 to A$1,000 a month", tint: "var(--prop)", text: "Depends on how much your AI workforce does: the calls, conversations and follow-ups it handles each month." },
   { kind: "AS NEEDED", title: "Advanced features", price: "Quoted on request", tint: "var(--rest)", text: "Customised features, workflows and integrations built for your business, such as booking systems, real estate portals or council planning data." },
   { kind: "ONGOING", title: "Maintenance and support", price: "Quoted with your plan", tint: "var(--care)", text: "Ongoing support from our team, keeping your solution running and adjusting it as your business changes." },
 ];
@@ -125,7 +125,7 @@ const PARTS = [
 
           <label class="slider est-slider">
             <span class="slider-top"><span>Average call length<small>Connected time per conversation</small></span><output data-out="minutes">{minutesLabel(d.minutes)}</output></span>
-            <input type="range" min="0.5" max="10" step="0.05" value={d.minutes} data-key="minutes" aria-label="Average call length in minutes" />
+            <input type="range" min="0.5" max="10" step="0.01" value={d.minutes} data-key="minutes" aria-label="Average call length in minutes" />
             <span class="slider-ends"><span>30 sec</span><span>10 min</span></span>
           </label>
 

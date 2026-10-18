@@ -4,9 +4,9 @@ export type Testimonial = { quote: string; name: string; detail: string; product
 
 export const TESTIMONIALS: Testimonial[] = [
   {
-    quote: "The phone stopped being the thing that interrupts the work. Jenny takes the call, handles what she can and passes on only what needs one of us.",
+    quote: "Jenny answers every single inbound call on the first ring, books straight into our staff diary, and auto-dispatches the tax intake checklists we used to lose. It’s like adding an experienced receptionist to our firm — with zero human downtime.",
     name: "Mandar Gokhale",
-    detail: "M&S Business Solutions · Accounting",
+    detail: "Managing Director · M&S Business Solutions",
     product: "jenny",
   },
   {

@@ -3,6 +3,27 @@
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
   const still = matchMedia("(prefers-reduced-motion: reduce)");
 
+  // A link to a platform disclosure should reveal its content on arrival.
+  const revealHash = () => {
+    let target;
+    try { target = document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch { return; }
+    const disclosure = target?.closest("details");
+    if (disclosure) disclosure.open = true;
+  };
+  addEventListener("hashchange", revealHash);
+  revealHash();
+  // Pinned chapters and fonts change the initial layout. Resolve a deep link once
+  // those have settled, so /#product-olivia arrives at the product, not an old offset.
+  addEventListener("load", () => {
+    Promise.resolve(document.fonts?.ready).then(() => requestAnimationFrame(() => {
+      if (!location.hash) return;
+      let target;
+      try { target = document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch { return; }
+      revealHash();
+      if (target?.getClientRects().length) target.scrollIntoView({ block: "start", behavior: "instant" });
+    }));
+  }, { once: true });
+
   /* ---------- Header ---------- */
   const header = $(".header");
   const onScroll = () => header.classList.toggle("scrolled", scrollY > 8);
@@ -24,7 +45,7 @@
   document.fonts?.ready.then(fitRotator);
   if (!still.matches)
     setInterval(() => {
-      if (document.hidden) return;
+      if (document.hidden || still.matches) return;
       words[wordIndex].classList.remove("is-active");
       words[wordIndex].classList.add("is-leaving");
       const leaving = words[wordIndex];
@@ -45,7 +66,7 @@
     const persona = document.body.dataset.persona ? getComputedStyle(document.body) : null;
     const colours = persona
       ? ["--p1", "--p2", "--p3", "--p1", "--p2"].map((v) => persona.getPropertyValue(v).trim())
-      : ["--edu", "--prop", "--rest", "--care"].map((v) => root.getPropertyValue(v).trim()).concat("#b48cff");
+      : ["--edu", "--prop", "--rest", "--care"].map((v) => root.getPropertyValue(v).trim()).concat("#b5d3ff");
     const lines = colours.map((colour, i) => ({ colour, phase: i * 1.9, speed: 0.55 + i * 0.13, freq: 1.1 + i * 0.32, boost: 0 }));
     // which line flares for each rotating word: buyer, booking, after-hours, missed
     const lineForWord = [1, 0, 4, 2];

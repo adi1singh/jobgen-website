@@ -51,6 +51,7 @@ const parts = (text: string) => text.split(/\b(Jenny|Olivia|Jess)\b/);
     <p class="mono">IN THEIR OWN WORDS</p>
     {quote && <blockquote>“{parts(quote.quote).map((p) => (TINTS[p] ? <span class="quote-name" style={`--tint: ${TINTS[p]}`}>{p}</span> : p))}”</blockquote>}
     <figcaption><b>{name}</b>{quote && <span> · {quote.detail}</span>}</figcaption>
+    {name === 'Mandar Gokhale' && <><dl class="customer-reported"><div><dt>Annual overhead saved</dt><dd>$65,000+</dd></div><div><dt>After-hours captured</dt><dd>100%</dd></div></dl><p class="reported-source">Figures reported in <a href="https://jobgen.ai/" target="_blank" rel="noopener">JobGen’s published M&S case study <span class="sr-only">(opens in a new tab)</span>↗</a>.</p></>}
     <p class="video-note">Video on YouTube. It loads only when you press play.</p>
   </div>
 </figure>
