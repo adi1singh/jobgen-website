@@ -30,7 +30,7 @@
    const rect = chapter.getBoundingClientRect();
    const distance = Math.max(1, chapter.offsetHeight - innerHeight + 86);
    scene(Math.min(2, Math.max(0, Math.floor((-rect.top + 100) / distance * 3))));
-   if (heroArt && scrollY < innerHeight * 1.5) heroArt.style.transform = 'translateY(' + Math.min(100, scrollY * .13) + 'px) rotate(' + Math.min(5,scrollY * .004) + 'deg)';
+   if (heroArt && scrollY < innerHeight * 1.5) heroArt.style.transform = 'translateY(' + Math.min(50, scrollY * .07) + 'px)';
   } else { scene(0); scenes.forEach(el => el.removeAttribute('aria-hidden')); if (heroArt) heroArt.style.transform = ''; }
   if (inkWords.length) {
    const r = ink.getBoundingClientRect(); const p = reduced.matches ? 1 : Math.max(0,Math.min(1,(innerHeight * .85 - r.top)/(innerHeight * .5)));

@@ -1,5 +1,20 @@
-<div class="hero-signal" aria-hidden="true">
-  <canvas class="hero-signal-canvas"></canvas>
+---
+interface Props { interactive?: boolean; }
+const { interactive = false } = Astro.props;
+const people = [
+  { key: 'jenny', name: 'Jenny', role: 'AI receptionist' },
+  { key: 'olivia', name: 'Olivia', role: 'AI sales agent' },
+  { key: 'jess', name: 'Jess', role: 'AI recruitment' },
+];
+---
+<div class:list={["hero-signal", { "is-interactive": interactive }]}>
+  <canvas class="hero-signal-canvas" aria-hidden="true"></canvas>
+  {interactive && <div class="signal-products" aria-label="Explore the AI workforce on the signal">
+    {people.map(person => <a href={'#product-' + person.key} data-select-agent={person.key} data-signal-anchor={person.key} class="signal-product" aria-label={'Meet ' + person.name + ', ' + person.role}>
+      <span class="signal-plus" aria-hidden="true">+</span><span class="signal-person"><b>{person.name}</b><small>{person.role}</small></span><span class="signal-arrow" aria-hidden="true">↗</span>
+    </a>)}
+    <span class="signal-map-label">+ EXPLORE YOUR AI WORKFORCE</span>
+  </div>}
 </div>
 
 <style>
@@ -20,6 +35,18 @@
     inset: 0;
   }
 
+  .signal-products { position: absolute; inset: 0; pointer-events: none; }
+  .signal-product { position: absolute; left: var(--node-x, 25%); top: var(--node-y, 30%); display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; min-width: 185px; min-height: 66px; background: rgba(6, 18, 39, .91); border: 1px solid rgba(142, 182, 245, .6); border-radius: 3px; transform: translateY(-50%); color: #eff6ff; text-decoration: none; pointer-events: auto; box-shadow: 0 10px 30px #02071465, 0 0 25px #3679f019; backdrop-filter: blur(12px); transition: border-color .25s, background .25s, box-shadow .25s; }
+  .signal-product:hover, .signal-product:focus-visible { border-color: #b4d1ff; background: #132b50; box-shadow: 0 0 30px #5a93ff40; outline: 3px solid #8cb9ff; outline-offset: 5px; }
+  .signal-product[data-signal-anchor="olivia"] { --node-x: 65%; --node-y: 31%; }
+  .signal-product[data-signal-anchor="jess"] { --node-x: 50%; --node-y: 74%; }
+  .signal-plus { display: grid; place-items: center; width: 30px; height: 30px; flex: none; border: 1px solid #9cc5ff; border-radius: 50%; color: #c2dcff; background: #315b9140; font: 400 27px/1 'Geist',sans-serif; }
+  .signal-person { display: grid; gap: 3px; }
+  .signal-person b { font: 730 19px/1.1 'Geist',sans-serif; letter-spacing: -.035em; }
+  .signal-person small { font: 450 12px/1.4 'Geist',sans-serif; color: #b3ccef; white-space: nowrap; }
+  .signal-arrow { margin-left: auto; font-size: 17px; color: #98bfff; }
+  .signal-map-label { position: absolute; bottom: 14%; left: 30%; color: #a3c3f1; font: 500 10px/1.6 'Geist Mono',monospace; letter-spacing: .05em; }
+  @media (max-width: 800px) { .signal-product { min-width: 157px; min-height: 58px; gap: 9px; padding: 9px 11px 9px 8px; } .signal-person b { font-size: 17px; } .signal-person small { font-size: 11px; } .signal-plus { width: 27px; height: 27px; font-size: 24px; } .signal-map-label { bottom: 4%; left: 12%; font-size: 10px; } }
   @media (max-width: 600px) {
     .hero-signal { min-height: 300px; }
   }
@@ -41,9 +68,16 @@
     const context = canvas?.getContext('2d', { alpha: true });
     if (!canvas || !context) return;
 
+    const markers = [...element.querySelectorAll<HTMLElement>('[data-signal-anchor]')];
+    const anchorPositions: Record<string, { theta: number; strand: number }> = {
+      jenny: { theta: 3.95, strand: 0.4 },
+      olivia: { theta: 0.7, strand: 0.35 },
+      jess: { theta: 1.95, strand: -0.45 },
+    };
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let width = 0;
     let height = 0;
+    let visibleWidth = 0;
     let pixelRatio = 1;
     let elapsed = 0;
     let frame = 0;
@@ -99,6 +133,14 @@
       context!.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       context!.clearRect(0, 0, width, height);
 
+      markers.forEach(marker => {
+        const anchor = anchorPositions[marker.dataset.signalAnchor || ''];
+        if (!anchor) return;
+        const point = project(anchor.theta, anchor.strand, time);
+        const labelWidth = width < 600 ? 170 : 200;
+        marker.style.setProperty('--node-x', Math.max(10, Math.min(visibleWidth - labelWidth - 10, point.x - 12)) + 'px');
+        marker.style.setProperty('--node-y', Math.max(65, Math.min(height - 65, point.y)) + 'px');
+      });
       const scale = Math.min(width, height);
       const haze = context!.createRadialGradient(
         width * 0.58, height * 0.43, 0,
@@ -143,9 +185,9 @@
         const edge = Math.pow(Math.abs(patch.strand), 5);
         const glow = Math.pow((Math.cos(patch.theta - time * 0.33 - 1.1) + 1) / 2, 11);
         const highlight = Math.pow((Math.cos(patch.theta + 1.1) + 1) / 2, 5);
-        const alpha = 0.12 + near * 0.23 + edge * 0.16 + glow * 0.22;
-        const hue = 221 - near * 15 - highlight * 14;
-        const light = 48 + near * 15 + edge * 11 + glow * 15;
+        const alpha = 0.16 + near * 0.28 + edge * 0.18 + glow * 0.24;
+        const hue = 218 - near * 3 - highlight * 2;
+        const light = 52 + near * 15 + edge * 11 + glow * 15;
 
         context!.strokeStyle = `hsla(${hue}, 95%, ${light}%, ${alpha})`;
         context!.lineWidth = 0.46 + near * 0.22 + edge * 0.2;
@@ -201,8 +243,16 @@
         const alpha = 0.14 + ((Math.sin(seed + time * 0.32) + 1) / 2) * 0.34;
         context!.fillStyle = `rgba(132, 195, 255, ${alpha})`;
         context!.beginPath();
-        context!.arc(x, y, particle % 7 === 0 ? 1.15 : 0.65, 0, TAU);
-        context!.fill();
+        if (particle % 6 === 0) {
+          context!.strokeStyle = `rgba(161, 198, 255, ${alpha + .2})`;
+          context!.lineWidth = 1;
+          context!.moveTo(x - 4, y); context!.lineTo(x + 4, y);
+          context!.moveTo(x, y - 4); context!.lineTo(x, y + 4);
+          context!.stroke();
+        } else {
+          context!.arc(x, y, particle % 7 === 0 ? 1.15 : 0.65, 0, TAU);
+          context!.fill();
+        }
       }
 
       context!.globalCompositeOperation = 'source-over';
@@ -233,6 +283,7 @@
     const resizeObserver = new ResizeObserver(([entry]) => {
       width = entry.contentRect.width;
       height = entry.contentRect.height;
+      visibleWidth = Math.min(width, Math.max(0, window.innerWidth - element.getBoundingClientRect().left - 18));
       pixelRatio = Math.min(window.devicePixelRatio || 1, 1.6);
       canvas.width = Math.round(width * pixelRatio);
       canvas.height = Math.round(height * pixelRatio);

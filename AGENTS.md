@@ -3,7 +3,8 @@
 ## User requirements
 
 - Build on this existing website and its approved hero/product presentation. This is a major visual upgrade.
-- Use diffused colours, restrained JobGen blue accents, premium spacious typography and cinematic scrolling.
+- Use diffused colours, consistent JobGen blue accents, bold punchy typography and cinematic scrolling. Body text must be comfortably readable at default zoom (17–19px); align major headings on the same grid.
+- Keep the animated wormhole hero; place named product links on it using + markers. The user explicitly requests ten developer/critic improvement passes, bug checks and Git checkpoints.
 - Main narrative: problem → solution → products → value. Serve both small businesses and enterprise buyers.
 - Prefer distinct abstract animated voice identities for Jenny and Olivia over synthetic human headshots.
 - Use adi1singh/website-ideas for the user's selected components and visual references.
