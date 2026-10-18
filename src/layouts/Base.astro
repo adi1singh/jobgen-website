@@ -56,7 +56,7 @@ const image = new URL(ogImage, Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#0b0b0d" />
+    <meta name="theme-color" content="#080d18" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -72,7 +72,7 @@ const image = new URL(ogImage, Astro.site);
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={image} />
     {noindex && <meta name="robots" content="noindex" />}
-    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icons/jobgen-official.webp" type="image/webp" />
     <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -84,6 +84,7 @@ const image = new URL(ogImage, Astro.site);
     <link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/styles/site.css" />
     <link rel="stylesheet" href="/styles/layout.css" />
+    <link rel="stylesheet" href="/styles/blue.css" />
   </head>
   <body data-persona={persona}>
     <div class="scroll-progress" aria-hidden="true"></div>

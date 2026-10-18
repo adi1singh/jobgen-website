@@ -134,7 +134,7 @@
       card.dataset.state = "done";
       $(".mini-text", card).textContent = "✓ " + card.dataset.result;
     });
-  else requestAnimationFrame(tickMinis);
+  else if (minis.length) requestAnimationFrame(tickMinis);
 
   /* ---------- Missed-call calculator: sliders → Calculate → the working → get in touch ---------- */
   // The total stays hidden until the visitor presses Calculate. Then the working is revealed line by
@@ -314,7 +314,7 @@
      and calendars (anything of these reaching the bottom of the screen, a playing call, or a focused
      field), so nothing fixed sits on top of what they're using. ---------- */
   {
-    const QUIET = ".recording, [data-missed-calls], [data-cost], form, .booking, .try-stage, .estimator, .video-frame";
+    const QUIET = ".recording, [data-missed-calls], [data-cost], form, .booking, .try-stage, .estimator, .video-frame, .agent-panel, .problem-sticky, .flow-steps";
     const near = new Set();
     const update = () => {
       const field = document.activeElement?.matches?.("input, textarea, select") ?? false;

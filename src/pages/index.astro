@@ -1,254 +1,89 @@
 ---
-import Base from "../layouts/Base.astro";
-import PageHero from "../components/PageHero.astro";
-import RealRecording from "../components/RealRecording.astro";
-import Testimonials from "../components/Testimonials.astro";
-import BookDemo from "../components/BookDemo.astro";
-import LogoStrip from "../components/LogoStrip.astro";
-import VideoTestimonial from "../components/VideoTestimonial.astro";
-import Faq from "../components/Faq.astro";
-import CostOfWaiting from "../components/CostOfWaiting.astro";
-import { WORKFORCE, LINKS } from "../data/site";
-import { RECORDINGS } from "../data/recordings";
-import { TESTIMONIALS } from "../data/testimonials";
-import { FOUNDER } from "../data/founder";
-
-// Kush's card only shows once he has approved the words and a photo is added.
-const founderLive = FOUNDER.approved && FOUNDER.photo !== "";
-
-// One real call per product that has one.
-const calls = [
-  RECORDINGS.find((r) => r.id === "education-support"),
-  RECORDINGS.find((r) => r.id === "property-report"),
-].filter((r) => r !== undefined);
-const labels: Record<string, string> = { jenny: "Jenny", olivia: "Olivia" };
-// After the featured story: one more customer per professional, word for word.
-const quotes = ["George Limberis", "Buta Deogun", "Pri Gillett"]
-  .map((n) => TESTIMONIALS.find((t) => t.name === n))
-  .filter((t) => t !== undefined);
-
-// Featured story: every line comes from Mandar's published testimonial, nothing added.
-const STORY: [string, string][] = [
-  ["THE PROBLEM", "Phone calls kept interrupting the team’s work."],
-  ["WHAT WE IMPLEMENTED", "Jenny, an AI receptionist, taking the firm’s calls."],
-  ["WHAT CHANGED", "Jenny handles what she can and passes on only the calls that need a person."],
+import Base from '../layouts/Base.astro';
+import HeroSignal from '../components/HeroSignal.astro';
+import AgentIdentity from '../components/AgentIdentity.astro';
+import RealRecording from '../components/RealRecording.astro';
+import CostOfWaiting from '../components/CostOfWaiting.astro';
+import VideoTestimonial from '../components/VideoTestimonial.astro';
+import Faq from '../components/Faq.astro';
+import BookDemo from '../components/BookDemo.astro';
+import { WORKFORCE, LINKS, CLIENTS } from '../data/site';
+import { RECORDINGS } from '../data/recordings';
+const calls = [RECORDINGS.find(r => r.id === 'education-support')!, RECORDINGS.find(r => r.id === 'property-report')!];
+const problems = [
+ { label: 'The calls you miss', title: 'A ring. A voicemail.|A missed opportunity.', text: 'You’re with a customer. The phone rings. By the time you call back, they may have moved on.', kind: 'calls' },
+ { label: 'The follow-ups that wait', title: 'Interest today.|Forgotten tomorrow.', text: 'Your database is full of conversations worth having. Your team’s day is already full.', kind: 'leads' },
+ { label: 'The work that piles up', title: 'More applicants.|The same hours.', text: 'Screening every applicant takes time your recruiters could spend on the right conversations.', kind: 'hiring' },
 ];
-
-// Solutions, organised by the problem a business owner would name. Descriptions stay to what each
-// service does (sources: jobgen.ai, sales.jobgen.ai and JobGen's own brief), with their limits.
-// The owner confirmed (Oct 2026) that the built-in CRM, SMS and email campaigns, website chat and the
-// custom integrations named below (council planning data, real estate portals) are live.
-const SOLUTIONS = [
-  {
-    problem: "Calls go unanswered when you’re busy or closed",
-    name: "AI receptionist",
-    who: "Jenny",
-    tint: "var(--edu)",
-    text: "Handles incoming calls around the clock: answers approved questions, takes messages and books appointments, with handover to your team when needed.",
-    links: [{ label: "Meet Jenny", href: "/receptionist/" }, { label: "Estimate what missed calls are worth", href: "/receptionist/#cost" }],
-  },
-  {
-    problem: "Bookings and reschedules take up your team’s day",
-    name: "Appointment management",
-    who: "Jenny",
-    tint: "#b48cff",
-    text: "Books, moves, cancels and confirms appointments in connected calendars, so fewer booking calls land on your team.",
-    links: [{ label: "See appointment booking", href: "/solutions/booking/" }],
-  },
-  {
-    problem: "Enquiries go cold before anyone follows up",
-    name: "Lead follow-up workflows",
-    tint: "var(--prop)",
-    text: "Automate SMS and email follow-up for the enquiries you choose, with each lead kept in a built-in CRM so your team can see where it stands.",
-    links: [],
-  },
-  {
-    problem: "Owners on your database never hear from you",
-    name: "AI sales agent for real estate",
-    who: "Olivia",
-    tint: "var(--prop)",
-    text: "Calls known property owners, listens for selling intent and arranges appraisals or agent callbacks. Respects do-not-contact preferences.",
-    links: [{ label: "Meet Olivia", href: "/olivia/" }],
-  },
-  {
-    problem: "More applicants than time to screen them",
-    name: "AI recruitment assistant",
-    who: "Jess",
-    tint: "var(--care)",
-    text: "Screens applicants by phone, scores their responses and writes results back to supported ATSs (Bullhorn, JobDiva, Ceipal).",
-    links: [{ label: "Meet Jess", href: "/recruiter-agent/" }],
-  },
-  {
-    problem: "Your website doesn’t turn visitors into enquiries",
-    name: "AI-ready website and chat",
-    tint: "var(--rest)",
-    text: "A website built to convert, with a chat assistant and offers such as evaluation reports or guides to capture enquiries.",
-    links: [{ label: "See web development", href: LINKS.webDevelopment }],
-  },
+const steps = [
+ { title: 'Understand', text: 'Your services, your knowledge and your rules. The AI starts with what your business approves.' },
+ { title: 'Take action', text: 'Answer the question. Book the appointment. Qualify the next step. Work moves forward during the conversation.' },
+ { title: 'Keep it connected', text: 'Save the details and send them to your connected calendars, CRM or supported applicant tracking system.' },
+ { title: 'Bring in your team', text: 'When a conversation needs a person, hand it over with context. You decide when your people take over.' },
 ];
-
-// How an implementation runs. Wording from the published setup answer and Jenny's onboarding steps.
-const PROCESS = [
-  { title: "We look at where AI can help", text: "On a 30-minute call, walk us through your calls, enquiries and admin. We suggest where to start." },
-  { title: "Our Sydney team builds and connects it", text: "Our Sydney team builds and connects everything: the information, questions, calendar connections and handover rules, set up with you. Channels, CRM connections and live transfers depend on your setup." },
-  { title: "You test it before it goes live", text: "We run a test period before it handles live calls. A straightforward deployment can be live within a few business days." },
-  { title: "We adjust it as you go", text: "Summaries and transcripts reach your team, and the rules can change whenever your business does." },
+const products = [
+ { ...WORKFORCE[0], intro: 'A warm welcome.|Every time.', detail: 'The front desk that keeps your business open to opportunity. Jenny answers, books and hands over, even when your team is busy.', note: 'INBOUND CONVERSATIONS', audio: 'Hear Jenny', sample: '“Hi, thanks for calling. How can I help you today?”' },
+ { ...WORKFORCE[1], intro: 'Your next listing|starts with hello.', detail: 'Turn the property owners already in your database into conversations. Olivia follows up, listens for selling intent and organises the next step.', note: 'PROPERTY OWNER FOLLOW-UP', audio: 'Hear Olivia', sample: '“Is a property appraisal something you’re considering?”' },
+ { ...WORKFORCE[2], intro: 'A fuller picture.|A clearer shortlist.', detail: 'Give every applicant a proper first conversation. Jess screens by voice and brings structured responses back to your recruitment team.', note: 'RECRUITMENT SCREENING', audio: '', sample: 'Voice screening. Structured responses. Human decisions.' },
+];
+const process = [
+ { title: 'Find your starting point', text: 'Tell us where calls, follow-ups or admin slow you down.' },
+ { title: 'Make it yours', text: 'Our Sydney team connects your knowledge, tools and handover rules.' },
+ { title: 'Try it together', text: 'Test the conversations and review the outcomes before going live.' },
+ { title: 'Keep getting better', text: 'Review summaries, refine the rules and expand when you’re ready.' },
 ];
 ---
-<Base
-  title="Grow your business with an AI workforce | JOBGEN.AI"
-  description="We identify where AI can help your business, then build and connect the right solution: answering calls, managing appointments and following up enquiries."
-  ogTitle="Grow your business with an AI workforce. JOBGEN.AI"
-  ogDescription="We identify where AI can help your business, then build and connect the right solution. Start with one."
-  ogImage="/og/home.png"
-  ogImageAlt="JOBGEN.AI: Grow your business with an AI workforce."
->
-  <PageHero
-    eyebrow="WE AUTOMATE WORK, NOT REPLACE PEOPLE"
-    sub="We identify where AI can help your business, then build and connect the right solution: from answering calls and managing appointments to following up enquiries."
-    secondary={{ label: "Hear a real call ↓", href: "#listen" }}
-  >
-    <span class="h1-line">Grow your business</span>
-    <span class="h1-line h1-muted">with an AI workforce.</span>
-    <p slot="under" class="hero-reassure"><span class="hero-reassure-dot" aria-hidden="true"></span>Start with one solution. Expand as your business needs.</p>
-    <div slot="below" class="wrap hero-team">
-      <ul class="team-strip" aria-label="Your AI workforce">
-        {WORKFORCE.map((w) => (
-          <li style={`--tint: ${w.tint}`}>
-            <a href={w.href}>
-              <span class="team-voice" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-              <span><b>{w.name}</b><small>{w.role}</small></span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </PageHero>
-
-  <LogoStrip />
-
-  <!-- 01 · HEAR A REAL CALL -->
-  <section class="chapter proof listen light" id="listen" aria-labelledby="listen-title">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="mono chapter-no reveal">01 · HEAR A REAL CALL</p>
-        <h2 id="listen-title" class="reveal">Don’t take our word for it.<br /><span class="muted">Listen.</span></h2>
-        <p class="section-sub reveal">Real calls from real businesses, with personal details removed.</p>
-      </div>
-      <div class="proof-recordings home-calls">
-        {calls.map((rec) => <RealRecording rec={rec} aiLabel={labels[rec.product ?? ""] ?? "AI"} />)}
-      </div>
-      <div class="listen-live reveal">
-        <p><b>Rather talk to one yourself?</b> Try a short live conversation in your browser. Microphone required · Up to 2 minutes · No account needed.</p>
-        <a class="btn btn-ink" href="/demo/" data-live-demo="receptionist">Try a live demo <span aria-hidden="true">→</span></a>
-        <span class="listen-live-status" data-live-demo-status aria-live="polite"></span>
-      </div>
-    </div>
-  </section>
-
-  <!-- 02 · FEATURED CUSTOMER STORY -->
-  <section class="chapter proof story-section light" id="proof" aria-labelledby="proof-title">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="mono chapter-no reveal">02 · CUSTOMER STORY · M&amp;S BUSINESS SOLUTIONS</p>
-        <h2 id="proof-title" class="reveal">An accounting firm<br /><span class="muted">gets back to the work.</span></h2>
-      </div>
-      <VideoTestimonial heading="The phone stopped interrupting the work." story={STORY} storyNote="Summarised from Mandar’s own words, below and in the video." />
-      <p class="more-quotes mono reveal">MORE FROM OUR CUSTOMERS</p>
-      <Testimonials items={quotes} />
-      {founderLive && (
-        <div class="founder-card founder-in-story reveal">
-          <img src={FOUNDER.photo} alt={FOUNDER.photoAlt} width="720" height="900" loading="lazy" />
-          <div>
-            <p class="mono">THE PEOPLE BEHIND IT · FROM OUR FOUNDER</p>
-            <blockquote>“{FOUNDER.mission}”</blockquote>
-            <p class="founder-by"><b>{FOUNDER.name}</b> · {FOUNDER.title}</p>
-            <p class="founder-intro">JobGen.AI was founded in Sydney in 2024. Our Sydney team builds and connects everything, and you’ll talk it through with us on a demo.</p>
-            <a class="founder-more" href="/about/#story">Read our story <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      )}
-    </div>
-  </section>
-
-  <!-- 03 · SOLUTIONS BY PROBLEM -->
-  <section class="chapter fixes light" id="solutions" aria-labelledby="solutions-title">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="mono chapter-no reveal">03 · WHAT WE BUILD</p>
-        <h2 id="solutions-title" class="reveal">Start with the problem<br /><span class="muted">costing you most.</span></h2>
-        <p class="section-sub reveal">Pick one to start. We build it, connect it to the tools you already use and add more only when it’s working.</p>
-      </div>
-      <ul class="fix-grid">
-        {SOLUTIONS.map((x, i) => (
-          <li class="fix reveal" style={`--tint: ${x.tint}; transition-delay: ${(i % 3) * 60}ms`}>
-            <p class="fix-problem mono">{x.problem}</p>
-            <h3>{x.name}{x.who && <span class="fix-who">· {x.who}</span>}</h3>
-            <p class="fix-text">{x.text}</p>
-            {x.links.length > 0 && (
-              <p class="fix-links">
-                {x.links.map((l) => <a href={l.href}>{l.label} <span aria-hidden="true">→</span></a>)}
-              </p>
-            )}
-          </li>
-        ))}
-      </ul>
-      <div class="fix-more reveal">
-        <p><b>Need it connected to something specific?</b> We build custom integrations with the systems your industry relies on, such as booking systems, real estate portals and council planning data.</p>
-        <button type="button" class="btn btn-ink" data-guide-open-alt>Not sure where to start? <span aria-hidden="true">→</span></button>
-      </div>
-    </div>
-  </section>
-
-  <!-- 04 · WHAT WAITING COSTS -->
-  <CostOfWaiting eyebrow="04 · WHAT WAITING COSTS" />
-
-  <!-- 05 · HOW WE WORK WITH YOU -->
-  <section class="chapter how-we-work" id="process" aria-labelledby="process-title">
-    <div class="aurora aurora-soft" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    <div class="wrap">
-      <div class="section-head">
-        <p class="mono chapter-no reveal">05 · HOW WE WORK WITH YOU</p>
-        <h2 id="process-title" class="reveal">We set it up with you.<br /><span class="grad">Your people stay in charge.</span></h2>
-      </div>
-      <div class="process-grid">
-        <ol class="process-steps">
-          {PROCESS.map((p, i) => (
-            <li class="reveal" style={`transition-delay: ${i * 60}ms`}>
-              <span class="process-no mono">{String(i + 1).padStart(2, "0")}</span>
-              <div>
-                <h3>{p.title}</h3>
-                <p>{p.text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-        <div class="process-side">
-          <div class="handover reveal">
-            <p class="mono">A PERSON WHEN IT MATTERS</p>
-            <h3>Human handover, built in.</h3>
-            <p>When the AI can’t answer, it escalates instead of guessing. Depending on your rules it can live-transfer the caller, take a message or create a callback, with the transcript, summary and details passed to your team.</p>
-            <p>You decide what it answers, what it collects and who takes over.</p>
-          </div>
-          <div class="handover data-home reveal">
-            <p class="mono">YOUR DATA</p>
-            <h3>Stored in Australia.</h3>
-            <p>Your data is stored in Australia, and handled under our privacy policy.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 06 · PLAIN ANSWERS -->
-  <Faq eyebrow="06 · PLAIN ANSWERS" />
-
-  <BookDemo
-    eyebrow="30 MINUTES · SYDNEY AND SAN FRANCISCO"
-    line1="Find where AI fits"
-    line2="your business."
-    sub="Pick a time. We’ll look at your calls, enquiries and admin, and suggest where to start."
-    agenda={[{ title: "Where AI can help" }, { title: "Hear it live" }, { title: "Setup and pricing" }]}
-  />
-
+<Base title="Your business. In full flow. | JobGen.AI" description="An AI workforce for the calls, follow-ups and everyday work that hold your business back. Meet Jenny, Olivia and Jess. Built with you in Sydney." ogImage="/og/home.png">
+<noscript><style>
+ .revamp-home .agent-panel[hidden]{display:grid!important}
+ .revamp-home .workforce-tabs,.revamp-home .problem-navigation{display:none}
+ .revamp-home .flow-step-detail{display:block;font-size:12px;line-height:1.7;margin-top:14px;color:#b8c8de}
+ .revamp-home .flow-detail{display:none}
+ </style></noscript>
+<div class="revamp-home">
+ <section class="hero flow-hero" aria-labelledby="hero-title">
+  <div class="hero-atmosphere" aria-hidden="true"></div><div class="hero-art"><HeroSignal /></div>
+  <div class="wrap flow-hero-content">
+   <p class="overline hero-overline"><span class="status-dot"></span> AI WORKFORCE. HUMAN AMBITION.</p>
+   <h1 id="hero-title"><span>Your business.</span><span class="flow-title">In full flow.</span></h1>
+   <p class="flow-hero-sub">An AI workforce for the calls, follow-ups and everyday work that hold you back.<br class="desktop-break" /> More room for what comes next.</p>
+   <div class="hero-actions"><a class="btn btn-blue" href="#book">Find your flow <span aria-hidden="true">↗</span></a><a class="text-play" href="#listen"><span class="play-ring" aria-hidden="true">▶</span> Hear it in action</a></div>
+   <p class="hero-footnote">Built around your business. Set up with your team.</p>
+  </div>
+  <div class="hero-art-caption mono" aria-hidden="true"><span class="crosshair">+</span> INTELLIGENCE, IN MOTION.<br /><span class="caption-detail">A new rhythm for your working day.</span></div>
+  <div class="wrap hero-bottom"><a class="scroll-cue mono" href="#problem"><span class="scroll-line" aria-hidden="true"></span> SCROLL TO SEE THE SHIFT</a><div class="hero-agents" aria-label="Meet your workforce">{WORKFORCE.map(w => <a href={'#product-' + w.key} data-select-agent={w.key}><span class="mini-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>{w.name}<small>{w.key === 'jenny' ? 'Reception' : w.key === 'olivia' ? 'Sales' : 'Recruitment'}</small></span><span class="agent-arrow" aria-hidden="true">↗</span></a>)}</div></div>
+ </section>
+ <section class="client-line" aria-label="Some of the teams we work with"><div class="wrap client-line-inner"><p class="mono">ALREADY PART OF<br />THE WORKING DAY AT</p><div class="client-logos">{[CLIENTS[0], CLIENTS[1], CLIENTS[2], CLIENTS[3]].map(c => <img src={c.logo} alt={c.name} width={c.w} height={c.h} loading="lazy" />)}</div></div></section>
+ <section class="problem-chapter paper" id="problem" aria-labelledby="problem-title">
+  <div class="problem-sticky wrap"><div class="problem-copy"><p class="overline">01 / THE EVERYDAY FRICTION</p><h2 id="problem-title">Big ambitions.<br /><span class="paper-muted">Busy days.</span></h2><p class="section-intro">Your next opportunity shouldn’t have to wait until you’re less busy.</p>
+   <div class="problem-navigation" aria-label="Explore everyday business problems">{problems.map((p, i) => <button class={i === 0 ? 'is-active' : ''} type="button" data-problem-go={i} aria-pressed={i === 0}><span class="mono">{'0' + (i + 1)}</span>{p.label}<span aria-hidden="true">↗</span></button>)}</div><p class="problem-scroll-note mono">THREE FAMILIAR MOMENTS.<br />ONE DIFFERENT WAY FORWARD.</p></div>
+   <div class="problem-scenes">{problems.map((p, i) => <article class={'problem-scene ' + (i === 0 ? 'is-active' : '')} data-problem-scene={i}>
+    <div class={'friction-visual friction-' + p.kind} aria-hidden="true"><div class="friction-grid"></div>
+     {p.kind === 'calls' && <><div class="phone-orbit"><span>↙</span></div><div class="missed-toast"><span class="toast-icon">↙</span><div><b>Incoming customer call</b><small>While your team is with a client</small></div><span class="missed-tag">Missed</span></div><div class="paper-task"><span class="mono">TODAY’S PRIORITIES</span><p><i></i> Client appointments</p><p><i></i> Quotes to send</p><p><i></i> Calls to return <em>Still waiting</em></p></div></>}
+     {p.kind === 'leads' && <><div class="lead-stack">{[['AK','Property owner enquiry','Appraisal requested'],['JM','Existing owner contact','Follow-up due'],['SL','Database conversation','Waiting for a callback']].map(([a,b,c]) => <div><i>{a}</i><span>{b}<small>{c}</small></span><em>To call</em></div>)}</div><span class="visual-caption mono">THE INTENT IS THERE. THE TIME ISN’T.</span></>}
+     {p.kind === 'hiring' && <><div class="application-stack">{['Application received','Screening to arrange','Another CV to review','Interview notes to write'].map((t,n) => <div style={'--card-order:' + n}><span class="document-icon">≡</span><span>{t}<small>Waiting for your team</small></span><span>···</span></div>)}</div><span class="visual-caption mono">A FULL INBOX. A FINITE WORKING DAY.</span></>}
+    </div><div class="problem-scene-copy"><span class="mono scene-counter">{'0' + (i + 1)} / 03</span><h3>{p.title.split('|').map(line => <span>{line}</span>)}</h3><p>{p.text}</p></div>
+   </article>)}<span class="illustration-note mono">ILLUSTRATIVE WORKFLOWS</span></div>
+  </div>
+ </section>
+ <section class="solution-chapter" id="solution" aria-labelledby="solution-title"><div class="solution-light" aria-hidden="true"></div><div class="wrap"><p class="overline reveal">02 / A DIFFERENT WAY TO WORK</p><h2 class="solution-statement" id="solution-title" data-ink><span>Keep work moving.</span><br /><span>Keep people at the heart.</span></h2><div class="solution-intro reveal"><p>Let AI take care of the repeatable work.<br />Give your people the moments that matter.</p><a class="inline-link" href="#workforce">Meet your AI workforce <span aria-hidden="true">↗</span></a></div>
+  <div class="flow-steps" aria-label="How JobGen works">{steps.map((s,i) => <button type="button" class={'flow-step ' + (i === 0 ? 'is-active' : '')} aria-pressed={i === 0} data-flow-step={i}><span class="flow-node"><span class="mono">{'0' + (i + 1)}</span><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><path d={i === 0 ? 'M22 34v-5m7 11V23m7 21V19m7 16v-7' : i === 1 ? 'M22 33l7 7 15-17' : i === 2 ? 'M20 25h24M20 32h24M20 39h24' : 'M23 42v-6a9 9 0 0118 0v6M32 19a5 5 0 110 10 5 5 0 010-10'}/></svg></span><span class="flow-step-name">{s.title}</span><span class="flow-step-detail">{s.text}</span></button>)}</div><p class="flow-detail" aria-live="polite">{steps[0].text}</p><p class="flow-smallprint mono">YOUR KNOWLEDGE → YOUR TOOLS → YOUR RULES</p>
+ </div></section>
+ <section class="workforce-chapter" id="workforce" aria-labelledby="workforce-title"><div class="wrap"><div class="workforce-heading"><div><p class="overline reveal">03 / MEET YOUR NEXT TEAMMATES</p><h2 id="workforce-title" class="reveal">Different strengths.<br /><span class="muted-blue">One shared ambition.</span></h2></div><p class="section-intro reveal">Start with the work holding you back.<br />Meet the AI built to move it forward.</p></div>
+  <div class="workforce-tabs" role="tablist" aria-label="AI workforce">{products.map((w,i) => <button type="button" id={'tab-' + w.key} role="tab" aria-selected={i === 0} aria-controls={'product-' + w.key} tabindex={i === 0 ? 0 : -1} data-agent-tab={w.key}><span class="mono">{'0' + (i + 1)}</span><span class="tab-agent-name">{w.name}</span><span class="tab-agent-role">{w.key === 'jenny' ? 'AI receptionist' : w.key === 'olivia' ? 'AI sales agent' : 'AI recruitment assistant'}</span><span class="tab-plus" aria-hidden="true">↗</span></button>)}</div>
+  <div class="workforce-panels">{products.map((w,i) => <article class="agent-panel" id={'product-' + w.key} role="tabpanel" aria-labelledby={'tab-' + w.key} hidden={i !== 0}><div class="identity-stage"><span class="identity-cross cross-one" aria-hidden="true">+</span><span class="identity-cross cross-two" aria-hidden="true">+</span><AgentIdentity kind={w.key as 'jenny' | 'olivia' | 'jess'}/><p class="identity-sample">{w.sample}</p><span class="identity-note mono">{w.note}</span></div><div class="agent-panel-copy"><span class="overline agent-presence"><span class="status-dot"></span>{w.role}</span><h3>{w.intro.split('|').map(line => <span>{line}</span>)}</h3><p>{w.detail}</p><ul>{w.capabilities.map(c => <li><span aria-hidden="true">↗</span>{c}</li>)}</ul><div class="agent-actions"><a class="btn btn-blue" href={w.href}>Explore {w.name} <span aria-hidden="true">↗</span></a>{w.audio && <a class="inline-link" href={'#call-' + w.key}>{w.audio} <span aria-hidden="true">▶</span></a>}</div></div></article>)}</div>
+  <div class="workforce-note"><p>Need the website, chat or a custom workflow to connect it all?</p><a href={LINKS.webDevelopment}>We build that too <span aria-hidden="true">↗</span></a></div>
+ </div></section>
+ <section class="listen-chapter paper" id="listen" aria-labelledby="listen-title"><div class="wrap"><div class="listen-heading"><div><p class="overline reveal">REAL CONVERSATIONS. REAL NEXT STEPS.</p><h2 id="listen-title" class="reveal">Sounds like<br /><span class="paper-muted">a better working day.</span></h2></div><p class="section-intro reveal">Listen to Jenny and Olivia at work.<br />Real recordings, with personal details removed.</p></div><div class="home-recordings">{calls.map((rec,i) => <div id={'call-' + (i === 0 ? 'jenny' : 'olivia')}><span class="recording-persona mono">{i === 0 ? 'JENNY / RECEPTION' : 'OLIVIA / PROPERTY SALES'}</span><RealRecording rec={rec} aiLabel={i === 0 ? 'Jenny' : 'Olivia'}/></div>)}</div><div class="listen-try"><p>Or have a conversation of your own.</p><a class="btn btn-ink" href="/demo/">Try the live demo <span aria-hidden="true">↗</span></a></div></div></section>
+ <section class="value-chapter paper" id="value" aria-labelledby="value-title"><div class="wrap"><p class="overline reveal">04 / ROOM FOR WHAT MATTERS</p><div class="value-heading"><h2 id="value-title" class="reveal">Less holding you back.<br /><span class="paper-muted">More moving you forward.</span></h2><p class="section-intro reveal">For a growing business or an established team, the value starts in the everyday.</p></div><div class="value-list">{[
+  ['Time for your people','Fewer routine calls and repetitive tasks between your team and the work they do best.'],
+  ['A next step for every conversation','Details captured, appointments made and follow-ups organised, according to your rules.'],
+  ['A setup that grows with you','Start with one workflow. Connect more as the value becomes clear. Your people stay in control.'],
+ ].map(([title,text],i) => <article class="value-row reveal"><span class="mono">{'0' + (i + 1)}</span><h3>{title}</h3><p>{text}</p><span class="value-arrow" aria-hidden="true">↗</span></article>)}</div><details class="value-calculator"><summary><span class="calculator-symbol" aria-hidden="true">＋</span><span>Put your own numbers to it.<small>Explore the cost of missed opportunities and repetitive admin.</small></span><span class="calculator-toggle mono">OPEN CALCULATOR <b aria-hidden="true">↗</b></span></summary><CostOfWaiting eyebrow="YOUR BUSINESS / YOUR NUMBERS"/></details></div></section>
+ <section class="customer-chapter" aria-labelledby="customer-title"><div class="wrap"><p class="overline reveal">THE PEOPLE ALREADY FEELING THE DIFFERENCE</p><h2 id="customer-title" class="reveal">The phone stopped<br /><span class="muted-blue">interrupting the work.</span></h2><VideoTestimonial/></div></section>
+ <section class="setup-chapter paper" aria-labelledby="setup-title"><div class="wrap"><div class="setup-heading"><p class="overline reveal">FROM FIRST CONVERSATION TO EVERYDAY FLOW</p><h2 id="setup-title" class="reveal">Built with you.<br /><span class="paper-muted">Ready for your world.</span></h2></div><ol class="setup-steps">{process.map((s,i) => <li class="reveal"><div class="setup-step-top"><span class="mono">{'0' + (i + 1)}</span><span aria-hidden="true">{i < 3 ? '→' : '↗'}</span></div><h3>{s.title}</h3><p>{s.text}</p></li>)}</ol></div></section>
+ <Faq eyebrow="A FEW THINGS YOU MIGHT BE WONDERING"/>
+ <BookDemo eyebrow="YOUR NEXT CHAPTER STARTS WITH A CONVERSATION" line1="Let’s find your flow." line2="Together." sub="In 30 minutes, we’ll look at where your business gets held up — and show you where AI can help." agenda={[{title:'Your biggest bottleneck'},{title:'The right AI, in action'},{title:'Your setup and next steps'}]} quoteFrom={null}/>
+</div>
+<script is:inline slot="scripts" src="/js/revamp.js" defer></script>
 </Base>

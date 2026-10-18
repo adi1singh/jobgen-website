@@ -1,0 +1,261 @@
+<div class="hero-signal" aria-hidden="true">
+  <canvas class="hero-signal-canvas"></canvas>
+</div>
+
+<style>
+  .hero-signal {
+    width: 100%;
+    height: 100%;
+    min-height: 340px;
+    position: relative;
+    pointer-events: none;
+    isolation: isolate;
+  }
+
+  .hero-signal-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+
+  @media (max-width: 600px) {
+    .hero-signal { min-height: 300px; }
+  }
+</style>
+
+<script>
+  type SignalPoint = { x: number; y: number; z: number };
+  type SignalPatch = {
+    points: SignalPoint[];
+    depth: number;
+    theta: number;
+    strand: number;
+  };
+
+  const TAU = Math.PI * 2;
+
+  document.querySelectorAll<HTMLElement>('.hero-signal').forEach((element) => {
+    const canvas = element.querySelector<HTMLCanvasElement>('canvas');
+    const context = canvas?.getContext('2d', { alpha: true });
+    if (!canvas || !context) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+    let elapsed = 0;
+    let frame = 0;
+    let previousTime = 0;
+    let visible = false;
+    let disposed = false;
+
+    // A twisted, open-centred ribbon. Its width turns through space as it
+    // follows the loop; every filament belongs to the same continuous surface.
+    function project(theta: number, strand: number, time: number): SignalPoint {
+      const turn = theta + 0.48;
+      const wave = Math.sin(theta * 2 - 0.3 + time * 0.12);
+      const radius = 1.56 + 0.11 * Math.sin(theta * 3 + 0.6);
+      const band = strand * 0.59;
+      let x = (radius + band * Math.cos(turn)) * Math.cos(theta);
+      let y = (radius * 0.82 + band * Math.cos(turn)) * Math.sin(theta);
+      let z = band * Math.sin(turn) * 1.24 + 0.23 * wave;
+
+      // The camera gently breathes; the composition never follows the pointer.
+      const yaw = -0.28 + Math.sin(time * 0.085) * 0.055;
+      const pitch = 0.83 + Math.cos(time * 0.07) * 0.045;
+      const roll = -0.37;
+      const yawX = x * Math.cos(yaw) + z * Math.sin(yaw);
+      z = -x * Math.sin(yaw) + z * Math.cos(yaw);
+      x = yawX;
+      const pitchY = y * Math.cos(pitch) - z * Math.sin(pitch);
+      z = y * Math.sin(pitch) + z * Math.cos(pitch);
+      y = pitchY;
+      const rollX = x * Math.cos(roll) - y * Math.sin(roll);
+      y = x * Math.sin(roll) + y * Math.cos(roll);
+      x = rollX;
+
+      const perspective = 5.8 / (5.8 - z);
+      const scale = Math.min(width / 4.65, height / 3.62);
+      return {
+        x: width * 0.5 + x * scale * perspective,
+        y: height * 0.49 + y * scale * perspective,
+        z,
+      };
+    }
+
+    function stroke(points: SignalPoint[]) {
+      context!.beginPath();
+      points.forEach((point, index) => {
+        if (index === 0) context!.moveTo(point.x, point.y);
+        else context!.lineTo(point.x, point.y);
+      });
+      context!.stroke();
+    }
+
+    function render(time: number) {
+      if (width < 1 || height < 1) return;
+      context!.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      context!.clearRect(0, 0, width, height);
+
+      const scale = Math.min(width, height);
+      const haze = context!.createRadialGradient(
+        width * 0.58, height * 0.43, 0,
+        width * 0.58, height * 0.43, scale * 0.46,
+      );
+      haze.addColorStop(0, 'rgba(16, 109, 244, 0.035)');
+      haze.addColorStop(0.58, 'rgba(28, 91, 235, 0.025)');
+      haze.addColorStop(1, 'rgba(28, 91, 235, 0)');
+      context!.fillStyle = haze;
+      context!.fillRect(0, 0, width, height);
+
+      const strands = width < 500 ? 65 : 91;
+      const steps = 216;
+      const patchSize = 12;
+      const patches: SignalPatch[] = [];
+
+      for (let line = 0; line < strands; line++) {
+        const strand = (line / (strands - 1)) * 2 - 1;
+        for (let start = 0; start < steps; start += patchSize) {
+          const points: SignalPoint[] = [];
+          let depth = 0;
+          for (let step = start; step <= start + patchSize; step++) {
+            const point = project((step / steps) * TAU, strand, time);
+            points.push(point);
+            depth += point.z;
+          }
+          patches.push({
+            points,
+            depth: depth / points.length,
+            theta: ((start + patchSize / 2) / steps) * TAU,
+            strand,
+          });
+        }
+      }
+
+      patches.sort((a, b) => a.depth - b.depth);
+      context!.lineCap = 'round';
+      context!.lineJoin = 'round';
+
+      for (const patch of patches) {
+        const near = Math.max(0, Math.min(1, (patch.depth + 1.7) / 3.4));
+        const edge = Math.pow(Math.abs(patch.strand), 5);
+        const glow = Math.pow((Math.cos(patch.theta - time * 0.33 - 1.1) + 1) / 2, 11);
+        const highlight = Math.pow((Math.cos(patch.theta + 1.1) + 1) / 2, 5);
+        const alpha = 0.12 + near * 0.23 + edge * 0.16 + glow * 0.22;
+        const hue = 221 - near * 15 - highlight * 14;
+        const light = 48 + near * 15 + edge * 11 + glow * 15;
+
+        context!.strokeStyle = `hsla(${hue}, 95%, ${light}%, ${alpha})`;
+        context!.lineWidth = 0.46 + near * 0.22 + edge * 0.2;
+        context!.shadowBlur = 0;
+        stroke(patch.points);
+      }
+
+      // Sparse transverse seams make the folded surface legible without
+      // turning it into a wireframe sphere.
+      context!.lineWidth = 0.5;
+      for (let seam = 0; seam < 42; seam++) {
+        const theta = (seam / 42) * TAU;
+        const points: SignalPoint[] = [];
+        for (let step = 0; step <= 28; step++) {
+          points.push(project(theta, (step / 28) * 2 - 1, time));
+        }
+        const front = (points[14].z + 1.8) / 3.6;
+        context!.strokeStyle = `rgba(89, 164, 255, ${0.025 + front * 0.035})`;
+        stroke(points);
+      }
+
+      context!.globalCompositeOperation = 'lighter';
+
+      // A handful of thin light packets travel along the filaments.
+      for (let packet = 0; packet < 7; packet++) {
+        const strand = Math.sin(packet * 2.3) * 0.88;
+        const head = (time * (0.12 + packet * 0.006) + packet * 0.89) % TAU;
+        const trail = 0.21 + (packet % 3) * 0.06;
+        for (let segment = 0; segment < 12; segment++) {
+          const progress = segment / 12;
+          const a = head - trail + progress * trail;
+          const b = a + trail / 12;
+          const first = project(a, strand, time);
+          const second = project(b, strand, time);
+          const near = Math.max(0.15, (first.z + 1.7) / 3.4);
+          context!.strokeStyle = `rgba(133, 218, 255, ${progress * 0.74 * near})`;
+          context!.lineWidth = 0.7 + progress * 0.5;
+          context!.shadowColor = 'rgba(48, 157, 255, 0.7)';
+          context!.shadowBlur = progress > 0.65 ? 9 : 0;
+          stroke([first, second]);
+        }
+      }
+
+      context!.shadowBlur = 0;
+      // Quiet floating points continue the signal just beyond its silhouette.
+      for (let particle = 0; particle < 46; particle++) {
+        const seed = particle * 2.399963;
+        const strand = Math.sin(seed * 1.31) * 1.18;
+        const point = project(seed + time * 0.023, strand, time);
+        const lift = 1.035 + ((particle * 13) % 17) * 0.006;
+        const x = width * 0.5 + (point.x - width * 0.5) * lift;
+        const y = height * 0.49 + (point.y - height * 0.49) * lift;
+        const alpha = 0.14 + ((Math.sin(seed + time * 0.32) + 1) / 2) * 0.34;
+        context!.fillStyle = `rgba(132, 195, 255, ${alpha})`;
+        context!.beginPath();
+        context!.arc(x, y, particle % 7 === 0 ? 1.15 : 0.65, 0, TAU);
+        context!.fill();
+      }
+
+      context!.globalCompositeOperation = 'source-over';
+    }
+
+    function canAnimate() {
+      return !disposed && visible && !document.hidden && !reducedMotion.matches;
+    }
+
+    function tick(now: number) {
+      frame = 0;
+      if (!canAnimate()) return;
+      const delta = previousTime ? Math.min((now - previousTime) / 1000, 0.05) : 0;
+      previousTime = now;
+      elapsed += delta;
+      render(elapsed);
+      frame = requestAnimationFrame(tick);
+    }
+
+    function syncAnimation() {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+      previousTime = 0;
+      if (reducedMotion.matches) render(0);
+      else if (canAnimate()) frame = requestAnimationFrame(tick);
+    }
+
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      width = entry.contentRect.width;
+      height = entry.contentRect.height;
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 1.6);
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+      render(reducedMotion.matches ? 0 : elapsed);
+    });
+
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      syncAnimation();
+    }, { rootMargin: '80px' });
+
+    resizeObserver.observe(element);
+    intersectionObserver.observe(element);
+    document.addEventListener('visibilitychange', syncAnimation);
+    reducedMotion.addEventListener('change', syncAnimation);
+
+    document.addEventListener('astro:before-swap', () => {
+      disposed = true;
+      if (frame) cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      intersectionObserver.disconnect();
+      document.removeEventListener('visibilitychange', syncAnimation);
+      reducedMotion.removeEventListener('change', syncAnimation);
+    }, { once: true });
+  });
+</script>

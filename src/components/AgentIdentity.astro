@@ -1,0 +1,252 @@
+---
+import { randomUUID } from "node:crypto";
+
+interface Props {
+  kind?: "jenny" | "olivia" | "jess";
+  class?: string;
+}
+
+const { kind = "jenny", class: className } = Astro.props;
+const uid = `agent-${kind}-${randomUUID()}`;
+const ref = (name: string) => `url(#${uid}-${name})`;
+const ribbon = "M129 283 C78 226 137 151 200 157 C276 165 223 253 277 279 C334 306 403 232 367 175 C345 141 307 137 282 155";
+const nodes = [
+  { x: 250, y: 86, r: 5 },
+  { x: 340, y: 128, r: 4 },
+  { x: 384, y: 211, r: 5.5 },
+  { x: 347, y: 298, r: 4 },
+  { x: 250, y: 344, r: 5.5 },
+  { x: 153, y: 298, r: 4 },
+  { x: 116, y: 211, r: 5 },
+  { x: 160, y: 128, r: 4 },
+  { x: 250, y: 151, r: 5.5 },
+  { x: 312, y: 211, r: 5 },
+  { x: 250, y: 277, r: 6 },
+  { x: 188, y: 211, r: 5 },
+  { x: 250, y: 215, r: 8 },
+];
+const edges = [
+  [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0],
+  [0, 8], [1, 8], [1, 9], [2, 9], [3, 9], [3, 10], [4, 10],
+  [5, 10], [5, 11], [6, 11], [7, 11], [7, 8],
+  [8, 9], [9, 10], [10, 11], [11, 8], [8, 12], [9, 12], [10, 12], [11, 12],
+];
+---
+
+<div class:list={["agent-identity", `agent-identity--${kind}`, className]} data-kind={kind} aria-hidden="true">
+  <div class="identity-aura"></div>
+  <svg viewBox="0 0 500 430" fill="none" focusable="false" aria-hidden="true">
+    <defs>
+      <linearGradient id={`${uid}-glass`} x1="112" y1="96" x2="370" y2="340" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#d7f1ff" />
+        <stop offset=".2" stop-color="#8fc5ff" />
+        <stop offset=".46" stop-color="#436ac0" />
+        <stop offset=".64" stop-color="#a9d9ff" />
+        <stop offset=".8" stop-color="#7187e1" />
+        <stop offset="1" stop-color="#233b77" />
+      </linearGradient>
+      <linearGradient id={`${uid}-edge`} x1="158" y1="107" x2="338" y2="321" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#f2fbff" stop-opacity=".95" />
+        <stop offset=".34" stop-color="#b3e5ff" stop-opacity=".7" />
+        <stop offset=".57" stop-color="#729fff" stop-opacity=".08" />
+        <stop offset=".82" stop-color="#9ba9ff" stop-opacity=".7" />
+        <stop offset="1" stop-color="#d9efff" stop-opacity=".25" />
+      </linearGradient>
+      <linearGradient id={`${uid}-ribbon`} x1="115" y1="163" x2="362" y2="283" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#456cb7" />
+        <stop offset=".21" stop-color="#bfe9ff" />
+        <stop offset=".43" stop-color="#6799e5" />
+        <stop offset=".59" stop-color="#5266b6" />
+        <stop offset=".79" stop-color="#b9dfff" />
+        <stop offset="1" stop-color="#6a86df" />
+      </linearGradient>
+      <radialGradient id={`${uid}-pearl`} cx=".32" cy=".24" r=".85">
+        <stop stop-color="#f8feff" />
+        <stop offset=".34" stop-color="#c2e8ff" />
+        <stop offset=".72" stop-color="#659cdb" />
+        <stop offset="1" stop-color="#283b78" />
+      </radialGradient>
+      <radialGradient id={`${uid}-floor`}>
+        <stop stop-color="#77aaff" stop-opacity=".13" />
+        <stop offset="1" stop-color="#77aaff" stop-opacity="0" />
+      </radialGradient>
+      <filter id={`${uid}-soft`} x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="11" />
+      </filter>
+      <filter id={`${uid}-glow`} x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="3.5" />
+      </filter>
+    </defs>
+
+    <ellipse cx="250" cy="361" rx="159" ry="30" fill={ref("floor")} class="identity-floor" />
+    <g class="identity-guides" stroke="#8fbfff" stroke-width=".6">
+      <circle cx="250" cy="215" r="168" stroke-dasharray="1 12" opacity=".19" />
+      <path d="M250 37V57M250 373V393M72 215H92M408 215H428" opacity=".22" />
+      <path d="M131 96l8 8M361 326l8 8M131 334l8-8M361 104l8-8" opacity=".13" />
+    </g>
+
+    {kind === "jenny" && (
+      <g class="jenny-sculpture">
+        <g transform="rotate(-29 250 215)">
+          <ellipse cx="250" cy="225" rx="135" ry="111" stroke="#5d8dff" stroke-width="28" opacity=".18" filter={ref("soft")} />
+          {[0, 1, 2, 3].map((i) => (
+            <g class="jenny-ring" style={`--ring:${i}`}>
+              <ellipse cx="250" cy={221 + i * 1.4} rx={133 - i * 28} ry={106 - i * 22} stroke="#172c57" stroke-width={15 - i} />
+              <ellipse cx="250" cy="213" rx={133 - i * 28} ry={106 - i * 22} stroke={ref("glass")} stroke-width={15 - i} />
+              <ellipse cx="250" cy="209.5" rx={133 - i * 28} ry={106 - i * 22} stroke={ref("edge")} stroke-width="1.15" />
+              <ellipse cx="250" cy="216" rx={126 - i * 28} ry={99 - i * 22} stroke="#c0e8ff" stroke-width=".6" opacity=".15" />
+            </g>
+          ))}
+          <ellipse cx="250" cy="213" rx="151" ry="121" stroke="#96baff" stroke-width=".65" opacity=".2" stroke-dasharray="51 14 3 18" class="jenny-orbit" />
+          <circle cx="384" cy="156" r="3.2" fill={ref("pearl")} />
+          <circle cx="119" cy="275" r="2" fill="#9ecaff" opacity=".7" />
+        </g>
+        <g class="voice-core" stroke-linecap="round" stroke="#ceeaff" stroke-width="3">
+          <path d="M237 210v9M244 203v23M251 198v33M258 205v19M265 211v7" />
+        </g>
+      </g>
+    )}
+
+    {kind === "olivia" && (
+      <g class="olivia-sculpture">
+        <ellipse cx="250" cy="224" rx="170" ry="110" stroke="#91adff" stroke-width=".65" opacity=".14" transform="rotate(-24 250 224)" stroke-dasharray="2 9" />
+        <path d={ribbon} stroke="#6d9bff" stroke-width="45" stroke-linecap="round" opacity=".16" filter={ref("soft")} />
+        <g class="olivia-ribbon">
+          <path d={ribbon} stroke="#172c57" stroke-width="30" stroke-linecap="round" transform="translate(0 7)" />
+          <path d={ribbon} stroke={ref("ribbon")} stroke-width="30" stroke-linecap="round" />
+          <path d={ribbon} stroke={ref("edge")} stroke-width="18" stroke-linecap="round" opacity=".62" />
+          <path d={ribbon} stroke="#d0edff" stroke-width="1" stroke-linecap="round" transform="translate(-3 -9)" opacity=".58" />
+          <path d={ribbon} stroke="#263665" stroke-width="1.5" stroke-linecap="round" transform="translate(2 11)" opacity=".55" />
+          <path d={ribbon} stroke="#dcf2ff" stroke-width=".75" stroke-linecap="round" stroke-dasharray="86 480" class="ribbon-light" />
+        </g>
+        <path d="M94 258C70 181 168 100 244 119" stroke="#8fc5ff" stroke-width=".8" opacity=".3" stroke-linecap="round" />
+        <path d="M300 324C368 326 421 269 408 210" stroke="#a5b0ff" stroke-width=".8" opacity=".3" stroke-linecap="round" />
+        <circle cx="243" cy="119" r="2.7" fill={ref("pearl")} />
+        <circle cx="408" cy="210" r="2" fill="#b2d5ff" opacity=".8" />
+      </g>
+    )}
+
+    {kind === "jess" && (
+      <g class="jess-sculpture">
+        <ellipse cx="250" cy="215" rx="151" ry="61" transform="rotate(-29 250 215)" stroke="#a7c6ff" stroke-width=".7" opacity=".18" />
+        <ellipse cx="250" cy="215" rx="100" ry="151" transform="rotate(-29 250 215)" stroke="#809fff" stroke-width=".65" opacity=".14" />
+        <circle cx="250" cy="215" r="125" fill={ref("floor")} />
+        <g stroke="#7591d5" stroke-width=".7" opacity=".24" stroke-dasharray="3 6">
+          <path d="M250 86L250 344M160 128L347 298M340 128L153 298M116 211H384" />
+          <path d="M250 86L384 211L250 344L116 211Z" />
+        </g>
+        <g class="jess-connections" stroke={ref("glass")} stroke-width="1.1">
+          {edges.map(([a, b], i) => (
+            <line x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} opacity={i < 8 ? .38 : .55} />
+          ))}
+        </g>
+        <path d="M160 128L250 151L312 211L250 277L153 298" stroke="#9bd5ff" stroke-width="4" opacity=".25" filter={ref("glow")} />
+        <path d="M160 128L250 151L312 211L250 277L153 298" stroke="#c2e7ff" stroke-width="1.4" opacity=".9" class="jess-signal" />
+        {nodes.map((node, i) => (
+          <g class="jess-node" style={`--node:${i}`}>
+            <circle cx={node.x} cy={node.y} r={node.r * 2.4} fill="#6daeff" opacity=".18" filter={ref("glow")} />
+            <circle cx={node.x} cy={node.y} r={node.r} fill={ref("pearl")} />
+            <circle cx={node.x} cy={node.y} r={node.r + 3.5} stroke="#9acaff" stroke-width=".6" opacity=".24" />
+          </g>
+        ))}
+        <g stroke="#c4e5ff" stroke-width=".7" opacity=".4">
+          <path d="M250 67v-7M101 211h-7M399 211h7M250 363v7" />
+        </g>
+      </g>
+    )}
+  </svg>
+</div>
+
+<style>
+  .agent-identity {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 500 / 430;
+    isolation: isolate;
+    pointer-events: none;
+  }
+  .agent-identity svg {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .identity-aura {
+    position: absolute;
+    z-index: -1;
+    inset: 17% 12%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgb(76 127 216 / .12), rgb(75 96 197 / .045) 47%, transparent 72%);
+    filter: blur(20px);
+  }
+  .identity-floor { opacity: .7; }
+  .jenny-sculpture,
+  .olivia-sculpture,
+  .jess-sculpture {
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    animation: suspended 9s ease-in-out infinite;
+  }
+  .jenny-ring {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ring-breathe 7s ease-in-out infinite;
+    animation-delay: calc(var(--ring) * -.6s);
+  }
+  .jenny-orbit {
+    transform-origin: 250px 213px;
+    animation: orbit-turn 72s linear infinite;
+  }
+  .voice-core {
+    opacity: .8;
+    filter: drop-shadow(0 0 5px rgb(119 178 255 / .55));
+    transform-origin: 250px 215px;
+    animation: core-breathe 4s ease-in-out infinite;
+  }
+  .olivia-sculpture { animation-duration: 11s; animation-delay: -2s; }
+  .olivia-ribbon {
+    transform-origin: 250px 215px;
+    animation: ribbon-tilt 12s ease-in-out infinite;
+  }
+  .ribbon-light { animation: ribbon-travel 12s linear infinite; }
+  .jess-sculpture { animation-duration: 10s; animation-delay: -4s; }
+  .jess-node {
+    animation: node-breathe 6s ease-in-out infinite;
+    animation-delay: calc(var(--node) * -.43s);
+  }
+  .jess-signal { animation: signal-breathe 6s ease-in-out infinite; }
+  @keyframes suspended {
+    0%, 100% { transform: translateY(3px) rotate(-1deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
+  }
+  @keyframes ring-breathe {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  @keyframes orbit-turn { to { transform: rotate(360deg); } }
+  @keyframes core-breathe {
+    0%, 100% { opacity: .62; transform: scaleY(.78); }
+    50% { opacity: 1; transform: scaleY(1.08); }
+  }
+  @keyframes ribbon-tilt {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(3deg); }
+  }
+  @keyframes ribbon-travel { to { stroke-dashoffset: -566; } }
+  @keyframes node-breathe {
+    0%, 100% { opacity: .72; }
+    50% { opacity: 1; }
+  }
+  @keyframes signal-breathe {
+    0%, 100% { opacity: .5; }
+    50% { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .agent-identity *, .agent-identity *::before, .agent-identity *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>
