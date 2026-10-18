@@ -34,3 +34,7 @@ Development branch: `codex/jobgen-blue-revamp` in `adi1singh/jobgen-website`. Co
 Private design preview: https://jobgen-blue-revamp.adityasingh-ind28.chatgpt.site
 
 `astro.config.mjs` defaults canonical URLs to the official JobGen domain. Preview hosts may set `SITE_URL` when building. The opening preview capture is at `docs/jobgen-revamp-preview.jpg`.
+
+## Required content parity
+
+The user requires everything from the live JobGen site to remain available in the revamp. The live site can also supply useful content, assets and patterns. See `AGENTS.md` and `docs/live-content-map.md` for the preserved brief, coverage checklist and remaining migration checks. The first visual pass is not a completed full-content migration.
