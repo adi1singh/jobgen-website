@@ -7,7 +7,7 @@ import { LINKS, WORKFORCE } from "../data/site";
     <div class="footer-brand">
       <a class="brand" href="/"><BrandMark size={32} /><b class="brand-word">JOBGEN<span>.AI</span></b></a>
       <p>We find where AI can help your business, then build and connect it.</p>
-      <p class="footer-offices">Sydney · 60 Martin Place, NSW 2000<br />San Francisco · 580 California St, CA 94104</p>
+      <p class="footer-offices">Sydney · Suite 306, 60 Martin Place, NSW 2000<br />San Francisco · 580 California St, CA 94104</p>
       <a class="footer-phone" href="tel:+61288147905">Sydney · (02) 8814 7905</a>
       <a class="footer-phone" href="tel:+18005624361">US · +1 (800) 562-4361</a>
       <p class="footer-trust"><span aria-hidden="true">●</span> Your data is stored in Australia</p>
@@ -15,6 +15,7 @@ import { LINKS, WORKFORCE } from "../data/site";
     <div>
       <p class="mono footer-head">AI WORKFORCE</p>
       {WORKFORCE.map((w) => <a href={w.href}>{w.name} · {w.role}</a>)}
+      <a href="/calls/">Real call library</a>
       <a href={LINKS.solutions}>Solutions</a>
       <a href={LINKS.industries}>Industries</a>
       <a href={LINKS.pricing}>Pricing</a>
@@ -35,6 +36,7 @@ import { LINKS, WORKFORCE } from "../data/site";
       <a href={LINKS.login}>Log in</a>
       <a href={LINKS.privacy}>Privacy</a>
       <a href={LINKS.terms}>Terms</a>
+      <a href="/#platform-controls">Security & controls</a>
     </div>
   </div>
   <div class="wrap footer-legal">

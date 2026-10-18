@@ -1,7 +1,9 @@
 // Plain answers, word for word from https://jobgen.ai/about/ (the cost answer adds a pointer to the
 // pricing page, which now exists). Pricing, GST and data residency answers were confirmed by the owner
 // (Oct 2026). The "do I have to buy everything" answer is JobGen's own positioning, confirmed by the owner (Oct 2026): customers can start with one solution.
-export const FAQ = [
+import LIVE_FAQ from "./liveFaq.json";
+
+const CORE_FAQ = [
   {
     q: "Do I have to buy a website, CRM and every assistant?",
     a: "No. Most businesses start with one solution, such as an AI receptionist, appointment booking or a follow-up workflow. We build it and connect it to the tools you already use. A website, CRM with SMS and email campaigns, more assistants or custom integrations can be added later if they’d help.",
@@ -37,9 +39,19 @@ export const FAQ = [
   },
 ];
 
+// Retain the complete live FAQ topics alongside the existing product/company answers.
+// Natural-speech wording is edited to avoid an unmeasured latency/recognition guarantee.
+const liveAnswers = LIVE_FAQ.map(item => item.q === "Does the AI sound like a robot?"
+  ? { ...item, a: "Jenny and Olivia use natural conversational voices with intonation, pacing and interruption handling. Hear the real recordings or try a live conversation to judge the experience for yourself." }
+  : item);
+export const FAQ: { q: string; a: string; link?: { label: string; href: string } }[] = [
+  ...CORE_FAQ,
+  ...liveAnswers.filter(item => !CORE_FAQ.some(core => core.q === item.q)),
+];
+
 // Tools named on sales.jobgen.ai (and Jess's ATS writeback). Its own caveat applies.
 export const INTEGRATIONS = [
   "Google Calendar", "Calendly", "HubSpot", "Salesforce", "Slack", "Microsoft Teams", "WhatsApp", "Zapier",
   "Google Drive", "Dropbox", "Notion", "Airtable", "Mailchimp", "Stripe", "MYOB", "LinkedIn",
-  "Bullhorn", "JobDiva", "Ceipal",
+  "Bullhorn", "JobDiva", "Ceipal", "Microsoft Outlook", "Xero", "Twilio",
 ];

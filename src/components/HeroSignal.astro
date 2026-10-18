@@ -82,6 +82,7 @@ const people = [
     let elapsed = 0;
     let frame = 0;
     let previousTime = 0;
+    let lastPaint = 0;
     let visible = false;
     let disposed = false;
 
@@ -138,8 +139,16 @@ const people = [
         if (!anchor) return;
         const point = project(anchor.theta, anchor.strand, time);
         const labelWidth = width < 600 ? 170 : 200;
-        marker.style.setProperty('--node-x', Math.max(10, Math.min(visibleWidth - labelWidth - 10, point.x - 12)) + 'px');
-        marker.style.setProperty('--node-y', Math.max(65, Math.min(height - 65, point.y)) + 'px');
+        const phoneAnchors: Record<string, { x: number; y: number }> = {
+          jenny: { x: 12, y: height * .28 },
+          olivia: { x: Math.max(12, visibleWidth - 170), y: height * .48 },
+          jess: { x: width * .25, y: height * .72 },
+        };
+        const phone = phoneAnchors[marker.dataset.signalAnchor || ''];
+        const x = width < 600 ? phone.x : Math.max(10, Math.min(visibleWidth - labelWidth - 10, point.x - 12));
+        const y = width < 600 ? phone.y : Math.max(65, Math.min(height - 65, point.y));
+        marker.style.setProperty('--node-x', x + 'px');
+        marker.style.setProperty('--node-y', y + 'px');
       });
       const scale = Math.min(width, height);
       const haze = context!.createRadialGradient(
@@ -152,8 +161,8 @@ const people = [
       context!.fillStyle = haze;
       context!.fillRect(0, 0, width, height);
 
-      const strands = width < 500 ? 65 : 91;
-      const steps = 216;
+      const strands = width < 600 ? 49 : 73;
+      const steps = width < 600 ? 144 : 180;
       const patchSize = 12;
       const patches: SignalPatch[] = [];
 
@@ -265,6 +274,8 @@ const people = [
     function tick(now: number) {
       frame = 0;
       if (!canAnimate()) return;
+      if (lastPaint && now - lastPaint < 1000 / 30) { frame = requestAnimationFrame(tick); return; }
+      lastPaint = now;
       const delta = previousTime ? Math.min((now - previousTime) / 1000, 0.05) : 0;
       previousTime = now;
       elapsed += delta;
@@ -276,6 +287,7 @@ const people = [
       if (frame) cancelAnimationFrame(frame);
       frame = 0;
       previousTime = 0;
+      lastPaint = 0;
       if (reducedMotion.matches) render(0);
       else if (canAnimate()) frame = requestAnimationFrame(tick);
     }

@@ -2,7 +2,7 @@
  const root = document.querySelector('.revamp-home');
  if (!root) return;
  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
- const wide = matchMedia('(min-width: 801px)');
+ const wide = matchMedia('(min-width: 1001px) and (min-height: 780px)');
  const chapter = root.querySelector('.problem-chapter');
  const scenes = [...root.querySelectorAll('[data-problem-scene]')];
  const problemButtons = [...root.querySelectorAll('[data-problem-go]')];

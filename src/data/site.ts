@@ -7,7 +7,7 @@ export const LINKS = {
   webDevelopment: "/web-development/",
   pricing: "/pricing/",
   // Where the calculator's "get in touch" form (email + phone + numbers) is sent, as a JSON POST.
-  // Empty for now: the form shows its thank-you state with a "not connected yet" note and sends nothing.
+  // When empty, show working booking/email links instead of collecting contact details.
   leadEndpoint: "",
   partners: "/partners/",
   industries: "/industries/",

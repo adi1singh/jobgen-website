@@ -7,9 +7,11 @@ import CostOfWaiting from '../components/CostOfWaiting.astro';
 import VideoTestimonial from '../components/VideoTestimonial.astro';
 import Faq from '../components/Faq.astro';
 import BookDemo from '../components/BookDemo.astro';
+import PlatformDepth from '../components/PlatformDepth.astro';
+import IndustryDepth from '../components/IndustryDepth.astro';
 import { WORKFORCE, LINKS, CLIENTS } from '../data/site';
 import { RECORDINGS } from '../data/recordings';
-const calls = [RECORDINGS.find(r => r.id === 'education-support')!, RECORDINGS.find(r => r.id === 'property-report')!];
+const calls = [RECORDINGS.find(r => r.id === 'inbound-appointment')!, RECORDINGS.find(r => r.id === 'property-report')!];
 const problems = [
  { label: 'The calls you miss', title: 'A ring. A voicemail.|A missed opportunity.', text: 'You’re with a customer. The phone rings. By the time you call back, they may have moved on.', kind: 'calls' },
  { label: 'The follow-ups that wait', title: 'Interest today.|Forgotten tomorrow.', text: 'Your database is full of conversations worth having. Your team’s day is already full.', kind: 'leads' },
@@ -42,7 +44,7 @@ const process = [
  </style></noscript>
 <div class="revamp-home">
  <section class="hero flow-hero" aria-labelledby="hero-title">
-  <div class="hero-atmosphere" aria-hidden="true"></div><div class="hero-art"><HeroSignal interactive /></div>
+  <div class="hero-atmosphere" aria-hidden="true"></div>
   <div class="wrap flow-hero-content">
    <p class="overline hero-overline"><span class="status-dot"></span> AI WORKFORCE. HUMAN AMBITION.</p>
    <h1 id="hero-title"><span>Business on.</span><span class="flow-title">Busywork off.</span></h1>
@@ -50,6 +52,7 @@ const process = [
    <div class="hero-actions"><a class="btn btn-blue" href="#book">Book a demo <span aria-hidden="true">↗</span></a><a class="text-play" href="#listen"><span class="play-ring" aria-hidden="true">▶</span> Hear a real call</a></div>
    <p class="hero-footnote">Built around your business. Set up with your team.</p>
   </div>
+  <div class="hero-art"><HeroSignal interactive /></div>
   <div class="hero-art-caption mono" aria-hidden="true"><span class="crosshair">+</span> INTELLIGENCE, IN MOTION.<br /><span class="caption-detail">A new rhythm for your working day.</span></div>
   <div class="wrap hero-bottom"><a class="scroll-cue mono" href="#problem"><span class="scroll-line" aria-hidden="true"></span> SCROLL TO SEE THE SHIFT</a><div class="hero-bottom-note"><span><i></i> YOUR TOOLS</span><span><i></i> YOUR RULES</span><span><i></i> YOUR NEXT MOVE</span></div></div>
  </section>
@@ -74,13 +77,15 @@ const process = [
   <div class="workforce-panels">{products.map((w,i) => <article class="agent-panel" id={'product-' + w.key} role="tabpanel" aria-labelledby={'tab-' + w.key} hidden={i !== 0}><div class="identity-stage"><span class="identity-cross cross-one" aria-hidden="true">+</span><span class="identity-cross cross-two" aria-hidden="true">+</span><AgentIdentity kind={w.key as 'jenny' | 'olivia' | 'jess'}/><p class="identity-sample">{w.sample}</p><span class="identity-note mono">{w.note}</span></div><div class="agent-panel-copy"><span class="overline agent-presence"><span class="status-dot"></span>{w.role}</span><h3>{w.intro.split('|').map(line => <span>{line}</span>)}</h3><p>{w.detail}</p><ul>{w.capabilities.map(c => <li><span aria-hidden="true">↗</span>{c}</li>)}</ul><div class="agent-actions"><a class="btn btn-blue" href={w.href}>Explore {w.name} <span aria-hidden="true">↗</span></a>{w.audio && <a class="inline-link" href={'#call-' + w.key}>{w.audio} <span aria-hidden="true">▶</span></a>}</div></div></article>)}</div>
   <div class="workforce-note"><p>Need the website, chat or a custom workflow to connect it all?</p><a href={LINKS.webDevelopment}>We build that too <span aria-hidden="true">↗</span></a></div>
  </div></section>
- <section class="listen-chapter paper" id="listen" aria-labelledby="listen-title"><div class="wrap"><div class="listen-heading"><div><p class="overline reveal">REAL CONVERSATIONS. REAL NEXT STEPS.</p><h2 id="listen-title" class="reveal">Hear the<br /><span class="paper-muted">difference.</span></h2></div><p class="section-intro reveal">Listen to Jenny and Olivia at work.<br />Real recordings, with personal details removed.</p></div><div class="home-recordings">{calls.map((rec,i) => <div id={'call-' + (i === 0 ? 'jenny' : 'olivia')}><span class="recording-persona mono">{i === 0 ? 'JENNY / RECEPTION' : 'OLIVIA / PROPERTY SALES'}</span><RealRecording rec={rec} aiLabel={i === 0 ? 'Jenny' : 'Olivia'}/></div>)}</div><div class="listen-try"><p>Or have a conversation of your own.</p><a class="btn btn-ink" href="/demo/">Try the live demo <span aria-hidden="true">↗</span></a></div></div></section>
+ <section class="listen-chapter paper" id="listen" aria-labelledby="listen-title"><div class="wrap"><div class="listen-heading"><div><p class="overline reveal">REAL CONVERSATIONS. REAL NEXT STEPS.</p><h2 id="listen-title" class="reveal">Hear the<br /><span class="paper-muted">difference.</span></h2></div><p class="section-intro reveal">Listen to Jenny and Olivia at work.<br />Real recordings, with personal details removed.</p></div><div class="home-recordings">{calls.map((rec,i) => <div id={'call-' + (i === 0 ? 'jenny' : 'olivia')}><span class="recording-persona mono">{i === 0 ? 'JENNY / RECEPTION' : 'OLIVIA / PROPERTY SALES'}</span><RealRecording rec={rec} aiLabel={i === 0 ? 'Jenny' : 'Olivia'}/></div>)}</div><div class="listen-try"><p>Or have a conversation of your own.</p><a class="inline-link" href="/calls/">Explore all six recordings <span aria-hidden="true">↗</span></a><a class="btn btn-ink" href="/demo/">Try the live demo <span aria-hidden="true">↗</span></a></div></div></section>
  <section class="value-chapter paper" id="value" aria-labelledby="value-title"><div class="wrap"><p class="overline reveal">04 / ROOM FOR WHAT MATTERS</p><div class="value-heading"><h2 id="value-title" class="reveal">Less admin.<br /><span class="paper-muted">More opportunity.</span></h2><p class="section-intro reveal">For a growing business or an established team, the value starts in the everyday.</p></div><div class="value-list">{[
   ['Time for your people','Fewer routine calls and repetitive tasks between your team and the work they do best.'],
   ['A next step for every conversation','Details captured, appointments made and follow-ups organised, according to your rules.'],
   ['A setup that grows with you','Start with one workflow. Connect more as the value becomes clear. Your people stay in control.'],
  ].map(([title,text],i) => <article class="value-row reveal"><span class="mono">{'0' + (i + 1)}</span><h3>{title}</h3><p>{text}</p><span class="value-arrow" aria-hidden="true">↗</span></article>)}</div><details class="value-calculator"><summary><span class="calculator-symbol" aria-hidden="true">＋</span><span>Put your own numbers to it.<small>Explore the cost of missed opportunities and repetitive admin.</small></span><span class="calculator-toggle mono">OPEN CALCULATOR <b aria-hidden="true">↗</b></span></summary><CostOfWaiting eyebrow="YOUR BUSINESS / YOUR NUMBERS"/></details></div></section>
+ <PlatformDepth />
  <section class="customer-chapter" aria-labelledby="customer-title"><div class="wrap"><p class="overline reveal">THE PEOPLE ALREADY FEELING THE DIFFERENCE</p><h2 id="customer-title" class="reveal">The phone stopped<br /><span class="muted-blue">interrupting the work.</span></h2><VideoTestimonial/></div></section>
+ <IndustryDepth />
  <section class="setup-chapter paper" aria-labelledby="setup-title"><div class="wrap"><div class="setup-heading"><p class="overline reveal">FROM FIRST CONVERSATION TO EVERYDAY FLOW</p><h2 id="setup-title" class="reveal">Your business.<br /><span class="paper-muted">Your rules.</span></h2></div><ol class="setup-steps">{process.map((s,i) => <li class="reveal"><div class="setup-step-top"><span class="mono">{'0' + (i + 1)}</span><span aria-hidden="true">{i < 3 ? '→' : '↗'}</span></div><h3>{s.title}</h3><p>{s.text}</p></li>)}</ol></div></section>
  <Faq eyebrow="A FEW THINGS YOU MIGHT BE WONDERING"/>
  <BookDemo eyebrow="YOUR NEXT CHAPTER STARTS WITH A CONVERSATION" line1="Let’s find your flow." line2="Together." sub="In 30 minutes, we’ll look at where your business gets held up — and show you where AI can help." agenda={[{title:'Your biggest bottleneck'},{title:'The right AI, in action'},{title:'Your setup and next steps'}]} quoteFrom={null}/>

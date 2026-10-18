@@ -1,0 +1,8 @@
+---
+const groups = [
+ { name:'Trades & home services',items:[['Plumbing','/industries/plumbing/'],['Electricians','/industries/electricians/'],['Home services','/industries/home-services/'],['Construction','https://receptionist.jobgen.ai/industries/construction']] },
+ { name:'Professional services',items:[['Accounting','/industries/accounting/'],['Legal','/industries/legal/'],['Real estate','/industries/property/'],['Mortgage brokers','https://receptionist.jobgen.ai/industries/mortgage-brokers']] },
+ { name:'Care & local business',items:[['Medical','/industries/medical/'],['Dental','https://receptionist.jobgen.ai/industries/dental'],['NDIS providers','https://receptionist.jobgen.ai/industries/ndis'],['Automotive','/industries/automotive/']] },
+];
+---
+<section class="industry-depth paper" id="industry-workflows" aria-labelledby="industry-workflows-title"><div class="wrap"><p class="overline reveal">BUILT AROUND YOUR KIND OF BUSINESS</p><div class="depth-heading"><h2 id="industry-workflows-title" class="reveal">Your world.<br /><span class="paper-muted">Already in mind.</span></h2><p class="section-intro reveal">Different questions. Different handovers.<br />A workflow that fits the way you work.</p></div><div class="industry-groups">{groups.map(group=><div><h3>{group.name}</h3><ul>{group.items.map(([label,href])=><li><a href={href}>{label}<span aria-hidden="true">↗</span></a></li>)}</ul></div>)}</div><div class="industry-more"><a href="/industries/education/">Education <span aria-hidden="true">↗</span></a><a href="/industries/recruitment/">Recruitment <span aria-hidden="true">↗</span></a><a href="/calls/">Hear hospitality & childcare calls <span aria-hidden="true">↗</span></a></div></div></section>

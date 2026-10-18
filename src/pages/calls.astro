@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import BookDemo from '../components/BookDemo.astro';
+import PageHero from '../components/PageHero.astro';
+import RealRecording from '../components/RealRecording.astro';
+import { RECORDINGS, recordingVoice } from '../data/recordings';
+---
+<Base title="Real call library | JobGen.AI" description="Hear six real JobGen AI conversations across reception, property, education, hospitality and childcare. Search recordings, control playback and follow the transcript.">
+  <PageHero eyebrow="THE REAL CALL LIBRARY" sub="Six real conversations. Hear how a question becomes an answer, a booking or a clear next step. Personal identifiers are omitted where shown in the published transcript." secondary={{label:'Choose a call ↓',href:'#recordings'}}>
+    <span class="h1-line">Hear the work.</span><span class="h1-line h1-muted">Not just the pitch.</span>
+  </PageHero>
+  <section class="recording-directory paper" id="recordings" aria-labelledby="recordings-title">
+    <div class="wrap">
+      <p class="overline">VOICE THAT MOVES THINGS FORWARD</p><h2 id="recordings-title">Real calls. Real next steps.</h2>
+      <div class="library-search"><label for="recording-search">Find a conversation</label><input id="recording-search" type="search" placeholder="Try property, tax, education…" data-recording-search /><p role="status" data-recording-count>{RECORDINGS.length} recordings</p></div>
+      <div class="library-grid">{RECORDINGS.map(rec => <div data-library-card data-library-search={[rec.title,rec.industry,rec.direction,rec.description,recordingVoice(rec)].join(' ').toLowerCase()}><RealRecording rec={rec} /></div>)}</div>
+      <p class="library-empty" data-recording-empty hidden>No matching calls. Try another word or <button type="button" data-recording-clear>clear your search</button>.</p>
+      <noscript><p>All six recordings are available below without search.</p></noscript>
+    </div>
+  </section>
+  <BookDemo line1="Hear your business." line2="In a live demo." sub="Bring a typical customer question. We’ll show you the next step, the handover and the tools behind it." agenda={[{title:'A call from your world'},{title:'Your workflow and systems'},{title:'Setup and pricing'}]} quoteFrom={null}/>
+  <script>
+    const search = document.querySelector<HTMLInputElement>('[data-recording-search]');
+    const cards = [...document.querySelectorAll<HTMLElement>('[data-library-card]')];
+    const count = document.querySelector<HTMLElement>('[data-recording-count]');
+    const empty = document.querySelector<HTMLElement>('[data-recording-empty]');
+    const filter = () => {
+      const words = (search?.value.trim().toLowerCase() || '').split(/\s+/).filter(Boolean);
+      let matches = 0;
+      cards.forEach(card => {
+        const show = words.every(word => card.dataset.librarySearch?.includes(word));
+        card.hidden = !show;
+        if (show) { matches++; card.querySelector('.recording')?.classList.add('in'); }
+        else card.querySelector('audio')?.pause();
+      });
+      if (count) count.textContent = matches + (matches === 1 ? ' recording' : ' recordings');
+      if (empty) empty.hidden = matches > 0;
+    };
+    search?.addEventListener('input', filter);
+    document.querySelector('[data-recording-clear]')?.addEventListener('click',()=>{if(search){search.value='';filter();search.focus();}});
+  </script>
+</Base>

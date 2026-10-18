@@ -1,5 +1,130 @@
 [
   {
+    "id": "inbound-appointment",
+    "industry": "Tax & Reception",
+    "direction": "Inbound call",
+    "title": "Tax return booking & checklist",
+    "description": "A returning client books an in-person tax return appointment and checks the information on file.",
+    "outcome": "In-person appointment booked for Monday, Aug 3 at 10:00 am",
+    "duration": 112.76,
+    "audio": "/audio/inbound-appointment-booking.m4a",
+    "areas": [
+      "accounting"
+    ],
+    "transcript": [
+      {
+        "time": 0,
+        "speaker": "ai",
+        "text": "Hi Shiqi. Thanks for calling M&S Solutions. This is Jenny, AI Receptionist. This call may be transcribed. How can I help?"
+      },
+      {
+        "time": 11.44,
+        "speaker": "caller",
+        "text": "I just want to book another meeting next Monday."
+      },
+      {
+        "time": 16.24,
+        "speaker": "ai",
+        "text": "Would you like to meet in person at the office or have the meeting online?"
+      },
+      {
+        "time": 20.24,
+        "speaker": "caller",
+        "text": "I’d like to meet in person, actually."
+      },
+      {
+        "time": 28.16,
+        "speaker": "ai",
+        "text": "We have tax return, consultation, and company or business return appointments. Which one would you like to book?"
+      },
+      {
+        "time": 34.76,
+        "speaker": "caller",
+        "text": "I want to book a tax return appointment."
+      },
+      {
+        "time": 37.76,
+        "speaker": "ai",
+        "text": "How many people are we preparing tax returns for?"
+      },
+      {
+        "time": 43.12,
+        "speaker": "caller",
+        "text": "Just one."
+      },
+      {
+        "time": 49.04,
+        "speaker": "ai",
+        "text": "I can see we have one investment property, zero crypto accounts or reports, and zero share-trading accounts or portfolios on file."
+      },
+      {
+        "time": 57.28,
+        "speaker": "ai",
+        "text": "Has anything changed since last time?"
+      },
+      {
+        "time": 59.8,
+        "speaker": "caller",
+        "text": "No, nothing has changed."
+      },
+      {
+        "time": 66.8,
+        "speaker": "ai",
+        "text": "Please give me a few seconds."
+      },
+      {
+        "time": 69.84,
+        "speaker": "ai",
+        "text": "The first available slot for your tax return appointment is Monday, August 3, from 10:00 am to 10:45 am."
+      },
+      {
+        "time": 78.24,
+        "speaker": "ai",
+        "text": "Would you like to book this time?"
+      },
+      {
+        "time": 80.8,
+        "speaker": "caller",
+        "text": "Yes, please."
+      },
+      {
+        "time": 86.52,
+        "speaker": "ai",
+        "text": "Please give me a few seconds."
+      },
+      {
+        "time": 88.88,
+        "speaker": "ai",
+        "text": "Your tax return appointment has been successfully booked for Monday, August 3, from 10:00 am to 10:45 am in the office."
+      },
+      {
+        "time": 97.64,
+        "speaker": "ai",
+        "text": "Is there another meeting you’d like me to book?"
+      },
+      {
+        "time": 101.12,
+        "speaker": "caller",
+        "text": "No, thank you."
+      },
+      {
+        "time": 105.72,
+        "speaker": "ai",
+        "text": "Thank you."
+      },
+      {
+        "time": 106.56,
+        "speaker": "ai",
+        "text": "If you need anything else, feel free to call me back."
+      },
+      {
+        "time": 109.64,
+        "speaker": "ai",
+        "text": "Have a great day."
+      }
+    ]
+  },
+  {
     "id": "education-support",
     "industry": "Education",
     "direction": "Inbound call",

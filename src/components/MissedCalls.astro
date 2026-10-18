@@ -74,7 +74,7 @@ const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", hre
           <p class="calc-note">This estimates the potential revenue in calls you currently miss, based only on your numbers. It isn’t guaranteed recovered revenue, profit or savings from JobGen.AI. Every number is yours to change, apart from the 22 working days.</p>
         </div>
 
-        <form class="lead" data-lead-form data-endpoint={LINKS.leadEndpoint} novalidate>
+        {LINKS.leadEndpoint ? <form class="lead" data-lead-form data-endpoint={LINKS.leadEndpoint} novalidate>
           <div class="lead-body" data-lead-body>
             <p class="lead-title">Want help winning these calls back?</p>
             <p class="lead-sub">Leave your email and number and we’ll get in touch with a plan built around your numbers.</p>
@@ -104,10 +104,13 @@ const { eyebrow = "THE COST OF A MISSED CALL", cta = { label: "Book a demo", hre
           <div class="lead-done" data-lead-done hidden>
             <p class="lead-title">Thanks, we’ve got your numbers.</p>
             <p class="lead-sub">Someone from our team will be in touch. Want to skip the wait?</p>
-            <p class="lead-preview mono" data-lead-preview hidden>Preview: this form isn’t connected yet, so nothing was sent.</p>
             <a class="btn btn-light" href={cta.href}>Pick a time now <span aria-hidden="true">→</span></a>
           </div>
-        </form>
+        </form> : <div class="lead">
+          <p class="lead-title">Turn these numbers into a plan.</p>
+          <p class="lead-sub">Talk through your estimate with the team, or send it in an email.</p>
+          <div class="lead-actions"><a class="btn btn-light" href={cta.href}>Book a demo <span aria-hidden="true">↗</span></a><a class="lead-alt" href="mailto:hello@jobgen.ai" data-calc-email>Email your estimate ↗</a></div>
+        </div>}
       </div>
     </div>
   </div>

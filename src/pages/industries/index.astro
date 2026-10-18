@@ -26,7 +26,7 @@ const name = (key: string) => WORKFORCE.find((w) => w.key === key)!.name;
     <div class="wrap">
       <div class="section-head">
         <p class="mono chapter-no reveal">PICK YOUR INDUSTRY</p>
-        <h2 id="ind-title" class="reveal">Ten industries,<br /><span class="muted">set up for how each one works.</span></h2>
+        <h2 id="ind-title" class="reveal">Your industry,<br /><span class="muted">set up for how each one works.</span></h2>
       </div>
       <ul class="ind-index">
         {INDUSTRIES.map((i) => (
@@ -42,6 +42,7 @@ const name = (key: string) => WORKFORCE.find((w) => w.key === key)!.name;
           </li>
         ))}
       </ul>
+      <div class="official-industry-links"><h3>More specialist workflows</h3><p>Explore JobGen’s existing industry guides.</p><a href="https://receptionist.jobgen.ai/industries/construction">Construction ↗</a><a href="https://receptionist.jobgen.ai/industries/mortgage-brokers">Mortgage brokers ↗</a><a href="https://receptionist.jobgen.ai/industries/dental">Dental ↗</a><a href="https://receptionist.jobgen.ai/industries/ndis">NDIS providers ↗</a></div>
     </div>
   </section>
   <BookDemo

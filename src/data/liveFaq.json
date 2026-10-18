@@ -1,0 +1,46 @@
+[
+  {
+    "q": "What is an AI receptionist?",
+    "a": "An AI receptionist answers phone calls in a natural voice, understands what callers need, books appointments, captures details, and follows up automatically. Jenny brings those essential front-desk jobs into one consistent, reliable workflow."
+  },
+  {
+    "q": "Does the AI sound like a robot?",
+    "a": "No. Jenny and Olivia use ultra-low latency conversational voice engines (sub-500ms voice round-trip) with natural intonation, dynamic pacing, and intelligent interruption handling. Most callers speak with Jenny or Olivia without realizing they are speaking with an AI assistant."
+  },
+  {
+    "q": "How does live calendar booking and rescheduling work?",
+    "a": "The AI checks live staff availability across Outlook, Google Calendar, and Calendly. It evaluates appointment type, duration, buffer times, and meeting rules, then books or reschedules the right time directly into the calendar and sends immediate confirmations."
+  },
+  {
+    "q": "What happens after a call ends?",
+    "a": "Jenny saves a concise summary and searchable transcript, records confirmed caller notes, updates your CRM, and creates callback or staff handoff tasks so every conversation turns into organized, visible work."
+  },
+  {
+    "q": "Can Jenny answer after hours and during peak seasons?",
+    "a": "Yes. Jenny can answer around the clock, 24/7, including weekends, holidays, and peak call overflow. You choose your business hours, transfer rules, unavailable messaging, and callback behavior."
+  },
+  {
+    "q": "How much control do I have over greetings, scripts, and rules?",
+    "a": "You have complete control. You configure the greeting, tone, business knowledge base, calendar availability, transfer rules, and escalation boundaries. Your team can review call logs and refine your agent's instructions at any time."
+  },
+  {
+    "q": "Is JobGen tailored for specific industry workflows?",
+    "a": "Yes. JobGen comes with tailored workflows and vocabularies for accounting practices, legal intake, dental and healthcare clinics, trades and home services, property and real estate, education, and hospitality."
+  },
+  {
+    "q": "Can I keep my existing business phone number?",
+    "a": "Yes. You can keep your existing phone number and simply set up call forwarding (unconditional, busy, or after-hours) to your dedicated JobGen routing number. You can also provision new dedicated local or toll-free numbers directly through the platform."
+  },
+  {
+    "q": "How do Inbound Reception (Jenny) and Outbound Sales (Olivia) work together?",
+    "a": "Jenny serves as your 24/7 Inbound Front Desk Receptionist—handling incoming calls, calendar bookings, and office triage. Olivia is your Outbound Growth Agent—following up with customer inquiries, property leads, and outreach campaigns. Both share the same unified operations console and client records."
+  },
+  {
+    "q": "How does JobGen connect to my tools and CRM?",
+    "a": "JobGen connects natively to your existing stack—including Outlook, Google Calendar, HubSpot, Salesforce, Xero, Twilio, and webhooks. Every call summary, transcript, confirmed booking, and follow-up task syncs automatically without double handling."
+  },
+  {
+    "q": "What happens when an urgent call or sensitive issue occurs?",
+    "a": "You define custom boundary rules and escalation criteria (e.g., emergency service request, VIP client, urgent legal or medical matter). JobGen immediately initiates a warm live transfer to your on-call staff or dispatches a high-priority SMS and email alert."
+  }
+]

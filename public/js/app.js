@@ -185,6 +185,13 @@
     };
     const calculate = () => {
       const r = (last = read());
+      const emailLink = $("[data-calc-email]", box);
+      if (emailLink) emailLink.href = "mailto:hello@jobgen.ai?subject=" + encodeURIComponent("My missed-call estimate") + "&body=" + encodeURIComponent(`I’d like to discuss this estimate:
+${r.calls} calls/day; ${r.missedPct}% unanswered; ${r.conv}% conversion; ${aud(r.value)} per customer.
+${num(r.missedMonth)} missed calls/month over 22 working days.
+Illustrative revenue opportunity: ${aud(r.total)}/month.
+
+My business: `);
       timers.forEach(clearTimeout);
       timers = [];
       calculated = true;
@@ -275,9 +282,7 @@
           $("[data-lead-done]", form).hidden = false;
         };
         if (!endpoint) {
-          // Not connected yet: show the thank-you design, clearly marked, and send nothing.
-          done();
-          $("[data-lead-preview]", form).hidden = false;
+          say('Please <a href="mailto:hello@jobgen.ai">email hello@jobgen.ai</a> or book a demo to discuss your estimate.');
           return;
         }
         submit.disabled = true;
